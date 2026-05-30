@@ -18,12 +18,15 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 
 /**
- * Crafting-table recipe that mints Fortune IV and V by writing the level directly onto a
- * tool that already has Fortune III (-&gt; IV) or IV (-&gt; V). Recipe = the tool + 8 diamonds.
+ * Upgrades a pair of Fortune books one level using the Fortune Upgrade template:
  *
- * Fortune's data-driven max_level stays 3, so the enchanting table, villagers, loot and
- * anvil-combine all remain capped at III. Writing a higher level directly bypasses that cap;
- * the extra drops work because vanilla ore/crop loot tables read the raw enchantment level.
+ *   L D L     L = lapis block
+ *   B T B     D = diamond block
+ *   L D L     B = enchanted book with Fortune N (both same level, N in 3..4)
+ *             T = Fortune Upgrade smithing template (consumed)
+ *
+ * Output: a single enchanted book with Fortune (N+1). max_level stays 3, so this is the only
+ * way to obtain Fortune IV/V; the book is applied to a tool in an anvil (see AnvilMenuMixin).
  */
 public class FortuneUpgradeRecipe extends CustomRecipe {
     public static final FortuneUpgradeRecipe INSTANCE = new FortuneUpgradeRecipe();
@@ -31,62 +34,47 @@ public class FortuneUpgradeRecipe extends CustomRecipe {
             MapCodec.unit(INSTANCE),
             StreamCodec.<RegistryFriendlyByteBuf, FortuneUpgradeRecipe>unit(INSTANCE));
 
-    private static final int REQUIRED_DIAMONDS = 8;
-    private static final int MIN_INPUT_LEVEL = 3;
     private static final int MAX_LEVEL = 5;
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
-        ItemStack tool = null;
-        int diamonds = 0;
-        for (int i = 0; i < input.size(); i++) {
-            ItemStack s = input.getItem(i);
-            if (s.isEmpty()) continue;
-            if (s.is(Items.DIAMOND)) {
-                diamonds += s.getCount();
-                continue;
-            }
-            int fl = fortuneLevel(s);
-            if (fl >= MIN_INPUT_LEVEL && fl < MAX_LEVEL && tool == null && s.getCount() == 1) {
-                tool = s;
-                continue;
-            }
-            return false; // any other item, a second tool, or a stacked tool -> no match
-        }
-        return tool != null && diamonds == REQUIRED_DIAMONDS;
+        if (input.width() != 3 || input.height() != 3) return false;
+
+        // Fixed positions (row-major): 0..8
+        if (!input.getItem(0).is(Items.LAPIS_BLOCK)) return false;
+        if (!input.getItem(2).is(Items.LAPIS_BLOCK)) return false;
+        if (!input.getItem(6).is(Items.LAPIS_BLOCK)) return false;
+        if (!input.getItem(8).is(Items.LAPIS_BLOCK)) return false;
+        if (!input.getItem(1).is(Items.DIAMOND_BLOCK)) return false;
+        if (!input.getItem(7).is(Items.DIAMOND_BLOCK)) return false;
+        if (!FortuneTemplate.isTemplate(input.getItem(4))) return false;
+
+        int left = bookFortuneLevel(input.getItem(3));
+        int right = bookFortuneLevel(input.getItem(5));
+        return left >= 3 && left < MAX_LEVEL && left == right;
     }
 
     @Override
     public ItemStack assemble(CraftingInput input) {
-        ItemStack tool = null;
-        for (int i = 0; i < input.size(); i++) {
-            ItemStack s = input.getItem(i);
-            if (!s.isEmpty() && !s.is(Items.DIAMOND) && fortuneLevel(s) >= MIN_INPUT_LEVEL) {
-                tool = s;
-                break;
-            }
-        }
-        if (tool == null) return ItemStack.EMPTY;
-
-        ItemStack out = tool.copy();
-        out.setCount(1);
-        ItemEnchantments ench = out.get(DataComponents.ENCHANTMENTS);
-        if (ench == null) return ItemStack.EMPTY;
+        ItemStack sourceBook = input.getItem(3);
+        ItemEnchantments stored = sourceBook.get(DataComponents.STORED_ENCHANTMENTS);
+        if (stored == null) return ItemStack.EMPTY;
 
         Holder<Enchantment> fortune = null;
-        int lvl = 0;
-        for (Object2IntMap.Entry<Holder<Enchantment>> e : ench.entrySet()) {
-            if (e.getKey().is(Enchantments.FORTUNE)) {
-                fortune = e.getKey();
-                lvl = e.getIntValue();
+        int level = 0;
+        for (Object2IntMap.Entry<Holder<Enchantment>> entry : stored.entrySet()) {
+            if (entry.getKey().is(Enchantments.FORTUNE)) {
+                fortune = entry.getKey();
+                level = entry.getIntValue();
                 break;
             }
         }
         if (fortune == null) return ItemStack.EMPTY;
 
-        ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(ench);
-        mutable.set(fortune, Math.min(MAX_LEVEL, lvl + 1));
-        out.set(DataComponents.ENCHANTMENTS, mutable.toImmutable());
+        ItemStack out = new ItemStack(Items.ENCHANTED_BOOK);
+        ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        mutable.set(fortune, Math.min(MAX_LEVEL, level + 1));
+        out.set(DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable());
         return out;
     }
 
@@ -100,10 +88,11 @@ public class FortuneUpgradeRecipe extends CustomRecipe {
         return SERIALIZER;
     }
 
-    private static int fortuneLevel(ItemStack stack) {
-        ItemEnchantments ench = stack.get(DataComponents.ENCHANTMENTS);
-        if (ench == null || ench.isEmpty()) return 0;
-        for (Object2IntMap.Entry<Holder<Enchantment>> entry : ench.entrySet()) {
+    private static int bookFortuneLevel(ItemStack stack) {
+        if (stack.isEmpty() || !stack.is(Items.ENCHANTED_BOOK)) return 0;
+        ItemEnchantments stored = stack.get(DataComponents.STORED_ENCHANTMENTS);
+        if (stored == null || stored.isEmpty()) return 0;
+        for (Object2IntMap.Entry<Holder<Enchantment>> entry : stored.entrySet()) {
             if (entry.getKey().is(Enchantments.FORTUNE)) return entry.getIntValue();
         }
         return 0;
