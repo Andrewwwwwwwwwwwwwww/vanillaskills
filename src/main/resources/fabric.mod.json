@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "vanillaskills",
+  "version": "${version}",
+  "name": "VanillaSkills",
+  "description": "A server-side skill tree and progression overhaul. Adds a per-player skill tree, new tool/weapon/armor tiers, and removes Mending from the game.",
+  "authors": ["Andrewwwwwwwwwwwwwww"],
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "main": ["io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills"]
+  },
+  "mixins": ["vanillaskills.mixins.json"],
+  "contact": {
+    "homepage": "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills",
+    "sources": "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills",
+    "issues": "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/issues"
+  },
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "fabric-api": ">=0.148.2",
+    "minecraft": "~26.1"
+  }
+}
