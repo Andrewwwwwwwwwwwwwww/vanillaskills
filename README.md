@@ -38,6 +38,16 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
   - `/skill edit ...` — op, live-edit the server's tree (add/remove nodes, set
     cost/slot/icon/title/desc, requirements, attribute effects) writing back to JSON
 
+### Craftable Fortune IV & V
+Fortune past the vanilla cap of III, obtainable only by crafting:
+
+- Place a tool with **Fortune III** (or IV) plus **8 diamonds** in a crafting table to get
+  the same tool with **Fortune IV** (or V).
+- The enchanting table, villager trades, chest loot, and anvil-combining stay capped at
+  Fortune III — IV/V are exclusive to this recipe.
+- An anvil mixin preserves the higher level, so repairing/renaming an upgraded tool won't
+  knock it back down to III.
+
 ## Planned
 
 - In-game drag/click tree editor (currently editing is via `/skill edit` + JSON)
