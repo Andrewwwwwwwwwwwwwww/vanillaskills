@@ -25,6 +25,7 @@ Mending is completely removed from the game:
 - New tool / weapon / armor tiers (hardwood, deepslate, rose gold, steel, etc.)
 - Custom smithing template for upgrades and repairs
 - Tier-specific combat effects (bleed, poison, burn, dash)
+- Craftable higher-tier enchantments (Fortune IV & V)
 - Quality-of-life: longer potions, stackable potions/soups, stronger tipped arrows
 
 ## Building

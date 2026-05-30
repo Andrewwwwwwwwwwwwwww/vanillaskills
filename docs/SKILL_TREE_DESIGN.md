@@ -110,38 +110,47 @@ everything branches from.
 
 ---
 
-## 4. Starter tree (13 nodes, 4 lanes)
+## 4. Starter tree (16 nodes, 5 lanes)
 
-6×9 chest. Slot = `row*9 + col`. Root center-bottom, four lanes rising from it.
+6×9 chest. Slot = `row*9 + col`. Root center-bottom, five lanes rising from it
+(the Mining lane rises directly above the root).
+
+Lanes: **Health, Speed, Mining, Luck, Base Damage.**
 
 ```
-        col0 col1 col2 col3 col4 col5 col6 col7 col8
-row0      .    .    .    .    .    .    .    .    .
-row1      .    .    .    .    .    .    .    .    .
-row2      .    V3   .    M3   .    P3   .    C3   .
-row3      .    V2   .    M2   .    P2   .    C2   .
-row4      .    V1   .    M1   .    P1   .    C1   .
-row5      .    .    .    .   ROOT  .    .    .    .
+       col0 col1 col2 col3 col4 col5 col6 col7 col8
+row0     .    .    .    .    .    .    .    .    .
+row1     .    .    .    .    .    .    .    .    .
+row2     H3   .    S3   .   Mi3   .    L3   .    D3
+row3     H2   .    S2   .   Mi2   .    L2   .    D2
+row4     H1   .    S1   .   Mi1   .    L1   .    D1
+row5     .    .    .    .   ROOT   .    .    .    .
 ```
 
 | id | title | slot | cost | requires | effect |
 |----|-------|------|------|----------|--------|
 | `root` | Awakening | 49 | 0 | — | none (anchor) |
-| `vitality_1` | Vitality I | 37 | 1 | root | +2 max_health |
-| `vitality_2` | Vitality II | 28 | 2 | vitality_1 | +2 max_health (4 total) |
-| `vitality_3` | Natural Toughness | 19 | 3 | vitality_2 | +2 armor_toughness |
-| `mobility_1` | Fleet Foot I | 39 | 1 | root | +5% movement_speed |
-| `mobility_2` | Fleet Foot II | 30 | 2 | mobility_1 | +5% movement_speed (10% total) |
-| `mobility_3` | Sure Step | 21 | 3 | mobility_2 | +0.5 step_height, +3 safe_fall_distance |
-| `mining_1` | Prospector I | 41 | 1 | root | +1 mining_efficiency |
-| `mining_2` | Prospector II | 32 | 2 | mining_1 | +2 mining_efficiency (3 total) |
-| `mining_3` | Deep Digger | 23 | 3 | mining_2 | +0.5 block_interaction_range, +submerged mining |
-| `combat_1` | Warrior I | 43 | 1 | root | +1 attack_damage |
-| `combat_2` | Warrior II | 34 | 2 | combat_1 | +1 attack_damage (2 total) |
-| `combat_3` | Brawler | 25 | 3 | combat_2 | +2 attack_damage (4 total) |
+| `health_1` | Vitality I | 36 | 1 | root | +2 max_health |
+| `health_2` | Vitality II | 27 | 2 | health_1 | +2 max_health (4 total) |
+| `health_3` | Vitality III | 18 | 3 | health_2 | +2 max_health (6 total) |
+| `speed_1` | Fleet Foot I | 38 | 1 | root | +5% movement_speed |
+| `speed_2` | Fleet Foot II | 29 | 2 | speed_1 | +5% movement_speed (10% total) |
+| `speed_3` | Fleet Foot III | 20 | 3 | speed_2 | +5% movement_speed (15% total) |
+| `mining_1` | Prospector I | 40 | 1 | root | +1 mining_efficiency |
+| `mining_2` | Prospector II | 31 | 2 | mining_1 | +2 mining_efficiency (3 total) |
+| `mining_3` | Prospector III | 22 | 3 | mining_2 | +2 mining_efficiency (5 total) |
+| `luck_1` | Fortune Finder I | 42 | 1 | root | +1 luck |
+| `luck_2` | Fortune Finder II | 33 | 2 | luck_1 | +1 luck (2 total) |
+| `luck_3` | Fortune Finder III | 24 | 3 | luck_2 | +1 luck (3 total) |
+| `damage_1` | Warrior I | 44 | 1 | root | +1 attack_damage |
+| `damage_2` | Warrior II | 35 | 2 | damage_1 | +1 attack_damage (2 total) |
+| `damage_3` | Warrior III | 26 | 3 | damage_2 | +2 attack_damage (4 total) |
 
-Full clear = 24 points across 4 lanes. Numbers live in the JSON, so balancing is a
-config edit, not a recompile.
+Icon suggestions: Health=`golden_apple`, Speed=`feather`, Mining=`iron_pickaxe`,
+Luck=`rabbit_foot`, Damage=`iron_sword`, Root=`nether_star`.
+
+Full clear = 30 points across 5 lanes (6 per lane). Numbers live in the JSON, so
+balancing is a config edit, not a recompile.
 
 GUI item states (via item + lore color):
 - **Owned** — enchanted-glint item, green "Unlocked".
