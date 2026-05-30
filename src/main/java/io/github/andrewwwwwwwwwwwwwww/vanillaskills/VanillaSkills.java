@@ -2,6 +2,7 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills;
 
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.command.SkillCommands;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.PointsConfig;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneUpgradeRecipe;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.PlayerSkillData;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.PlayerSkillManager;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillEffects;
@@ -12,6 +13,9 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
@@ -31,6 +35,10 @@ public class VanillaSkills implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("VanillaSkills initializing");
+
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+                Identifier.fromNamespaceAndPath(MOD_ID, "fortune_upgrade"),
+                FortuneUpgradeRecipe.SERIALIZER);
 
         ServerLifecycleEvents.SERVER_STARTED.register(srv -> {
             server = srv;
