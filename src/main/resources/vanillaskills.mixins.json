@@ -3,7 +3,8 @@
   "package": "io.github.andrewwwwwwwwwwwwwww.vanillaskills.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "ItemEnchantmentsMutableMixin"
+    "ItemEnchantmentsMutableMixin",
+    "PlayerAdvancementsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
