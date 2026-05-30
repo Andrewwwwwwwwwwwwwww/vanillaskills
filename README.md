@@ -19,9 +19,28 @@ Mending is completely removed from the game:
   `#minecraft:on_random_loot` remove Mending from the selection pools so librarian
   trades and chest loot never *roll* it (avoiding blank enchanted books).
 
+### Skill tree
+Per-player skill tree with a chest-based GUI (no client mod needed):
+
+- **Points** are earned from advancements (configurable per-advancement in
+  `config/vanillaskills/points.json`; recipe advancements ignored; existing players
+  are credited retroactively on first join).
+- **Tree** is defined in `config/vanillaskills/skilltree.json` (a default 5-lane starter
+  tree — Health, Speed, Mining, Luck, Damage — is written on first run). Effects support
+  `attribute`, `status_effect`, and `flag` types. Attribute bonuses apply as transient
+  modifiers on join/respawn, so they never duplicate.
+- **Commands:**
+  - `/skill` (or `/skills`) — open the tree GUI
+  - `/skill points` — show your points
+  - `/skill points <player> add|set <n>` — op
+  - `/skill reset <player>` / `/skill recalc <player>` — op
+  - `/skill reload` — op, reloads tree + points config
+  - `/skill edit ...` — op, live-edit the server's tree (add/remove nodes, set
+    cost/slot/icon/title/desc, requirements, attribute effects) writing back to JSON
+
 ## Planned
 
-- Per-player skill tree (chest-based GUI, importable server-defined trees)
+- In-game drag/click tree editor (currently editing is via `/skill edit` + JSON)
 - New tool / weapon / armor tiers (hardwood, deepslate, rose gold, steel, etc.)
 - Custom smithing template for upgrades and repairs
 - Tier-specific combat effects (bleed, poison, burn, dash)
