@@ -2,6 +2,7 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills;
 
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.command.SkillCommands;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.PointsConfig;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneTemplateRecipe;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneUpgradeRecipe;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.PlayerSkillData;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.PlayerSkillManager;
@@ -39,6 +40,9 @@ public class VanillaSkills implements ModInitializer {
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
                 Identifier.fromNamespaceAndPath(MOD_ID, "fortune_upgrade"),
                 FortuneUpgradeRecipe.SERIALIZER);
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+                Identifier.fromNamespaceAndPath(MOD_ID, "fortune_template"),
+                FortuneTemplateRecipe.SERIALIZER);
 
         ServerLifecycleEvents.SERVER_STARTED.register(srv -> {
             server = srv;

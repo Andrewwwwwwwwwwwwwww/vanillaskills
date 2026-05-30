@@ -41,12 +41,24 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
 ### Craftable Fortune IV & V
 Fortune past the vanilla cap of III, obtainable only by crafting:
 
-- Place a tool with **Fortune III** (or IV) plus **8 diamonds** in a crafting table to get
-  the same tool with **Fortune IV** (or V).
-- The enchanting table, villager trades, chest loot, and anvil-combining stay capped at
-  Fortune III — IV/V are exclusive to this recipe.
-- An anvil mixin preserves the higher level, so repairing/renaming an upgraded tool won't
-  knock it back down to III.
+1. **Fortune Upgrade Smithing Template** — a vanilla netherite upgrade template with a custom
+   name + hidden marker tag (kept as a vanilla item so the mod stays server-side; a recolored
+   texture can come via a resource pack). Crafted like the netherite template:
+   ```
+   D T D     D = diamond
+   D N D     T = netherite upgrade smithing template
+   D D D     N = netherite ingot
+   ```
+2. **Upgrade a Fortune book** — consumes two Fortune N books + the template:
+   ```
+   lapis block | diamond block | lapis block
+   Fortune N book | Fortune Upgrade template | Fortune N book
+   lapis block | diamond block | lapis block
+   ```
+   Output: one **Fortune (N+1)** book (N = 3 → IV, N = 4 → V). The template is consumed.
+3. Apply the book to a tool in an **anvil**. Fortune's `max_level` stays 3, so the enchanting
+   table, villagers, loot and anvil-*combining* never exceed III — IV/V are exclusive to this
+   recipe. An anvil mixin un-clamps the over-level book/tool so the IV/V actually sticks.
 
 ## Planned
 
