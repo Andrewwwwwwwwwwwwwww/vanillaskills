@@ -3,6 +3,7 @@
   "package": "io.github.andrewwwwwwwwwwwwwww.vanillaskills.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "AnvilMenuMixin",
     "ItemEnchantmentsMutableMixin",
     "PlayerAdvancementsMixin"
   ],
