@@ -2,6 +2,9 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills;
 
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.command.SkillCommands;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.PointsConfig;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.AlloyRecipes;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorCraftingRecipe;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.RoseGoldImmunity;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot.FortuneTemplateLoot;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneTemplateRecipe;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneUpgradeRecipe;
@@ -46,6 +49,16 @@ public class VanillaSkills implements ModInitializer {
                 FortuneTemplateRecipe.SERIALIZER);
         FortuneTemplateLoot.register();
 
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+                Identifier.fromNamespaceAndPath(MOD_ID, "armor_crafting"),
+                ArmorCraftingRecipe.SERIALIZER);
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+                Identifier.fromNamespaceAndPath(MOD_ID, "rose_gold_ingot"),
+                AlloyRecipes.RoseGold.SERIALIZER);
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+                Identifier.fromNamespaceAndPath(MOD_ID, "steel_ingot"),
+                AlloyRecipes.Steel.SERIALIZER);
+
         ServerLifecycleEvents.SERVER_STARTED.register(srv -> {
             server = srv;
             PLAYERS.setPointsConfig(PointsConfig.load());
@@ -65,6 +78,7 @@ public class VanillaSkills implements ModInitializer {
     }
 
     private void onServerTick(MinecraftServer srv) {
+        RoseGoldImmunity.tick(srv);
         if (++tickCounter < STATUS_REFRESH_INTERVAL) return;
         tickCounter = 0;
         SkillTree tree = TREE.tree();

@@ -64,9 +64,27 @@ Fortune past the vanilla cap of III, obtainable only by crafting:
    table, villagers, loot and anvil-*combining* never exceed III — IV/V are exclusive to this
    recipe. An anvil mixin un-clamps the over-level book/tool so the IV/V actually sticks.
 
+### New armor tiers
+Reskinned vanilla armor stamped with custom stats/name/marker (server-side; textures via an
+optional resource pack keyed on the `custom_model_data` hook). Crafted in normal armor shapes
+via one custom recipe; repaired at an anvil with the tier's material.
+
+- **Hardwood** (leather base) — crafted from **Wood blocks** (`oak_wood` etc., stripped + hyphae
+  too). Light & fast: +8% movement with a full set.
+- **Rose Gold** (golden base) — crafted from **Rose Gold Ingots** (4 gold + 4 copper → 8).
+  Immune to **all** negative status effects with a full set; piglins stay neutral (gold base).
+- **Steel** (iron base) — crafted from **Steel Ingots** (1 iron + 1 coal → 1). High armor +
+  high toughness for reliable defense; slightly slower (−4% with a full set).
+- *Diamond II and Netherite II are planned but not built yet.*
+
+Both metals are vanilla copper ingots with a name + hidden marker (no new items registered).
+Known minor leak for now: because repair matches by item type, plain copper (and the other
+copper-based ingot) can also repair Rose Gold/Steel armor.
+
 ## Planned
 
 - In-game drag/click tree editor (currently editing is via `/skill edit` + JSON)
+- Diamond II & Netherite II armor tiers
 - New tool / weapon / armor tiers (hardwood, deepslate, rose gold, steel, etc.)
 - Custom smithing template for upgrades and repairs
 - Tier-specific combat effects (bleed, poison, burn, dash)
