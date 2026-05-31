@@ -45,7 +45,14 @@ Fortune past the vanilla cap of III, obtainable only by crafting:
    name + hidden marker tag (kept as a vanilla item so the mod stays server-side; a recolored
    texture can come via a resource pack). It is **its own thing**: a mixin blocks the marked
    template from working in the smithing table, so it can't be used as a netherite upgrade.
-   *How players obtain it is not decided yet* (no crafting recipe ships at the moment).
+   - **Found** in Ancient City and minecart (abandoned mineshaft) chests at ~8.6% per chest —
+     the same rarity as an Ancient City enchanted golden apple (injected via the loot API).
+   - **Duplicated** in a crafting table (output 2):
+     ```
+     glow berries | Fortune Upgrade template | glow berries
+     sculk        | diamond block            | sculk
+     glow berries | emerald block            | glow berries
+     ```
 2. **Upgrade a Fortune book** — consumes two Fortune N books + the template:
    ```
    lapis block | diamond block | lapis block
