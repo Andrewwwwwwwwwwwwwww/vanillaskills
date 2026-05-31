@@ -5,6 +5,7 @@
   "mixins": [
     "AnvilMenuMixin",
     "ItemEnchantmentsMutableMixin",
+    "ItemStackRepairMixin",
     "PlayerAdvancementsMixin",
     "SmithingRecipeMixin"
   ],

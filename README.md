@@ -78,8 +78,8 @@ via one custom recipe; repaired at an anvil with the tier's material.
 - *Diamond II and Netherite II are planned but not built yet.*
 
 Both metals are vanilla copper ingots with a name + hidden marker (no new items registered).
-Known minor leak for now: because repair matches by item type, plain copper (and the other
-copper-based ingot) can also repair Rose Gold/Steel armor.
+Anvil repair is locked to each tier's own material — only Rose Gold Ingots repair Rose Gold
+armor, only Steel Ingots repair Steel armor (plain copper / the wrong alloy won't work).
 
 ## Planned
 
