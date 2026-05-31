@@ -45,13 +45,7 @@ Fortune past the vanilla cap of III, obtainable only by crafting:
    name + hidden marker tag (kept as a vanilla item so the mod stays server-side; a recolored
    texture can come via a resource pack). It is **its own thing**: a mixin blocks the marked
    template from working in the smithing table, so it can't be used as a netherite upgrade.
-   Crafted from a netherite template:
-   ```
-   D T D     D = diamond
-   D N D     T = netherite upgrade smithing template
-   D D D     N = netherite ingot
-   ```
-   (Distinct from vanilla's template-duplication recipe, which uses netherrack in the center.)
+   *How players obtain it is not decided yet* (no crafting recipe ships at the moment).
 2. **Upgrade a Fortune book** — consumes two Fortune N books + the template:
    ```
    lapis block | diamond block | lapis block
