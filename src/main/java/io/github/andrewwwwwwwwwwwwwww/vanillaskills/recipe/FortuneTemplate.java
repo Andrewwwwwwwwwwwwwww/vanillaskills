@@ -27,14 +27,23 @@ public final class FortuneTemplate {
         return tag;
     }
 
+    /** The display name shown on the template. */
+    public static Component displayName() {
+        return Component.literal("Fortune Upgrade").withStyle(ChatFormatting.AQUA).withStyle(s -> s.withItalic(false));
+    }
+
+    /** A fresh marker tag identifying our template. */
+    public static CompoundTag markerTag() {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean(MARKER_KEY, true);
+        return tag;
+    }
+
     /** Build a fresh Fortune Upgrade template stack. */
     public static ItemStack create() {
         ItemStack stack = new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
-        stack.set(DataComponents.CUSTOM_NAME,
-                Component.literal("Fortune Upgrade").withStyle(ChatFormatting.AQUA).withStyle(s -> s.withItalic(false)));
-        CompoundTag tag = new CompoundTag();
-        tag.putBoolean(MARKER_KEY, true);
-        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
+        stack.set(DataComponents.CUSTOM_NAME, displayName());
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, markerTag());
         return stack;
     }
 
