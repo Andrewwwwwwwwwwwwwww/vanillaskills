@@ -4,16 +4,13 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.Container;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,21 +24,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * only lifts enchantments the anvil already chose to apply (never adds new ones), so it
  * correctly: (a) keeps an over-level tool's enchant through repair/rename, and (b) applies a
  * Fortune IV/V book to a tool at full level.
+ *
+ * Slots are read via the inherited {@code getSlot} (the {@code inputSlots}/{@code resultSlots}
+ * fields live in the superclass {@code ItemCombinerMenu} and can't be shadowed from here).
  */
 @Mixin(AnvilMenu.class)
 public class AnvilMenuMixin {
 
-    @Shadow
-    @Final
-    protected Container inputSlots;
-
-    @Shadow
-    @Final
-    protected ResultContainer resultSlots;
-
     @Inject(method = "createResult", at = @At("TAIL"))
     private void vanillaskills$preserveOverLevelEnchantments(CallbackInfo ci) {
-        ItemStack result = resultSlots.getItem(0);
+        AbstractContainerMenu self = (AbstractContainerMenu) (Object) this;
+        ItemStack result = self.getSlot(AnvilMenu.RESULT_SLOT).getItem();
         if (result.isEmpty()) return;
 
         DataComponentType<ItemEnchantments> resultType = enchantmentsType(result);
@@ -50,8 +43,8 @@ public class AnvilMenuMixin {
 
         ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(resultEnch);
         boolean changed = false;
-        for (int slot = 0; slot < 2; slot++) {
-            ItemStack input = inputSlots.getItem(slot);
+        for (int slot : new int[]{AnvilMenu.INPUT_SLOT, AnvilMenu.ADDITIONAL_SLOT}) {
+            ItemStack input = self.getSlot(slot).getItem();
             if (input.isEmpty()) continue;
             ItemEnchantments inputEnch = input.get(enchantmentsType(input));
             if (inputEnch == null || inputEnch.isEmpty()) continue;
