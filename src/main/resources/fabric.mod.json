@@ -6,7 +6,7 @@
   "description": "A server-side skill tree and progression overhaul. Adds a per-player skill tree, new tool/weapon/armor tiers, and removes Mending from the game.",
   "authors": ["Andrewwwwwwwwwwwwwww"],
   "license": "MIT",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": ["io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills"]
   },
