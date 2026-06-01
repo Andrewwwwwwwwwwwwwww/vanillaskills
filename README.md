@@ -79,6 +79,14 @@ via one custom recipe; repaired at an anvil with the tier's material.
   high toughness for reliable defense; slightly slower (−4% with a full set).
 - *Diamond II and Netherite II are planned but not built yet.*
 
+Each tier also has the full **tool set** (pickaxe, axe, shovel, hoe, sword), crafted in the
+normal tool shapes from the tier's material + sticks, and repaired with the tier material.
+Hardwood tools are wooden-tier; Rose Gold and Steel are iron-tier with more durability.
+
+A creative tab ("VanillaSkills") collects all custom items, and `/skill guide` opens an
+in-game info book. (Custom *blocks* aren't possible in a server-side / vanilla-client mod, so
+there are none.)
+
 Both metals are vanilla copper ingots with a name + hidden marker (no new items registered).
 Anvil repair is locked to each tier's own material — only Rose Gold Ingots repair Rose Gold
 armor, only Steel Ingots repair Steel armor (plain copper / the wrong alloy won't work).
