@@ -44,6 +44,9 @@ public final class FortuneTemplate {
         ItemStack stack = new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
         stack.set(DataComponents.CUSTOM_NAME, displayName());
         CustomData.set(DataComponents.CUSTOM_DATA, stack, markerTag());
+        // Hide the vanilla "netherite upgrade" template description (shows just our name).
+        stack.set(DataComponents.TOOLTIP_DISPLAY,
+                new net.minecraft.world.item.component.TooltipDisplay(true, new java.util.LinkedHashSet<>()));
         return stack;
     }
 
