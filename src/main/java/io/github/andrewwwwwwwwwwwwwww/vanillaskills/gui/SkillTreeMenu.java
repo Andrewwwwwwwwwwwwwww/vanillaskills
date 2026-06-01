@@ -6,6 +6,7 @@ import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillNode;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillTree;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -21,34 +22,46 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Read-only chest GUI for the skill tree. Each node renders as an item; clicking an
- * available, affordable node unlocks it. All item movement is blocked.
+ * Chest GUI for the skill tree. In normal mode, clicking an available node unlocks it. In edit
+ * mode (ops, via {@code /skill editor}), clicking picks up / moves / swaps nodes and right-click
+ * deletes them, writing changes back to skilltree.json. All item movement is blocked either way.
  */
 public class SkillTreeMenu extends ChestMenu {
     private final ServerPlayer player;
     private final SimpleContainer container;
+    private final boolean editMode;
+    private String selected; // node id currently picked up in edit mode
 
     public static void open(ServerPlayer player) {
+        openInternal(player, false);
+    }
+
+    public static void openEditor(ServerPlayer player) {
+        openInternal(player, true);
+    }
+
+    private static void openInternal(ServerPlayer player, boolean editMode) {
         SkillTree tree = VanillaSkills.TREE.tree();
-        Component title = Component.literal(tree.title == null ? "Skills" : tree.title);
+        String base = tree.title == null ? "Skills" : tree.title;
+        Component title = Component.literal(editMode ? base + " (Edit Mode)" : base);
         player.openMenu(new SimpleMenuProvider(
-                (syncId, inv, p) -> new SkillTreeMenu(syncId, inv, (ServerPlayer) p), title));
+                (syncId, inv, p) -> new SkillTreeMenu(syncId, inv, (ServerPlayer) p, editMode), title));
     }
 
-    public SkillTreeMenu(int syncId, Inventory inv, ServerPlayer player) {
-        this(syncId, inv, player, new SimpleContainer(VanillaSkills.TREE.tree().slotCount()));
+    public SkillTreeMenu(int syncId, Inventory inv, ServerPlayer player, boolean editMode) {
+        this(syncId, inv, player, editMode, new SimpleContainer(VanillaSkills.TREE.tree().slotCount()));
     }
 
-    private SkillTreeMenu(int syncId, Inventory inv, ServerPlayer player, SimpleContainer container) {
+    private SkillTreeMenu(int syncId, Inventory inv, ServerPlayer player, boolean editMode, SimpleContainer container) {
         super(menuTypeFor(VanillaSkills.TREE.tree().rows), syncId, inv, container, clampRows(VanillaSkills.TREE.tree().rows));
         this.player = player;
+        this.editMode = editMode;
         this.container = container;
         populate();
     }
@@ -74,13 +87,19 @@ public class SkillTreeMenu extends ChestMenu {
         int size = container.getContainerSize();
         for (int slot = 0; slot < size; slot++) {
             SkillNode node = tree.bySlot(slot);
-            container.setItem(slot, node != null ? buildNodeItem(node, data) : ItemStack.EMPTY);
+            if (node != null) {
+                container.setItem(slot, editMode ? buildEditItem(node) : buildNodeItem(node, data));
+            } else {
+                container.setItem(slot, ItemStack.EMPTY);
+            }
         }
         int counterSlot = size - 1;
         if (tree.bySlot(counterSlot) == null) {
-            container.setItem(counterSlot, buildCounter(data));
+            container.setItem(counterSlot, editMode ? buildEditInfo() : buildCounter(data));
         }
     }
+
+    // ---- normal mode ----
 
     private ItemStack buildNodeItem(SkillNode node, PlayerSkillData data) {
         boolean unlocked = data.hasUnlocked(node.id);
@@ -126,6 +145,81 @@ public class SkillTreeMenu extends ChestMenu {
         return stack;
     }
 
+    // ---- edit mode ----
+
+    private ItemStack buildEditItem(SkillNode node) {
+        boolean isSelected = node.id.equals(selected);
+        ItemStack stack = new ItemStack(resolveItem(node.icon));
+        stack.set(DataComponents.CUSTOM_NAME,
+                styled(node.title + (isSelected ? " (moving)" : ""), isSelected ? ChatFormatting.GOLD : ChatFormatting.AQUA));
+
+        List<Component> lore = new ArrayList<>();
+        lore.add(styled("id: " + node.id, ChatFormatting.DARK_GRAY));
+        lore.add(styled("slot " + node.slot + "   cost " + node.cost, ChatFormatting.GRAY));
+        lore.add(styled("effects: " + node.effects.size() + "   requires: " + node.requires, ChatFormatting.GRAY));
+        lore.add(Component.literal(""));
+        lore.add(styled("Left-click: pick up / place / swap", ChatFormatting.YELLOW));
+        lore.add(styled("Right-click: delete node", ChatFormatting.RED));
+        stack.set(DataComponents.LORE, new ItemLore(lore));
+        if (isSelected) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+        return stack;
+    }
+
+    private ItemStack buildEditInfo() {
+        ItemStack stack = new ItemStack(Items.WRITABLE_BOOK);
+        stack.set(DataComponents.CUSTOM_NAME, styled("Edit Mode", ChatFormatting.GOLD));
+        List<Component> lore = new ArrayList<>();
+        lore.add(styled("Left-click a node to pick it up,", ChatFormatting.GRAY));
+        lore.add(styled("then an empty slot to move it,", ChatFormatting.GRAY));
+        lore.add(styled("or another node to swap.", ChatFormatting.GRAY));
+        lore.add(styled("Right-click a node to delete it.", ChatFormatting.GRAY));
+        lore.add(Component.literal(""));
+        lore.add(styled("Add nodes / set cost / effects:", ChatFormatting.DARK_GRAY));
+        lore.add(styled("use /skill edit ...", ChatFormatting.DARK_GRAY));
+        stack.set(DataComponents.LORE, new ItemLore(lore));
+        return stack;
+    }
+
+    private void handleEditClick(int slotId, int button) {
+        SkillTree tree = VanillaSkills.TREE.tree();
+        SkillNode atSlot = tree.bySlot(slotId);
+
+        if (button == 1) { // right-click: delete
+            if (atSlot != null) {
+                tree.nodes.remove(atSlot);
+                if (atSlot.id.equals(selected)) selected = null;
+                VanillaSkills.TREE.touchAndSave();
+            }
+            return;
+        }
+
+        // left-click
+        if (selected == null) {
+            if (atSlot != null) selected = atSlot.id; // pick up
+            return;
+        }
+        SkillNode sel = tree.byId(selected);
+        if (sel == null) {
+            selected = null;
+            return;
+        }
+        if (atSlot == null) {
+            sel.slot = slotId; // move to empty
+            VanillaSkills.TREE.touchAndSave();
+            selected = null;
+        } else if (atSlot.id.equals(selected)) {
+            selected = null; // clicked itself -> cancel
+        } else {
+            int tmp = sel.slot; // swap
+            sel.slot = atSlot.slot;
+            atSlot.slot = tmp;
+            VanillaSkills.TREE.touchAndSave();
+            selected = null;
+        }
+    }
+
+    // ---- shared ----
+
     private static MutableComponent styled(String text, ChatFormatting color) {
         return Component.literal(text).withStyle(color).withStyle(s -> s.withItalic(false));
     }
@@ -140,12 +234,15 @@ public class SkillTreeMenu extends ChestMenu {
     @Override
     public void clicked(int slotId, int button, ContainerInput input, Player clicker) {
         if (slotId >= 0 && slotId < container.getContainerSize() && clicker instanceof ServerPlayer sp) {
-            SkillNode node = VanillaSkills.TREE.tree().bySlot(slotId);
-            if (node != null) {
-                VanillaSkills.PLAYERS.unlock(sp, node.id);
+            if (editMode) {
+                handleEditClick(slotId, button);
+            } else {
+                SkillNode node = VanillaSkills.TREE.tree().bySlot(slotId);
+                if (node != null) {
+                    VanillaSkills.PLAYERS.unlock(sp, node.id);
+                }
             }
         }
-        // Block all item movement; just resync the client to the authoritative state.
         populate();
         sendAllDataToRemote();
     }
