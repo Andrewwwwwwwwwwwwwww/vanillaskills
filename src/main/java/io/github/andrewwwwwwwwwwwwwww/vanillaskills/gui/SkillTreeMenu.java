@@ -184,8 +184,8 @@ public class SkillTreeMenu extends ChestMenu {
         SkillTree tree = VanillaSkills.TREE.tree();
         SkillNode atSlot = tree.bySlot(slotId);
 
-        if (button == 1) { // right-click: delete
-            if (atSlot != null) {
+        if (button == 1) { // right-click: delete (root is protected)
+            if (atSlot != null && !atSlot.id.equals(SkillTree.ROOT_ID)) {
                 tree.nodes.remove(atSlot);
                 if (atSlot.id.equals(selected)) selected = null;
                 VanillaSkills.TREE.touchAndSave();

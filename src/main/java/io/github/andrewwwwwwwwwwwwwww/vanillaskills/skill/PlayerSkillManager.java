@@ -31,10 +31,6 @@ public class PlayerSkillManager {
         this.points = points;
     }
 
-    public PointsConfig points() {
-        return points;
-    }
-
     public PlayerSkillData get(UUID uuid) {
         return cache.computeIfAbsent(uuid, this::loadFromDisk);
     }
@@ -229,6 +225,12 @@ public class PlayerSkillManager {
 
     public void saveAll() {
         for (UUID uuid : cache.keySet()) save(uuid);
+    }
+
+    /** Save everything and drop the cache (on server stop, so singleplayer world-switches start clean). */
+    public void saveAllAndClear() {
+        saveAll();
+        cache.clear();
     }
 
     public void unload(UUID uuid) {
