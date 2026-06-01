@@ -93,11 +93,18 @@ public class SkillTreeMenu extends ChestMenu {
                 container.setItem(slot, ItemStack.EMPTY);
             }
         }
-        int counterSlot = size - 1;
-        if (tree.bySlot(counterSlot) == null) {
-            container.setItem(counterSlot, editMode ? buildEditInfo() : buildCounter(data));
+        if (editMode) {
+            int infoSlot = size - 1;
+            if (tree.bySlot(infoSlot) == null) container.setItem(infoSlot, buildEditInfo());
+        } else {
+            // Control bar: points bottle left of root, stats head to the right.
+            container.setItem(POINTS_SLOT, buildCounter(data));
+            container.setItem(STATS_SLOT, buildStatsHead());
         }
     }
+
+    private static final int POINTS_SLOT = 48;
+    private static final int STATS_SLOT = 50;
 
     // ---- normal mode ----
 
@@ -142,6 +149,14 @@ public class SkillTreeMenu extends ChestMenu {
     private ItemStack buildCounter(PlayerSkillData data) {
         ItemStack stack = new ItemStack(Items.EXPERIENCE_BOTTLE);
         stack.set(DataComponents.CUSTOM_NAME, styled("Points: " + data.pointsAvailable, ChatFormatting.AQUA));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(styled("Click to see how to earn points", ChatFormatting.GRAY))));
+        return stack;
+    }
+
+    private ItemStack buildStatsHead() {
+        ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
+        stack.set(DataComponents.CUSTOM_NAME, styled("Your Stats", ChatFormatting.AQUA));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(styled("Click to view your current stats", ChatFormatting.GRAY))));
         return stack;
     }
 
@@ -195,7 +210,11 @@ public class SkillTreeMenu extends ChestMenu {
 
         // left-click
         if (selected == null) {
-            if (atSlot != null) selected = atSlot.id; // pick up
+            if (atSlot != null) {
+                selected = atSlot.id; // pick up
+            } else {
+                promptAddSkill(slotId); // blank slot -> offer a pre-filled add command
+            }
             return;
         }
         SkillNode sel = tree.byId(selected);
@@ -218,6 +237,13 @@ public class SkillTreeMenu extends ChestMenu {
         }
     }
 
+    private void promptAddSkill(int slotId) {
+        String command = "/skill edit add newskill " + slotId + " 1 minecraft:stone";
+        player.sendSystemMessage(Component.literal("Click to add a skill at slot " + slotId + " (then edit the id/icon)")
+                .withStyle(s -> s.withColor(0x55FF55).withItalic(false)
+                        .withClickEvent(new net.minecraft.network.chat.ClickEvent.SuggestCommand(command))));
+    }
+
     // ---- shared ----
 
     private static MutableComponent styled(String text, ChatFormatting color) {
@@ -236,6 +262,12 @@ public class SkillTreeMenu extends ChestMenu {
         if (slotId >= 0 && slotId < container.getContainerSize() && clicker instanceof ServerPlayer sp) {
             if (editMode) {
                 handleEditClick(slotId, button);
+            } else if (slotId == POINTS_SLOT) {
+                PointsScreen.open(sp);
+                return; // sub-screen replaces this menu
+            } else if (slotId == STATS_SLOT) {
+                StatsScreen.open(sp);
+                return;
             } else {
                 SkillNode node = VanillaSkills.TREE.tree().bySlot(slotId);
                 if (node != null) {
