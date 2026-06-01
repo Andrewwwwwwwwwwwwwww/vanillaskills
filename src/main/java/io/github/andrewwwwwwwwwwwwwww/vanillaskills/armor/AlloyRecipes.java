@@ -34,8 +34,8 @@ public final class AlloyRecipes {
             for (int i = 0; i < input.size(); i++) {
                 ItemStack s = input.getItem(i);
                 if (s.isEmpty()) continue;
-                if (s.is(Items.GOLD_INGOT)) gold += s.getCount();
-                else if (isPlainCopper(s)) copper += s.getCount();
+                if (s.is(Items.GOLD_INGOT)) gold++;          // count slots, not item counts
+                else if (isPlainCopper(s)) copper++;
                 else return false;
             }
             return gold == 4 && copper == 4;
@@ -44,7 +44,7 @@ public final class AlloyRecipes {
         @Override
         public ItemStack assemble(CraftingInput input) {
             ItemStack out = Alloys.roseGoldIngot();
-            out.setCount(8);
+            out.setCount(4);
             return out;
         }
 
@@ -70,8 +70,8 @@ public final class AlloyRecipes {
             for (int i = 0; i < input.size(); i++) {
                 ItemStack s = input.getItem(i);
                 if (s.isEmpty()) continue;
-                if (s.is(Items.IRON_INGOT)) iron += s.getCount();
-                else if (s.is(Items.COAL)) coal += s.getCount();
+                if (s.is(Items.IRON_INGOT)) iron++;          // count slots, not item counts
+                else if (s.is(Items.COAL)) coal++;
                 else return false;
             }
             return iron == 1 && coal == 1;
