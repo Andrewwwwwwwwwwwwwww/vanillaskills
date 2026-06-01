@@ -34,19 +34,19 @@ public final class ArmorTiers {
             "hardwood", "Hardwood", 0x9A6B3F, "vs_armor_hardwood",
             new Item[]{LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS},
             new int[]{2, 4, 3, 2}, 0.0, 0.0, 0.02, new int[]{120, 176, 165, 143},
-            itemSet(WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
+            itemSet(WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()), null);
 
     public static final ArmorTier ROSE_GOLD = new ArmorTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_armor_rose_gold",
             new Item[]{GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS},
             new int[]{2, 5, 4, 2}, 0.0, 0.0, 0.0, new int[]{165, 240, 225, 195}, // iron durability
-            itemSet(COPPER_INGOT), Alloys::isRoseGoldIngot);
+            itemSet(COPPER_INGOT), Alloys::isRoseGoldIngot, RoseGoldSet::baseLore);
 
     public static final ArmorTier STEEL = new ArmorTier(
             "steel", "Steel", 0xB8C0C8, "vs_armor_steel",
             new Item[]{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS},
             new int[]{3, 7, 5, 3}, 2.0, 0.0, -0.01, new int[]{330, 481, 451, 390},
-            itemSet(IRON_INGOT), Alloys::isSteelIngot);
+            itemSet(IRON_INGOT), Alloys::isSteelIngot, null);
 
     public static final List<ArmorTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL);
 
