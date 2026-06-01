@@ -34,6 +34,13 @@ public final class VanillaSkillsItemGroup {
                             output.accept(tier.create(piece));
                         }
                     }
+                    for (io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTier tier
+                            : io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTiers.TIERS) {
+                        for (io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolKind kind
+                                : io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolKind.values()) {
+                            output.accept(tier.create(kind));
+                        }
+                    }
                 })
                 .build();
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB,
