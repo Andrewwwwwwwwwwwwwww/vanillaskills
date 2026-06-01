@@ -3,6 +3,8 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.mixin;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorTier;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorTiers;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.Markers;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTier;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTiers;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,6 +27,12 @@ public class ItemStackRepairMixin {
     private void vanillaskills$tierMaterialRepair(ItemStack candidate, CallbackInfoReturnable<Boolean> cir) {
         ItemStack self = (ItemStack) (Object) this;
         for (ArmorTier tier : ArmorTiers.TIERS) {
+            if (Markers.has(self, tier.markerKey)) {
+                cir.setReturnValue(tier.material.test(candidate));
+                return;
+            }
+        }
+        for (ToolTier tier : ToolTiers.TIERS) {
             if (Markers.has(self, tier.markerKey)) {
                 cir.setReturnValue(tier.material.test(candidate));
                 return;
