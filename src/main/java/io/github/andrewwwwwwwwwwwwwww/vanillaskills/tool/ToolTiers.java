@@ -30,17 +30,17 @@ public final class ToolTiers {
     // Hardwood = stone tier (better than stone, can't mine diamond), crafted from Wood blocks.
     public static final ToolTier HARDWOOD = new ToolTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_tool_hardwood",
-            STONE_TOOLS, 200, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
+            STONE_TOOLS, 200, 0.5, 0.1, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
 
-    // Rose Gold = gold tier (gold speed, can't mine diamond) but far more durable.
+    // Rose Gold = gold tier (gold speed, can't mine diamond) but far more durable; quick strikes.
     public static final ToolTier ROSE_GOLD = new ToolTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_tool_rose_gold",
-            GOLD_TOOLS, 250, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
+            GOLD_TOOLS, 250, 0.5, 0.2, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
 
-    // Steel = iron tier (mines diamond), more durable than iron but below diamond.
+    // Steel = iron tier (mines diamond), more durable than iron but below diamond; hits harder.
     public static final ToolTier STEEL = new ToolTier(
             "steel", "Steel", 0xB8C0C8, "vs_tool_steel",
-            IRON_TOOLS, 800, itemSet(IRON_INGOT), Alloys::isSteelIngot);
+            IRON_TOOLS, 800, 1.0, 0.1, itemSet(IRON_INGOT), Alloys::isSteelIngot);
 
     public static final List<ToolTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL);
 
