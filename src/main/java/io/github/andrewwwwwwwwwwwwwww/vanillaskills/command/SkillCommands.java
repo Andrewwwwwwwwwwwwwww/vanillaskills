@@ -154,10 +154,32 @@ public final class SkillCommands {
                 .then(Commands.literal("list").executes(SkillCommands::editList))
                 .then(Commands.literal("add")
                         .then(Commands.argument("id", StringArgumentType.word())
-                                .then(Commands.argument("slot", IntegerArgumentType.integer(0))
-                                        .then(Commands.argument("cost", IntegerArgumentType.integer(0))
+                                .then(Commands.argument("category", StringArgumentType.word())
+                                        .then(Commands.argument("slot", IntegerArgumentType.integer(0))
+                                                .then(Commands.argument("cost", IntegerArgumentType.integer(0))
+                                                        .then(Commands.argument("icon", IdentifierArgument.id())
+                                                                .executes(SkillCommands::editAdd)))))))
+                .then(Commands.literal("category")
+                        .then(Commands.literal("add")
+                                .then(Commands.argument("id", StringArgumentType.word())
+                                        .then(Commands.argument("slot", IntegerArgumentType.integer(0))
                                                 .then(Commands.argument("icon", IdentifierArgument.id())
-                                                        .executes(SkillCommands::editAdd))))))
+                                                        .executes(SkillCommands::editCategoryAdd)))))
+                        .then(Commands.literal("remove")
+                                .then(Commands.argument("id", StringArgumentType.word())
+                                        .executes(SkillCommands::editCategoryRemove)))
+                        .then(Commands.literal("setslot")
+                                .then(Commands.argument("id", StringArgumentType.word())
+                                        .then(Commands.argument("slot", IntegerArgumentType.integer(0))
+                                                .executes(SkillCommands::editCategorySetSlot))))
+                        .then(Commands.literal("seticon")
+                                .then(Commands.argument("id", StringArgumentType.word())
+                                        .then(Commands.argument("icon", IdentifierArgument.id())
+                                                .executes(SkillCommands::editCategorySetIcon))))
+                        .then(Commands.literal("settitle")
+                                .then(Commands.argument("id", StringArgumentType.word())
+                                        .then(Commands.argument("text", StringArgumentType.greedyString())
+                                                .executes(SkillCommands::editCategorySetTitle)))))
                 .then(Commands.literal("remove")
                         .then(Commands.argument("id", StringArgumentType.word())
                                 .executes(SkillCommands::editRemove)))
@@ -224,13 +246,74 @@ public final class SkillCommands {
             ctx.getSource().sendFailure(Component.literal("A node with id '" + id + "' already exists."));
             return 0;
         }
+        String category = StringArgumentType.getString(ctx, "category");
         int slot = IntegerArgumentType.getInteger(ctx, "slot");
         int cost = IntegerArgumentType.getInteger(ctx, "cost");
         String icon = IdentifierArgument.getId(ctx, "icon").toString();
-        SkillNode node = new SkillNode(id, id, slot, cost, icon);
+        SkillNode node = new SkillNode(id, id, category, slot, cost, icon);
         VanillaSkills.TREE.tree().nodes.add(node);
         VanillaSkills.TREE.touchAndSave();
-        ctx.getSource().sendSuccess(() -> Component.literal("Added node '" + id + "'.").withStyle(ChatFormatting.GREEN), true);
+        ctx.getSource().sendSuccess(() -> Component.literal("Added node '" + id + "' to lane '" + category + "'.").withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    // ---- lane (category) editing ----
+
+    private static io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillCategory requireCategory(CommandContext<CommandSourceStack> ctx) {
+        String id = StringArgumentType.getString(ctx, "id");
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillCategory cat = VanillaSkills.TREE.tree().category(id);
+        if (cat == null) ctx.getSource().sendFailure(Component.literal("No lane with id '" + id + "'."));
+        return cat;
+    }
+
+    private static int editCategoryAdd(CommandContext<CommandSourceStack> ctx) {
+        String id = StringArgumentType.getString(ctx, "id");
+        if (VanillaSkills.TREE.tree().category(id) != null) {
+            ctx.getSource().sendFailure(Component.literal("A lane with id '" + id + "' already exists."));
+            return 0;
+        }
+        int slot = IntegerArgumentType.getInteger(ctx, "slot");
+        String icon = IdentifierArgument.getId(ctx, "icon").toString();
+        VanillaSkills.TREE.tree().categories.add(
+                new io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillCategory(id, id, icon, slot));
+        VanillaSkills.TREE.touchAndSave();
+        ctx.getSource().sendSuccess(() -> Component.literal("Added lane '" + id + "'.").withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    private static int editCategoryRemove(CommandContext<CommandSourceStack> ctx) {
+        var cat = requireCategory(ctx);
+        if (cat == null) return 0;
+        VanillaSkills.TREE.tree().categories.remove(cat);
+        VanillaSkills.TREE.touchAndSave();
+        ctx.getSource().sendSuccess(() -> Component.literal("Removed lane '" + cat.id + "' (its skills move to the default lane).").withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    private static int editCategorySetSlot(CommandContext<CommandSourceStack> ctx) {
+        var cat = requireCategory(ctx);
+        if (cat == null) return 0;
+        cat.slot = IntegerArgumentType.getInteger(ctx, "slot");
+        VanillaSkills.TREE.touchAndSave();
+        ctx.getSource().sendSuccess(() -> Component.literal("Set lane '" + cat.id + "' slot to " + cat.slot + "."), true);
+        return 1;
+    }
+
+    private static int editCategorySetIcon(CommandContext<CommandSourceStack> ctx) {
+        var cat = requireCategory(ctx);
+        if (cat == null) return 0;
+        cat.icon = IdentifierArgument.getId(ctx, "icon").toString();
+        VanillaSkills.TREE.touchAndSave();
+        ctx.getSource().sendSuccess(() -> Component.literal("Set lane '" + cat.id + "' icon to " + cat.icon + "."), true);
+        return 1;
+    }
+
+    private static int editCategorySetTitle(CommandContext<CommandSourceStack> ctx) {
+        var cat = requireCategory(ctx);
+        if (cat == null) return 0;
+        cat.title = StringArgumentType.getString(ctx, "text");
+        VanillaSkills.TREE.touchAndSave();
+        ctx.getSource().sendSuccess(() -> Component.literal("Set lane '" + cat.id + "' title."), true);
         return 1;
     }
 
