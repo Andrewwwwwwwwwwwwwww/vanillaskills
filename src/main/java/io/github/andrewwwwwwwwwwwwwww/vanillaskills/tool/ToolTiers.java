@@ -22,10 +22,10 @@ public final class ToolTiers {
 
     private static final Set<Item> WOOD_SET = Set.of(ArmorTiers.WOOD_ITEMS);
 
-    // Ordered to match ToolKind: pickaxe, axe, shovel, hoe, sword.
-    private static final Item[] STONE_TOOLS = {STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE, STONE_SWORD};
-    private static final Item[] GOLD_TOOLS = {GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE, GOLDEN_SWORD};
-    private static final Item[] IRON_TOOLS = {IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, IRON_SWORD};
+    // Ordered to match ToolKind: pickaxe, axe, shovel, hoe, sword, spear (spear is sword-based).
+    private static final Item[] STONE_TOOLS = {STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE, STONE_SWORD, STONE_SWORD};
+    private static final Item[] GOLD_TOOLS = {GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE, GOLDEN_SWORD, GOLDEN_SWORD};
+    private static final Item[] IRON_TOOLS = {IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, IRON_SWORD, IRON_SWORD};
 
     // Hardwood = stone tier (better than stone, can't mine diamond), crafted from Wood blocks.
     public static final ToolTier HARDWOOD = new ToolTier(
