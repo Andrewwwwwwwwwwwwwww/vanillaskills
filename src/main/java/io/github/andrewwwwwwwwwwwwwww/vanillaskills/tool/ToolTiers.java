@@ -23,20 +23,24 @@ public final class ToolTiers {
     private static final Set<Item> WOOD_SET = Set.of(ArmorTiers.WOOD_ITEMS);
 
     // Ordered to match ToolKind: pickaxe, axe, shovel, hoe, sword.
-    private static final Item[] WOOD_TOOLS = {WOODEN_PICKAXE, WOODEN_AXE, WOODEN_SHOVEL, WOODEN_HOE, WOODEN_SWORD};
+    private static final Item[] STONE_TOOLS = {STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE, STONE_SWORD};
+    private static final Item[] GOLD_TOOLS = {GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE, GOLDEN_SWORD};
     private static final Item[] IRON_TOOLS = {IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, IRON_SWORD};
 
+    // Hardwood = stone tier (better than stone, can't mine diamond), crafted from Wood blocks.
     public static final ToolTier HARDWOOD = new ToolTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_tool_hardwood",
-            WOOD_TOOLS, 250, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
+            STONE_TOOLS, 200, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
 
+    // Rose Gold = gold tier (gold speed, can't mine diamond) but far more durable.
     public static final ToolTier ROSE_GOLD = new ToolTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_tool_rose_gold",
-            IRON_TOOLS, 550, itemSet(COPPER_INGOT), Alloys::isRoseGoldIngot);
+            GOLD_TOOLS, 250, itemSet(COPPER_INGOT), Alloys::isRoseGoldIngot);
 
+    // Steel = iron tier (mines diamond), more durable than iron but below diamond.
     public static final ToolTier STEEL = new ToolTier(
             "steel", "Steel", 0xB8C0C8, "vs_tool_steel",
-            IRON_TOOLS, 850, itemSet(COPPER_INGOT), Alloys::isSteelIngot);
+            IRON_TOOLS, 800, itemSet(IRON_INGOT), Alloys::isSteelIngot);
 
     public static final List<ToolTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL);
 

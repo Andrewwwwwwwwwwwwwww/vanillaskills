@@ -30,6 +30,17 @@ public final class Markers {
         return data != null && data.matchedBy(markerTag(key));
     }
 
+    /** True if the stack carries any of our markers (custom_data key starting with "vs_"). */
+    public static boolean isOurs(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null) return false;
+        for (String key : data.copyTag().keySet()) {
+            if (key.startsWith("vs_")) return true;
+        }
+        return false;
+    }
+
     /** A non-italic colored display name (rgb is 0xRRGGBB). */
     public static Component name(String text, int rgb) {
         return Component.literal(text).withStyle(s -> s.withColor(rgb).withItalic(false));

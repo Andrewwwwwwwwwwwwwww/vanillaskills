@@ -70,7 +70,7 @@ public final class AlloyRecipes {
             for (int i = 0; i < input.size(); i++) {
                 ItemStack s = input.getItem(i);
                 if (s.isEmpty()) continue;
-                if (s.is(Items.IRON_INGOT)) iron++;          // count slots, not item counts
+                if (s.is(Items.IRON_INGOT) && !Alloys.isSteelIngot(s)) iron++;  // plain iron only
                 else if (s.is(Items.COAL)) coal++;
                 else return false;
             }
