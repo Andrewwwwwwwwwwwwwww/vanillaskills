@@ -35,7 +35,7 @@ public final class ToolTiers {
     // Rose Gold = gold tier (gold speed, can't mine diamond) but far more durable.
     public static final ToolTier ROSE_GOLD = new ToolTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_tool_rose_gold",
-            GOLD_TOOLS, 250, itemSet(COPPER_INGOT), Alloys::isRoseGoldIngot);
+            GOLD_TOOLS, 250, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
 
     // Steel = iron tier (mines diamond), more durable than iron but below diamond.
     public static final ToolTier STEEL = new ToolTier(
