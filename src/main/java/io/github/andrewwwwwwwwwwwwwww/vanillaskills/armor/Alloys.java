@@ -30,15 +30,19 @@ public final class Alloys {
     }
 
     public static ItemStack steelIngot() {
-        return stamp(STEEL_MARKER, "Steel Ingot", STEEL_COLOR, "vanillaskills:steel_ingot");
+        return stamp(Items.IRON_INGOT, STEEL_MARKER, "Steel Ingot", STEEL_COLOR, "vanillaskills:steel_ingot");
     }
 
     public static boolean isSteelIngot(ItemStack stack) {
-        return stack.is(Items.COPPER_INGOT) && Markers.has(stack, STEEL_MARKER);
+        return stack.is(Items.IRON_INGOT) && Markers.has(stack, STEEL_MARKER);
     }
 
     private static ItemStack stamp(String marker, String name, int color, String modelHook) {
-        ItemStack stack = new ItemStack(Items.COPPER_INGOT);
+        return stamp(Items.COPPER_INGOT, marker, name, color, modelHook);
+    }
+
+    private static ItemStack stamp(net.minecraft.world.item.Item base, String marker, String name, int color, String modelHook) {
+        ItemStack stack = new ItemStack(base);
         stack.set(DataComponents.CUSTOM_NAME, Markers.name(name, color));
         Markers.applyMarker(stack, marker);
         stack.set(DataComponents.CUSTOM_MODEL_DATA,

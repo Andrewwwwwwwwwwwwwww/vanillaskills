@@ -46,7 +46,7 @@ public final class ArmorTiers {
             "steel", "Steel", 0xB8C0C8, "vs_armor_steel",
             new Item[]{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS},
             new int[]{3, 7, 5, 3}, 2.0, 0.0, -0.01, new int[]{330, 481, 451, 390},
-            itemSet(COPPER_INGOT), Alloys::isSteelIngot);
+            itemSet(IRON_INGOT), Alloys::isSteelIngot);
 
     public static final List<ArmorTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL);
 
