@@ -39,7 +39,7 @@ public final class ArmorTiers {
     public static final ArmorTier ROSE_GOLD = new ArmorTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_armor_rose_gold",
             new Item[]{GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS},
-            new int[]{2, 5, 4, 2}, 0.0, 0.0, 0.0, new int[]{200, 288, 270, 234},
+            new int[]{2, 5, 4, 2}, 0.0, 0.0, 0.0, new int[]{165, 240, 225, 195}, // iron durability
             itemSet(COPPER_INGOT), Alloys::isRoseGoldIngot);
 
     public static final ArmorTier STEEL = new ArmorTier(
