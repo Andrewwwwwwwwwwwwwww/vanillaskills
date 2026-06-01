@@ -43,6 +43,8 @@ public final class SkillCommands {
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(SkillCommands::openEditor));
 
+        root.then(Commands.literal("guide").executes(SkillCommands::guide));
+
         root.then(Commands.literal("points")
                 .executes(SkillCommands::showOwnPoints)
                 .then(Commands.argument("player", EntityArgument.player())
@@ -83,6 +85,11 @@ public final class SkillCommands {
 
     private static int openEditor(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         SkillTreeMenu.openEditor(ctx.getSource().getPlayerOrException());
+        return 1;
+    }
+
+    private static int guide(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.book.GuideBook.open(ctx.getSource().getPlayerOrException());
         return 1;
     }
 
