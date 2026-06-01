@@ -35,6 +35,8 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
   - `/skill points <player> add|set <n>` — op
   - `/skill reset <player>` / `/skill recalc <player>` — op
   - `/skill reload` — op, reloads tree + points config
+  - `/skill editor` — op, opens the tree GUI in **edit mode**: left-click a node to pick it
+    up, click an empty slot to move it or another node to swap, right-click to delete
   - `/skill edit ...` — op, live-edit the server's tree (add/remove nodes, set
     cost/slot/icon/title/desc, requirements, attribute effects) writing back to JSON
 
@@ -71,7 +73,7 @@ via one custom recipe; repaired at an anvil with the tier's material.
 
 - **Hardwood** (leather base) — crafted from **Wood blocks** (`oak_wood` etc., stripped + hyphae
   too). Light & fast: +8% movement with a full set.
-- **Rose Gold** (golden base) — crafted from **Rose Gold Ingots** (4 gold + 4 copper → 8).
+- **Rose Gold** (golden base) — crafted from **Rose Gold Ingots** (4 gold + 4 copper → 4).
   Immune to **all** negative status effects with a full set; piglins stay neutral (gold base).
 - **Steel** (iron base) — crafted from **Steel Ingots** (1 iron + 1 coal → 1). High armor +
   high toughness for reliable defense; slightly slower (−4% with a full set).
