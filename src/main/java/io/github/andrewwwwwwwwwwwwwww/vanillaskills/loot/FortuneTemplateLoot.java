@@ -39,7 +39,7 @@ public final class FortuneTemplateLoot {
         return LootPool.lootPool()
                 .setRolls(ConstantValue.exactly(1.0f))
                 .add(EmptyLootItem.emptyItem().setWeight(EMPTY_WEIGHT))
-                .add(LootItem.lootTableItem(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
+                .add(LootItem.lootTableItem(FortuneTemplate.BASE)
                         .setWeight(TEMPLATE_WEIGHT)
                         .apply(SetComponentsFunction.setComponent(DataComponents.CUSTOM_NAME, FortuneTemplate.displayName()))
                         .apply(SetComponentsFunction.setComponent(DataComponents.CUSTOM_DATA, CustomData.of(FortuneTemplate.markerTag()))));

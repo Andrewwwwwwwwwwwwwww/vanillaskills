@@ -34,7 +34,7 @@ public final class AlloyRecipes {
             for (int i = 0; i < input.size(); i++) {
                 ItemStack s = input.getItem(i);
                 if (s.isEmpty()) continue;
-                if (s.is(Items.GOLD_INGOT)) gold++;          // count slots, not item counts
+                if (s.is(Items.GOLD_INGOT) && !Alloys.isRoseGoldIngot(s)) gold++;  // plain gold only
                 else if (isPlainCopper(s)) copper++;
                 else return false;
             }
