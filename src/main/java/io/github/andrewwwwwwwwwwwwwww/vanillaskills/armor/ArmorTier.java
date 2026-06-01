@@ -9,10 +9,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.enchantment.Repairable;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * One armor tier. Pieces are built by stamping a vanilla armor item with overriding components:
@@ -32,11 +34,12 @@ public class ArmorTier {
     private final int[] durability;       // per piece
     private final HolderSet<Item> repairItems;
     public final Predicate<ItemStack> material;
+    private final Supplier<ItemLore> staticLore; // optional description (e.g. set bonus), nullable
 
     public ArmorTier(String id, String displayName, int nameColor, String markerKey,
                      Item[] baseItems, int[] armor, double toughness, double knockback,
                      double perPieceSpeed, int[] durability, HolderSet<Item> repairItems,
-                     Predicate<ItemStack> material) {
+                     Predicate<ItemStack> material, Supplier<ItemLore> staticLore) {
         this.id = id;
         this.displayName = displayName;
         this.nameColor = nameColor;
@@ -49,6 +52,7 @@ public class ArmorTier {
         this.durability = durability;
         this.repairItems = repairItems;
         this.material = material;
+        this.staticLore = staticLore;
     }
 
     public boolean isWorn(ItemStack stack) {
@@ -77,6 +81,9 @@ public class ArmorTier {
             b.add(Attributes.MOVEMENT_SPEED, modifier(piece, "speed", perPieceSpeed, AttributeModifier.Operation.ADD_MULTIPLIED_BASE), piece.group);
         }
         stack.set(DataComponents.ATTRIBUTE_MODIFIERS, b.build());
+        if (staticLore != null) {
+            stack.set(DataComponents.LORE, staticLore.get());
+        }
         return stack;
     }
 

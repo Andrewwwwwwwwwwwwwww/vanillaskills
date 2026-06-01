@@ -4,7 +4,7 @@ import io.github.andrewwwwwwwwwwwwwww.vanillaskills.command.SkillCommands;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.PointsConfig;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.AlloyRecipes;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorCraftingRecipe;
-import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.RoseGoldImmunity;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.RoseGoldSet;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot.FortuneTemplateLoot;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneTemplateRecipe;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneUpgradeRecipe;
@@ -34,6 +34,7 @@ public class VanillaSkills implements ModInitializer {
     public static final SkillTreeManager TREE = new SkillTreeManager();
     public static final PlayerSkillManager PLAYERS = new PlayerSkillManager();
 
+    private static final int ROSE_GOLD_INTERVAL = 10;
     private static final int STATUS_REFRESH_INTERVAL = 40;
     private int tickCounter = 0;
 
@@ -83,13 +84,16 @@ public class VanillaSkills implements ModInitializer {
     }
 
     private void onServerTick(MinecraftServer srv) {
-        RoseGoldImmunity.tick(srv);
-        if (++tickCounter < STATUS_REFRESH_INTERVAL) return;
-        tickCounter = 0;
-        SkillTree tree = TREE.tree();
-        for (ServerPlayer player : srv.getPlayerList().getPlayers()) {
-            PlayerSkillData data = PLAYERS.get(player.getUUID());
-            SkillEffects.refreshStatusEffects(player, data, tree);
+        tickCounter++;
+        if (tickCounter % ROSE_GOLD_INTERVAL == 0) {
+            RoseGoldSet.tick(srv);
+        }
+        if (tickCounter % STATUS_REFRESH_INTERVAL == 0) {
+            SkillTree tree = TREE.tree();
+            for (ServerPlayer player : srv.getPlayerList().getPlayers()) {
+                PlayerSkillData data = PLAYERS.get(player.getUUID());
+                SkillEffects.refreshStatusEffects(player, data, tree);
+            }
         }
     }
 }
