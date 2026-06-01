@@ -8,9 +8,10 @@ import net.minecraft.world.item.component.CustomModelData;
 import java.util.List;
 
 /**
- * The custom crafting metals. They are vanilla copper ingots stamped with a name + marker +
- * model hook (so a resource pack can retexture them). Copper is used as the base because it has
- * no vanilla armor recipe, avoiding recipe collisions; the two metals are told apart by marker.
+ * The custom crafting metals. They are vanilla ingots stamped with a name + marker + model hook
+ * (so a resource pack can retexture them), kept consistent with their gear's look: Rose Gold is a
+ * gold ingot (matches the golden armor/tools), Steel is an iron ingot. The IngredientMixin stops
+ * them being used in vanilla recipes, so there are no collisions or block "laundering".
  */
 public final class Alloys {
     private Alloys() {}
@@ -22,11 +23,11 @@ public final class Alloys {
     private static final int STEEL_COLOR = 0xB8C0C8;
 
     public static ItemStack roseGoldIngot() {
-        return stamp(ROSE_GOLD_MARKER, "Rose Gold Ingot", ROSE_GOLD_COLOR, "vanillaskills:rose_gold_ingot");
+        return stamp(Items.GOLD_INGOT, ROSE_GOLD_MARKER, "Rose Gold Ingot", ROSE_GOLD_COLOR, "vanillaskills:rose_gold_ingot");
     }
 
     public static boolean isRoseGoldIngot(ItemStack stack) {
-        return stack.is(Items.COPPER_INGOT) && Markers.has(stack, ROSE_GOLD_MARKER);
+        return stack.is(Items.GOLD_INGOT) && Markers.has(stack, ROSE_GOLD_MARKER);
     }
 
     public static ItemStack steelIngot() {
@@ -35,10 +36,6 @@ public final class Alloys {
 
     public static boolean isSteelIngot(ItemStack stack) {
         return stack.is(Items.IRON_INGOT) && Markers.has(stack, STEEL_MARKER);
-    }
-
-    private static ItemStack stamp(String marker, String name, int color, String modelHook) {
-        return stamp(Items.COPPER_INGOT, marker, name, color, modelHook);
     }
 
     private static ItemStack stamp(net.minecraft.world.item.Item base, String marker, String name, int color, String modelHook) {
