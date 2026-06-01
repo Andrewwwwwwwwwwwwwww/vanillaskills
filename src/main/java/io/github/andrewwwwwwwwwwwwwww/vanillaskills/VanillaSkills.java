@@ -49,6 +49,8 @@ public class VanillaSkills implements ModInitializer {
                 FortuneTemplateRecipe.SERIALIZER);
         FortuneTemplateLoot.register();
 
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.creative.VanillaSkillsItemGroup.register();
+
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
                 Identifier.fromNamespaceAndPath(MOD_ID, "armor_crafting"),
                 ArmorCraftingRecipe.SERIALIZER);
