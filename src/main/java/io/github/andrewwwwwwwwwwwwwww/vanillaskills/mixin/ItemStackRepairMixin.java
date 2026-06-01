@@ -38,5 +38,8 @@ public class ItemStackRepairMixin {
                 return;
             }
         }
+        if (Markers.has(self, io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.SteelShield.MARKER)) {
+            cir.setReturnValue(io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.Alloys.isSteelIngot(candidate));
+        }
     }
 }
