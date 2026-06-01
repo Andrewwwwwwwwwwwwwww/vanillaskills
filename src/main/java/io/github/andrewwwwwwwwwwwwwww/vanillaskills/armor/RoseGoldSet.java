@@ -36,6 +36,14 @@ public final class RoseGoldSet {
         }
     }
 
+    /** True only while all four Rose Gold pieces are worn (checked live, so it reverts instantly). */
+    public static boolean isFullSet(net.minecraft.world.entity.LivingEntity entity) {
+        for (EquipmentSlot slot : ARMOR_SLOTS) {
+            if (!ArmorTiers.ROSE_GOLD.isWorn(entity.getItemBySlot(slot))) return false;
+        }
+        return true;
+    }
+
     private static void update(ServerPlayer player) {
         ItemStack[] worn = new ItemStack[4];
         boolean[] present = new boolean[4];

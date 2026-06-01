@@ -29,6 +29,7 @@ public final class VanillaSkillsItemGroup {
                     output.accept(Alloys.roseGoldIngot());
                     output.accept(Alloys.steelIngot());
                     output.accept(FortuneTemplate.create());
+                    output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.SteelShield.create());
                     for (ArmorTier tier : ArmorTiers.TIERS) {
                         for (ArmorPiece piece : ArmorPiece.values()) {
                             output.accept(tier.create(piece));
