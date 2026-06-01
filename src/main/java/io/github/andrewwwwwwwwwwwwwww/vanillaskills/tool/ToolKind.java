@@ -19,7 +19,10 @@ public enum ToolKind {
             new Shape(2, 3, new int[]{0, 1}, new int[]{3, 5}),
             new Shape(2, 3, new int[]{0, 1}, new int[]{2, 4}))),
     SWORD("Sword", List.of(
-            new Shape(1, 3, new int[]{0, 1}, new int[]{2})));
+            new Shape(1, 3, new int[]{0, 1}, new int[]{2}))),
+    SPEAR("Spear", List.of(
+            new Shape(3, 3, new int[]{2}, new int[]{4, 6}),   // tip top-right, shaft down-left
+            new Shape(3, 3, new int[]{0}, new int[]{4, 8})));  // mirror: tip top-left, shaft down-right
 
     public final String word;
     public final List<Shape> shapes;

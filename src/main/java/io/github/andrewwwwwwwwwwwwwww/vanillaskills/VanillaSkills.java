@@ -51,6 +51,9 @@ public class VanillaSkills implements ModInitializer {
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
                 Identifier.fromNamespaceAndPath(MOD_ID, "tool_crafting"),
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolCraftingRecipe.SERIALIZER);
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+                Identifier.fromNamespaceAndPath(MOD_ID, "steel_shield"),
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.ShieldInfuseRecipe.SERIALIZER);
         FortuneTemplateLoot.register();
 
         io.github.andrewwwwwwwwwwwwwww.vanillaskills.creative.VanillaSkillsItemGroup.register();

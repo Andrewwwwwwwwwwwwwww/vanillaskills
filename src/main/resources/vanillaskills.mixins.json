@@ -8,6 +8,8 @@
     "ItemEnchantmentsMutableMixin",
     "ItemStackRepairMixin",
     "PlayerAdvancementsMixin",
+    "RoseGoldEffectMixin",
+    "ShieldThornsMixin",
     "SmithingRecipeMixin"
   ],
   "injectors": {
