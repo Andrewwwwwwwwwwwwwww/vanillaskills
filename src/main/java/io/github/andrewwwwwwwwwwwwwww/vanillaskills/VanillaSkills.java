@@ -70,7 +70,7 @@ public class VanillaSkills implements ModInitializer {
             TREE.load();
         });
 
-        ServerLifecycleEvents.SERVER_STOPPING.register(srv -> PLAYERS.saveAll());
+        ServerLifecycleEvents.SERVER_STOPPING.register(srv -> PLAYERS.saveAllAndClear());
 
         ServerPlayerEvents.JOIN.register(PLAYERS::onJoin);
         ServerPlayerEvents.LEAVE.register(player -> PLAYERS.unload(player.getUUID()));
