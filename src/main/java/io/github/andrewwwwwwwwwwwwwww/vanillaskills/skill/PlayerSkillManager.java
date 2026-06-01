@@ -31,6 +31,10 @@ public class PlayerSkillManager {
         this.points = points;
     }
 
+    public PointsConfig pointsConfig() {
+        return points;
+    }
+
     public PlayerSkillData get(UUID uuid) {
         return cache.computeIfAbsent(uuid, this::loadFromDisk);
     }
