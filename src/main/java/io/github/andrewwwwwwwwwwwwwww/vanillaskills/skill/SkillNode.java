@@ -13,14 +13,16 @@ public class SkillNode {
     public String icon = "minecraft:stone";
     public int cost = 1;
     public List<String> requires = new ArrayList<>();
-    public int slot;
+    public String category;   // which lane this node belongs to (null -> default lane)
+    public int slot;          // position within its lane's view
     public List<SkillEffect> effects = new ArrayList<>();
 
     public SkillNode() {}
 
-    public SkillNode(String id, String title, int slot, int cost, String icon) {
+    public SkillNode(String id, String title, String category, int slot, int cost, String icon) {
         this.id = id;
         this.title = title;
+        this.category = category;
         this.slot = slot;
         this.cost = cost;
         this.icon = icon;
