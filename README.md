@@ -25,8 +25,13 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
 - **Points** are earned from advancements (configurable per-advancement in
   `config/vanillaskills/points.json`; recipe advancements ignored; existing players
   are credited retroactively on first join).
-- **Tree** is defined in `config/vanillaskills/skilltree.json` (a default 5-lane starter
-  tree — Health, Speed, Mining, Luck, Damage — is written on first run). Effects support
+- **Tree** is defined in `config/vanillaskills/skilltree.json` (a default 12-lane starter tree —
+  Vitality, Fleet Foot, Prospector, Fortune Finder, Warrior, Guardian (armor), Reach
+  (block+entity interaction range), Mountaineer (step height), Aquatic (oxygen + underwater
+  speed/mining), plus **Armorsmith**/**Toolsmith** (5 nodes each — one per tier — gating crafting of
+  that tier's gear) and **Brewmaster** (5 nodes — beneficial potions up to +100% duration) — is
+  written on first run; all use vanilla attributes/flags, no client mod). Prospector now runs 5 nodes
+  to +12 mining efficiency (instamine stone with an Efficiency V diamond pick). Effects support
   `attribute`, `status_effect`, and `flag` types. Attribute bonuses apply as transient
   modifiers on join/respawn, so they never duplicate.
 - **Commands:**
@@ -34,7 +39,9 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
   - `/skill points` — show your points
   - `/skill points <player> add|set <n>` — op
   - `/skill reset <player>` / `/skill recalc <player>` — op
-  - `/skill reload` — op, reloads tree + points config
+  - `/skill reload` — op, reloads tree + points config from disk
+  - `/skill regen` — op, overwrites `skilltree.json` with the latest built-in default tree
+    (backs up the old file first); use this to pick up new lanes after updating the mod
   - `/skill editor` — op, opens the tree GUI in **edit mode**: left-click a node to pick it
     up, click an empty slot to move it or another node to swap, right-click to delete
   - `/skill edit ...` — op, live-edit the server's tree (add/remove nodes, set
@@ -77,11 +84,26 @@ via one custom recipe; repaired at an anvil with the tier's material.
   Immune to **all** negative status effects with a full set; piglins stay neutral (gold base).
 - **Steel** (iron base) — crafted from **Steel Ingots** (1 iron + 1 coal → 1). High armor +
   high toughness for reliable defense; slightly slower (−4% with a full set).
-- *Diamond II and Netherite II are planned but not built yet.*
+- **Crystalline** / Diamond II (diamond base) — crafted from **Crystallized Diamonds**
+  (4 diamonds + 1 amethyst block → 4). Stats sit between diamond and netherite (toughness 2.5,
+  small built-in knockback resistance). Full-set bonus: **reflects 25% of melee damage** back at
+  attackers (thorns-style, repaired with Crystallized Diamonds).
+- **Dragon** / Netherite II (netherite base) — the top tier. **Upgraded from netherite armor in a
+  smithing table:** *Dragon Upgrade Template* (found in End City treasure, ~4%) + netherite armor +
+  *Dragon Ingot* → Dragon armor (enchants preserved). A **Dragon Ingot** is forged by surrounding a
+  netherite ingot with **8 Dragon Scales** (dropped by the Ender Dragon, 8 per kill). Toughness 3,
+  highest durability. Full-set bonuses: **immunity to fire / lava / dragon's breath**, and an active
+  **dive-dash** (hold sneak while airborne, ~3s cooldown). Dragon **tools** are crafted from Dragon Ingots.
+  - **Elytra combine:** **drop** a Dragon chestplate + an Elytra together **on top of an anvil block**
+    to fuse them into one gliding chestplate; **drop** the combined chestplate **on a grindstone block**
+    to split them back. Each keeps its own enchantments, so they always work standalone. (Item-drop
+    mechanic, like the Vanilla Tweaks Armored Elytra — anvil-GUI elytra combining isn't natively supported.)
 
 Each tier also has the full **tool set** (pickaxe, axe, shovel, hoe, sword), crafted in the
 normal tool shapes from the tier's material + sticks, and repaired with the tier material.
-Hardwood tools are wooden-tier; Rose Gold and Steel are iron-tier with more durability.
+Hardwood tools are wooden-tier; Rose Gold and Steel are iron-tier with more durability;
+**Crystalline** tools are diamond-tier (between diamond and netherite); **Dragon** tools are
+netherite-tier with the highest durability and hardest hits.
 
 A creative tab ("VanillaSkills") collects all custom items, and `/skill guide` opens an
 in-game info book. (Custom *blocks* aren't possible in a server-side / vanilla-client mod, so
@@ -108,4 +130,4 @@ task. Output jar lands in `build/libs/`.
 
 ## License
 
-MIT
+All Rights Reserved. See the [LICENSE](LICENSE) file — these mods are proprietary.

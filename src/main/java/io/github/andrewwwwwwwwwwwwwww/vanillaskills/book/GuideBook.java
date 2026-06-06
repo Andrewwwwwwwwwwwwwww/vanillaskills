@@ -50,9 +50,9 @@ public final class GuideBook {
             """
             Fortune IV & V
 
-            Find a Fortune Upgrade Template in Ancient City and mineshaft minecart chests.
+            Find a Fortune Upgrade Template in Ancient City and mineshaft chests.
 
-            Duplicate it by surrounding it with glow berries, sculk, a diamond block and an emerald block.""",
+            Duplicate it with glow berries, sculk, a diamond block and an emerald block.""",
 
             """
             Fortune IV & V (cont.)
@@ -71,9 +71,65 @@ public final class GuideBook {
 
             Rose Gold: 4 gold + 4 copper = ingots. Full set = status immunity, piglins neutral.
 
-            Steel: 1 iron + 1 coal = ingot. Tanky.
+            Steel: 2 iron + 1 coal = ingot. Tanky.
 
-            Repair each at an anvil with its own material."""
+            Repair each at an anvil with its own material.""",
+
+            """
+            Crystalline (Diamond II)
+
+            Craft Crystallized Diamonds: 4 diamonds + 1 amethyst block = 4.
+
+            Armor and tools sit between diamond and netherite. Full armor set reflects 25% of melee damage.""",
+
+            """
+            Dragon (Netherite II)
+
+            Slay the Ender Dragon for Dragon Scales (8 drop).
+
+            Full set: immune to fire, lava and dragon's breath.
+
+            Hold sneak in midair to dive-dash.""",
+
+            """
+            Dragon Ingot
+
+            Surround a Netherite Ingot with 8 Dragon Scales in a crafting table to forge a Dragon Ingot.""",
+
+            """
+            Dragon Upgrade
+
+            Find a Dragon Upgrade template in End City treasure (~4%).
+
+            Smithing table: template + netherite armor + Dragon Ingot = Dragon armor (keeps enchants).""",
+
+            """
+            Dragon (cont.)
+
+            Dragon tools are crafted from Dragon Ingots.
+
+            Duplicate the template: chorus flowers around it, a netherite ingot below, end rods + a shulker shell on the bottom row.""",
+
+            """
+            Dragon Elytra
+
+            Drop a Dragon chestplate and an Elytra on top of an anvil to fuse them into a gliding chestplate.
+
+            Drop it on a grindstone to split them again.""",
+
+            """
+            Crafting Unlocks
+
+            Armorsmith & Toolsmith have a node per tier - unlock a tier to craft its armor/tools.
+
+            Ingots and materials are never locked.""",
+
+            """
+            Potions
+
+            Brewmaster (5 nodes): beneficial potions last up to +100% longer.
+
+            Potions stack to 16."""
     };
 
     public static ItemStack create() {

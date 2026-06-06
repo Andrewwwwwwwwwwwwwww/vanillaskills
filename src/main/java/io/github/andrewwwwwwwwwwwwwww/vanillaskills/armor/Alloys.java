@@ -18,9 +18,11 @@ public final class Alloys {
 
     public static final String ROSE_GOLD_MARKER = "vs_rose_gold_ingot";
     public static final String STEEL_MARKER = "vs_steel_ingot";
+    public static final String CRYSTAL_MARKER = "vs_crystallized_diamond";
 
     private static final int ROSE_GOLD_COLOR = 0xE8B7A6;
     private static final int STEEL_COLOR = 0xB8C0C8;
+    private static final int CRYSTAL_COLOR = 0xB389E8;
 
     public static ItemStack roseGoldIngot() {
         return stamp(Items.GOLD_INGOT, ROSE_GOLD_MARKER, "Rose Gold Ingot", ROSE_GOLD_COLOR, "vanillaskills:rose_gold_ingot");
@@ -36,6 +38,14 @@ public final class Alloys {
 
     public static boolean isSteelIngot(ItemStack stack) {
         return stack.is(Items.IRON_INGOT) && Markers.has(stack, STEEL_MARKER);
+    }
+
+    public static ItemStack crystallizedDiamond() {
+        return stamp(Items.DIAMOND, CRYSTAL_MARKER, "Crystallized Diamond", CRYSTAL_COLOR, "vanillaskills:crystallized_diamond");
+    }
+
+    public static boolean isCrystallizedDiamond(ItemStack stack) {
+        return stack.is(Items.DIAMOND) && Markers.has(stack, CRYSTAL_MARKER);
     }
 
     private static ItemStack stamp(net.minecraft.world.item.Item base, String marker, String name, int color, String modelHook) {
