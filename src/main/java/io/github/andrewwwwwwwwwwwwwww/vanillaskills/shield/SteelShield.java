@@ -25,7 +25,7 @@ public final class SteelShield {
 
     public static final String MARKER = "vs_steel_shield";
     public static final int DURABILITY = 1200;     // vanilla shield is 336
-    public static final float THORNS_DAMAGE = 4.0f;
+    public static final float THORNS_DAMAGE = 2.0f;
     private static final int COLOR = 0xB8C0C8;
 
     public static ItemStack create() {

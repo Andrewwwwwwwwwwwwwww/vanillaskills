@@ -20,25 +20,34 @@ public final class PointsScreen {
 
     public static void open(ServerPlayer player) {
         PointsConfig cfg = VanillaSkills.PLAYERS.pointsConfig();
+        int per = cfg.perAdvancement;
         List<ItemStack> items = new ArrayList<>();
 
-        items.add(item(Items.KNOWLEDGE_BOOK, "Earn Skill Points", ChatFormatting.GOLD, List.of(
-                "Skill points come from completing advancements.")));
-        items.add(item(Items.PAPER, "Each advancement", ChatFormatting.YELLOW, List.of(
-                "+" + cfg.perAdvancement + " point" + (cfg.perAdvancement == 1 ? "" : "s"))));
+        items.add(item(Items.KNOWLEDGE_BOOK, "Earning Skill Points", ChatFormatting.GOLD, List.of(
+                "Points come from completing advancements.",
+                "Each advancement counts once — they can't be farmed.")));
+
+        items.add(item(Items.PAPER, "Every Advancement", ChatFormatting.YELLOW, List.of(
+                "+" + per + " point" + (per == 1 ? "" : "s") + " each")));
+
+        items.add(item(Items.NETHER_STAR, "Major Milestones", ChatFormatting.LIGHT_PURPLE, List.of(
+                "Big goals — Nether, the End, bosses,",
+                "netherite, and full collections —",
+                "award far more than a normal advancement.")));
+
+        items.add(item(Items.DIAMOND_CHESTPLATE, "VanillaSkills Goals", ChatFormatting.AQUA, List.of(
+                "Craft full armor sets, discover the",
+                "upgrade templates, forge a Dragon Ingot,",
+                "and finish skill paths for bonus points.")));
+
         if (cfg.startingPoints > 0) {
-            items.add(item(Items.EXPERIENCE_BOTTLE, "Starting points", ChatFormatting.AQUA, List.of(
-                    "+" + cfg.startingPoints + " when you first join")));
+            items.add(item(Items.EXPERIENCE_BOTTLE, "Starting Bonus", ChatFormatting.GREEN, List.of(
+                    "+" + cfg.startingPoints + " points when you first join")));
         }
+
         if (cfg.ignoreRecipeAdvancements) {
-            items.add(item(Items.CRAFTING_TABLE, "Recipe unlocks", ChatFormatting.GRAY, List.of(
-                    "Give no points")));
-        }
-        if (cfg.advancementOverrides != null) {
-            for (Map.Entry<String, Integer> e : cfg.advancementOverrides.entrySet()) {
-                items.add(item(Items.NETHER_STAR, e.getKey(), ChatFormatting.LIGHT_PURPLE, List.of(
-                        "+" + e.getValue() + " point" + (e.getValue() == 1 ? "" : "s"))));
-            }
+            items.add(item(Items.CRAFTING_TABLE, "Recipe Unlocks", ChatFormatting.GRAY, List.of(
+                    "Give no points.")));
         }
 
         InfoMenu.open(player, styled("Earning Points", ChatFormatting.AQUA), 6, items);

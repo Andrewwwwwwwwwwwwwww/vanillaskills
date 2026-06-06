@@ -58,6 +58,33 @@ public class PlayerSkillManager {
         }
 
         applyAll(player);
+        reevaluateAdvancements(player); // retroactively grant path/completion rewards
+    }
+
+    /** Re-check lane-completion and full-tree advancements (e.g. for trees finished before the feature existed). */
+    private void reevaluateAdvancements(ServerPlayer player) {
+        PlayerSkillData data = get(player.getUUID());
+        SkillTree tree = VanillaSkills.TREE.tree();
+        for (SkillCategory cat : tree.categories()) {
+            boolean any = false, full = true;
+            for (SkillNode n : tree.nodesIn(cat.id)) {
+                any = true;
+                if (!data.hasUnlocked(n.id)) { full = false; break; }
+            }
+            if (any && full) { awardAdvancement(player, "vanillaskills:specialist", "path"); break; }
+        }
+        checkCompletionist(player, data);
+    }
+
+    private void awardAdvancement(ServerPlayer player, String id, String criterion) {
+        MinecraftServer server = VanillaSkills.server;
+        if (server == null) return;
+        for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
+            if (holder.id().toString().equals(id)) {
+                player.getAdvancements().award(holder, criterion);
+                return;
+            }
+        }
     }
 
     /** Reapply all attribute effects (e.g. after respawn). */
@@ -156,9 +183,51 @@ public class PlayerSkillManager {
         data.pointsAvailable -= node.cost;
         data.unlocked.add(nodeId);
         SkillEffects.applyNode(player, node);
+        checkPathAdvancement(player, node, data);
+        checkCompletionist(player, data);
         save(player.getUUID());
         player.sendSystemMessage(Component.literal("Unlocked " + node.title + "!").withStyle(ChatFormatting.GREEN));
         return true;
+    }
+
+    /** Grants the "Specialist" advancement when the player has fully unlocked a lane. */
+    private void checkPathAdvancement(ServerPlayer player, SkillNode node, PlayerSkillData data) {
+        if (node.category == null) return;
+        SkillTree tree = VanillaSkills.TREE.tree();
+        for (SkillNode n : tree.nodesIn(node.category)) {
+            if (!data.hasUnlocked(n.id)) return; // lane not complete yet
+        }
+        MinecraftServer server = VanillaSkills.server;
+        if (server == null) return;
+        for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
+            if (holder.id().toString().equals("vanillaskills:specialist")) {
+                player.getAdvancements().award(holder, "path");
+                break;
+            }
+        }
+    }
+
+    /** When every node in the tree is unlocked, grant the completion advancement + 5 Dragon Ingots (once). */
+    private void checkCompletionist(ServerPlayer player, PlayerSkillData data) {
+        SkillTree tree = VanillaSkills.TREE.tree();
+        for (SkillNode n : tree.nodes) {
+            if (!data.hasUnlocked(n.id)) return; // tree not fully unlocked
+        }
+        MinecraftServer server = VanillaSkills.server;
+        if (server == null) return;
+        for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
+            if (holder.id().toString().equals("vanillaskills:completionist")) {
+                if (player.getAdvancements().getOrStartProgress(holder).isDone()) return; // already rewarded
+                player.getAdvancements().award(holder, "complete");
+                net.minecraft.world.item.ItemStack reward =
+                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot.create();
+                reward.setCount(5);
+                if (!player.getInventory().add(reward)) player.drop(reward, false);
+                player.sendSystemMessage(Component.literal("Skill tree mastered! +5 Dragon Ingots")
+                        .withStyle(ChatFormatting.GOLD));
+                return;
+            }
+        }
     }
 
     /** Op command: clear all unlocks and refund earned points. */
