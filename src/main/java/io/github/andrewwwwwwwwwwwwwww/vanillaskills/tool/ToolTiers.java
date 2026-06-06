@@ -22,10 +22,12 @@ public final class ToolTiers {
 
     private static final Set<Item> WOOD_SET = Set.of(ArmorTiers.WOOD_ITEMS);
 
-    // Ordered to match ToolKind: pickaxe, axe, shovel, hoe, sword, spear (spear is sword-based).
-    private static final Item[] STONE_TOOLS = {STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE, STONE_SWORD, STONE_SWORD};
-    private static final Item[] GOLD_TOOLS = {GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE, GOLDEN_SWORD, GOLDEN_SWORD};
-    private static final Item[] IRON_TOOLS = {IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, IRON_SWORD, IRON_SWORD};
+    // Ordered to match ToolKind: pickaxe, axe, shovel, hoe, sword, spear (spear uses the vanilla spear item).
+    private static final Item[] STONE_TOOLS = {STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE, STONE_SWORD, STONE_SPEAR};
+    private static final Item[] GOLD_TOOLS = {GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE, GOLDEN_SWORD, GOLDEN_SPEAR};
+    private static final Item[] IRON_TOOLS = {IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, IRON_SWORD, IRON_SPEAR};
+    private static final Item[] DIAMOND_TOOLS = {DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SHOVEL, DIAMOND_HOE, DIAMOND_SWORD, DIAMOND_SPEAR};
+    private static final Item[] NETHERITE_TOOLS = {NETHERITE_PICKAXE, NETHERITE_AXE, NETHERITE_SHOVEL, NETHERITE_HOE, NETHERITE_SWORD, NETHERITE_SPEAR};
 
     // Hardwood = stone tier (better than stone, can't mine diamond), crafted from Wood blocks.
     public static final ToolTier HARDWOOD = new ToolTier(
@@ -42,7 +44,18 @@ public final class ToolTiers {
             "steel", "Steel", 0xB8C0C8, "vs_tool_steel",
             IRON_TOOLS, 800, 1.0, 0.1, itemSet(IRON_INGOT), Alloys::isSteelIngot);
 
-    public static final List<ToolTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL);
+    // Crystalline = diamond tier (mines like diamond), between diamond and netherite; sharper hits.
+    public static final ToolTier CRYSTAL = new ToolTier(
+            "crystal", "Crystalline", 0xB389E8, "vs_tool_crystal",
+            DIAMOND_TOOLS, 1800, 1.0, 0.1, itemSet(DIAMOND), Alloys::isCrystallizedDiamond);
+
+    // Dragon = netherite tier (top), highest durability; strongest strikes. Crafted from Dragon Ingots.
+    public static final ToolTier DRAGON = new ToolTier(
+            "dragon", "Dragon", 0xC23BD6, "vs_tool_dragon",
+            NETHERITE_TOOLS, 2500, 1.5, 0.1, itemSet(NETHERITE_INGOT),
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot::isDragonIngot);
+
+    public static final List<ToolTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL, CRYSTAL, DRAGON);
 
     public static ToolTier tierForMaterial(ItemStack stack) {
         for (ToolTier tier : TIERS) {

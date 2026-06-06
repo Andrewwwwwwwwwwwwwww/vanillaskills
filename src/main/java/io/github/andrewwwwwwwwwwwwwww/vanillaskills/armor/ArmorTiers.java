@@ -33,7 +33,7 @@ public final class ArmorTiers {
     public static final ArmorTier HARDWOOD = new ArmorTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_armor_hardwood",
             new Item[]{LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS},
-            new int[]{2, 4, 3, 2}, 0.0, 0.0, 0.02, new int[]{120, 176, 165, 143},
+            new int[]{2, 4, 3, 2}, 0.0, 0.0, 0.025, new int[]{120, 176, 165, 143}, // +10% movement at full set
             itemSet(WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()), null);
 
     public static final ArmorTier ROSE_GOLD = new ArmorTier(
@@ -48,7 +48,19 @@ public final class ArmorTiers {
             new int[]{3, 7, 5, 3}, 2.0, 0.0, -0.01, new int[]{330, 481, 451, 390},
             itemSet(IRON_INGOT), Alloys::isSteelIngot, null);
 
-    public static final List<ArmorTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL);
+    public static final ArmorTier CRYSTAL = new ArmorTier(
+            "crystal", "Crystalline", 0xB389E8, "vs_armor_crystal",
+            new Item[]{DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS},
+            new int[]{3, 8, 6, 3}, 2.5, 0.125, 0.0, new int[]{385, 560, 490, 455}, // between diamond & netherite
+            itemSet(DIAMOND), Alloys::isCrystallizedDiamond, CrystalSet::baseLore);
+
+    public static final ArmorTier DRAGON = new ArmorTier(
+            "dragon", "Dragon", 0xC23BD6, "vs_armor_dragon",
+            new Item[]{NETHERITE_HELMET, NETHERITE_CHESTPLATE, NETHERITE_LEGGINGS, NETHERITE_BOOTS},
+            new int[]{3, 8, 6, 3}, 3.0, 0.1, 0.0, new int[]{555, 796, 722, 650}, // toughness nerfed 4.0->3.0 (dash was too strong)
+            itemSet(NETHERITE_INGOT), DragonIngot::isDragonIngot, DragonSet::baseLore); // smithing-only; repaired with Dragon Ingots
+
+    public static final List<ArmorTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL, CRYSTAL, DRAGON);
 
     /** The tier whose crafting material this stack is, or null. */
     public static ArmorTier tierForMaterial(ItemStack stack) {

@@ -28,6 +28,10 @@ public final class VanillaSkillsItemGroup {
                 .displayItems((params, output) -> {
                     output.accept(Alloys.roseGoldIngot());
                     output.accept(Alloys.steelIngot());
+                    output.accept(Alloys.crystallizedDiamond());
+                    output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonScale.create());
+                    output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot.create());
+                    output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.DragonUpgradeTemplate.create());
                     output.accept(FortuneTemplate.create());
                     output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.SteelShield.create());
                     for (ArmorTier tier : ArmorTiers.TIERS) {

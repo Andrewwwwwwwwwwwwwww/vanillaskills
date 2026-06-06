@@ -13,14 +13,19 @@ import net.minecraft.world.level.Level;
 
 /**
  * Shapeless crafting-table recipes for the two custom metals:
- *   Rose Gold Ingot: 4 gold ingots + 4 copper ingots -> 8 rose gold ingots
- *   Steel Ingot:     1 iron ingot + 1 coal           -> 1 steel ingot
+ *   Rose Gold Ingot:      4 gold ingots + 4 copper ingots -> 8 rose gold ingots
+ *   Steel Ingot:          1 iron ingot + 1 coal           -> 1 steel ingot
+ *   Crystallized Diamond: 4 diamonds + 1 amethyst block   -> 4 crystallized diamonds
  */
 public final class AlloyRecipes {
     private AlloyRecipes() {}
 
     private static boolean isPlainCopper(ItemStack s) {
         return s.is(Items.COPPER_INGOT) && !Alloys.isRoseGoldIngot(s) && !Alloys.isSteelIngot(s);
+    }
+
+    private static boolean isPlainDiamond(ItemStack s) {
+        return s.is(Items.DIAMOND) && !Alloys.isCrystallizedDiamond(s);
     }
 
     public static class RoseGold extends CustomRecipe {
@@ -89,6 +94,42 @@ public final class AlloyRecipes {
 
         @Override
         public RecipeSerializer<Steel> getSerializer() {
+            return SERIALIZER;
+        }
+    }
+
+    public static class Crystal extends CustomRecipe {
+        public static final Crystal INSTANCE = new Crystal();
+        public static final RecipeSerializer<Crystal> SERIALIZER = new RecipeSerializer<>(
+                MapCodec.unit(INSTANCE), StreamCodec.<RegistryFriendlyByteBuf, Crystal>unit(INSTANCE));
+
+        @Override
+        public boolean matches(CraftingInput input, Level level) {
+            int diamond = 0, amethyst = 0;
+            for (int i = 0; i < input.size(); i++) {
+                ItemStack s = input.getItem(i);
+                if (s.isEmpty()) continue;
+                if (isPlainDiamond(s)) diamond++;
+                else if (s.is(Items.AMETHYST_BLOCK)) amethyst++;
+                else return false;
+            }
+            return diamond == 4 && amethyst == 1;
+        }
+
+        @Override
+        public ItemStack assemble(CraftingInput input) {
+            ItemStack out = Alloys.crystallizedDiamond();
+            out.setCount(4);
+            return out;
+        }
+
+        @Override
+        public CraftingBookCategory category() {
+            return CraftingBookCategory.MISC;
+        }
+
+        @Override
+        public RecipeSerializer<Crystal> getSerializer() {
             return SERIALIZER;
         }
     }
