@@ -32,4 +32,11 @@ public class SkillEffect {
         e.amount = amount;
         return e;
     }
+
+    public static SkillEffect flag(String name) {
+        SkillEffect e = new SkillEffect();
+        e.type = "flag";
+        e.name = name;
+        return e;
+    }
 }

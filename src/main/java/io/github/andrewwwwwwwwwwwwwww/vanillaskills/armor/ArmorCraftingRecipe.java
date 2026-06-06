@@ -52,7 +52,9 @@ public class ArmorCraftingRecipe extends CustomRecipe {
                     break;
                 }
             }
-            if (ok && tier != null) return new Match(tier, piece);
+            // Dragon armor is smithing-only (netherite + Dragon Upgrade Template + Dragon Ingot),
+            // so it is never table-craftable from its material.
+            if (ok && tier != null && tier != ArmorTiers.DRAGON) return new Match(tier, piece);
         }
         return null;
     }

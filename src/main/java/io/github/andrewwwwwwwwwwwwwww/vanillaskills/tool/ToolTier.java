@@ -3,8 +3,6 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.Markers;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
@@ -57,21 +55,17 @@ public class ToolTier {
                 new CustomModelData(List.of(), List.of(), List.of("vanillaskills:" + id + "_" + kind.lower()), List.of()));
         stack.set(DataComponents.MAX_DAMAGE, durability);
         stack.set(DataComponents.REPAIRABLE, new Repairable(repairItems));
-        applyAttributes(stack, baseItem, kind);
+        applyAttributes(stack, baseItem);
         return stack;
     }
 
-    // A spear hits a little harder, swings slower, and reaches further than the matching sword.
-    private static final double SPEAR_DAMAGE_BONUS = 1.0;
-    private static final double SPEAR_SPEED_PENALTY = -0.5;
-    private static final double SPEAR_REACH = 1.0;
-
-    /** Copy the base tool's attribute modifiers, boosting attack damage/speed and (spears) reach. */
-    private void applyAttributes(ItemStack stack, Item baseItem, ToolKind kind) {
-        double damageBonus = attackDamageBonus + (kind == ToolKind.SPEAR ? SPEAR_DAMAGE_BONUS : 0);
-        double speedBonus = attackSpeedBonus + (kind == ToolKind.SPEAR ? SPEAR_SPEED_PENALTY : 0);
-        double reach = kind == ToolKind.SPEAR ? SPEAR_REACH : 0;
-        if (damageBonus == 0 && speedBonus == 0 && reach == 0) return;
+    /**
+     * Copy the base tool's attribute modifiers, boosting attack damage/speed by the tier bonus.
+     * Spears now use the real vanilla spear item, which already carries its own reach and slower
+     * swing, so no spear-specific tweaks are needed here.
+     */
+    private void applyAttributes(ItemStack stack, Item baseItem) {
+        if (attackDamageBonus == 0 && attackSpeedBonus == 0) return;
 
         ItemAttributeModifiers base = new ItemStack(baseItem).get(DataComponents.ATTRIBUTE_MODIFIERS);
         if (base == null) base = ItemAttributeModifiers.EMPTY;
@@ -79,18 +73,12 @@ public class ToolTier {
         ItemAttributeModifiers.Builder b = ItemAttributeModifiers.builder();
         for (ItemAttributeModifiers.Entry entry : base.modifiers()) {
             AttributeModifier mod = entry.modifier();
-            if (damageBonus != 0 && entry.attribute().is(Attributes.ATTACK_DAMAGE)) {
-                mod = new AttributeModifier(mod.id(), mod.amount() + damageBonus, mod.operation());
-            } else if (speedBonus != 0 && entry.attribute().is(Attributes.ATTACK_SPEED)) {
-                mod = new AttributeModifier(mod.id(), mod.amount() + speedBonus, mod.operation());
+            if (attackDamageBonus != 0 && entry.attribute().is(Attributes.ATTACK_DAMAGE)) {
+                mod = new AttributeModifier(mod.id(), mod.amount() + attackDamageBonus, mod.operation());
+            } else if (attackSpeedBonus != 0 && entry.attribute().is(Attributes.ATTACK_SPEED)) {
+                mod = new AttributeModifier(mod.id(), mod.amount() + attackSpeedBonus, mod.operation());
             }
             b.add(entry.attribute(), mod, entry.slot(), entry.display());
-        }
-        if (reach != 0) {
-            b.add(Attributes.ENTITY_INTERACTION_RANGE,
-                    new AttributeModifier(Identifier.fromNamespaceAndPath("vanillaskills", id + ".spear.reach"),
-                            reach, AttributeModifier.Operation.ADD_VALUE),
-                    EquipmentSlotGroup.MAINHAND);
         }
         stack.set(DataComponents.ATTRIBUTE_MODIFIERS, b.build());
     }

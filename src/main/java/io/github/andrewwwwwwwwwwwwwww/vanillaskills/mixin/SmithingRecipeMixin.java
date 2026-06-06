@@ -24,7 +24,8 @@ public interface SmithingRecipeMixin {
             at = @At("HEAD"),
             cancellable = true)
     private void vanillaskills$blockFortuneTemplate(SmithingRecipeInput input, Level level, CallbackInfoReturnable<Boolean> cir) {
-        if (FortuneTemplate.isTemplate(input.template())) {
+        if (FortuneTemplate.isTemplate(input.template())
+                || io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.DragonUpgradeTemplate.isTemplate(input.template())) {
             cir.setReturnValue(false);
         }
     }

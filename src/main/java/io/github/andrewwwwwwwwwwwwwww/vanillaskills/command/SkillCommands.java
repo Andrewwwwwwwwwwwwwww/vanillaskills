@@ -27,7 +27,8 @@ import net.minecraft.server.level.ServerPlayer;
  * /skill         open the tree GUI (all players)
  * /skill points  show own points; (op) /skill points &lt;player&gt; add|set &lt;n&gt;
  * /skill reset|recalc &lt;player&gt;   (op)
- * /skill reload                    (op) reload tree + points config
+ * /skill reload                    (op) reload tree + points config from disk
+ * /skill regen                     (op) overwrite skilltree.json with the built-in default (backs up the old one)
  * /skill edit ...                  (op) live-edit the server's skill tree
  */
 public final class SkillCommands {
@@ -69,6 +70,10 @@ public final class SkillCommands {
         root.then(Commands.literal("reload")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(SkillCommands::reload));
+
+        root.then(Commands.literal("regen")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .executes(SkillCommands::regen));
 
         root.then(editTree());
 
@@ -142,6 +147,20 @@ public final class SkillCommands {
         }
         ctx.getSource().sendSuccess(() -> Component.literal(
                 "Reloaded skill tree (" + VanillaSkills.TREE.tree().size() + " nodes) and points config.")
+                .withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    private static int regen(CommandContext<CommandSourceStack> ctx) {
+        java.nio.file.Path backup = VanillaSkills.TREE.regenerate();
+        if (ctx.getSource().getServer() != null) {
+            for (ServerPlayer player : ctx.getSource().getServer().getPlayerList().getPlayers()) {
+                VanillaSkills.PLAYERS.applyAll(player);
+            }
+        }
+        String suffix = backup != null ? " Backed up the old tree to " + backup.getFileName() + "." : "";
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "Regenerated the default skill tree (" + VanillaSkills.TREE.tree().size() + " nodes)." + suffix)
                 .withStyle(ChatFormatting.GREEN), true);
         return 1;
     }
