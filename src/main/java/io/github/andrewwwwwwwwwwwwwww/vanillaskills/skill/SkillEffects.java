@@ -23,7 +23,7 @@ import java.util.Optional;
 public final class SkillEffects {
     private SkillEffects() {}
 
-    private static final int STATUS_DURATION_TICKS = 220; // reapplied well before expiry
+    private static final int STATUS_DURATION_TICKS = 400; // reapplied every ~2s; >10s so Night Vision never flashes
 
     /** Apply every effect of one node to the player. */
     public static void applyNode(ServerPlayer player, SkillNode node) {

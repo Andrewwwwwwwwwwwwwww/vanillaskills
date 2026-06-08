@@ -12,7 +12,6 @@ import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /** Shows the ways players earn skill points (read from points.json). */
 public final class PointsScreen {

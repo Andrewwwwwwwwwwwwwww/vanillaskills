@@ -84,6 +84,19 @@ public class ArmorTier {
         if (staticLore != null) {
             stack.set(DataComponents.LORE, staticLore.get());
         }
+
+        // Give each tier its own worn-armor equipment asset (vanillaskills:<id>) so resource packs
+        // can retexture the worn armour per tier. Keeps the base item's slot + equip sound.
+        net.minecraft.world.item.equipment.Equippable baseEquippable = stack.get(DataComponents.EQUIPPABLE);
+        if (baseEquippable != null) {
+            stack.set(DataComponents.EQUIPPABLE, net.minecraft.world.item.equipment.Equippable
+                    .builder(baseEquippable.slot())
+                    .setEquipSound(baseEquippable.equipSound())
+                    .setAsset(net.minecraft.resources.ResourceKey.create(
+                            net.minecraft.world.item.equipment.EquipmentAssets.ROOT_ID,
+                            Identifier.fromNamespaceAndPath("vanillaskills", id)))
+                    .build());
+        }
         return stack;
     }
 

@@ -2,7 +2,6 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills;
 
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.command.SkillCommands;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.PointsConfig;
-import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.AlloyRecipes;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorCraftingRecipe;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonScale;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonSet;
@@ -42,10 +41,15 @@ public class VanillaSkills implements ModInitializer {
     public static MinecraftServer server;
     public static final SkillTreeManager TREE = new SkillTreeManager();
     public static final PlayerSkillManager PLAYERS = new PlayerSkillManager();
+    public static final io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestBoard QUESTS =
+            new io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestBoard();
+    public static final io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards BOARDS =
+            new io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards();
 
     private static final int ROSE_GOLD_INTERVAL = 10;
     private static final int STATUS_REFRESH_INTERVAL = 40;
     private static final int DRAGON_SCALE_DROP = 8;
+    private static final int QUEST_ROTATION_INTERVAL = 200; // check the bounty timer every ~10s
     private static final int ELYTRA_FORGE_INTERVAL = 20; // scan items on anvils/grindstones once a second
 
     // Data-driven recipes granted on join so they appear in the vanilla recipe book.
@@ -82,15 +86,6 @@ public class VanillaSkills implements ModInitializer {
                 Identifier.fromNamespaceAndPath(MOD_ID, "armor_crafting"),
                 ArmorCraftingRecipe.SERIALIZER);
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
-                Identifier.fromNamespaceAndPath(MOD_ID, "rose_gold_ingot"),
-                AlloyRecipes.RoseGold.SERIALIZER);
-        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
-                Identifier.fromNamespaceAndPath(MOD_ID, "steel_ingot"),
-                AlloyRecipes.Steel.SERIALIZER);
-        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
-                Identifier.fromNamespaceAndPath(MOD_ID, "crystallized_diamond"),
-                AlloyRecipes.Crystal.SERIALIZER);
-        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
                 Identifier.fromNamespaceAndPath(MOD_ID, "dragon_ingot"),
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngotRecipe.SERIALIZER);
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
@@ -102,9 +97,33 @@ public class VanillaSkills implements ModInitializer {
             server = srv;
             PLAYERS.setPointsConfig(PointsConfig.load());
             TREE.load();
+            QUESTS.load();
+            BOARDS.load();
         });
 
-        ServerLifecycleEvents.SERVER_STOPPING.register(srv -> PLAYERS.saveAllAndClear());
+        ServerLifecycleEvents.SERVER_STOPPING.register(srv -> {
+            PLAYERS.saveAllAndClear();
+            QUESTS.save();
+            BOARDS.save();
+        });
+
+        // Right-click a physical bounty board (lectern) to open the quest GUI.
+        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (hand == net.minecraft.world.InteractionHand.MAIN_HAND
+                    && world instanceof ServerLevel sl && player instanceof ServerPlayer sp
+                    && BOARDS.isBoard(sl, hitResult.getBlockPos())) {
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.gui.QuestMenu.open(sp);
+                return net.minecraft.world.InteractionResult.SUCCESS;
+            }
+            return net.minecraft.world.InteractionResult.PASS;
+        });
+
+        // Bounty board: track kills toward active quests.
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+            if (source.getEntity() instanceof ServerPlayer killer) {
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Quests.onKill(killer, entity);
+            }
+        });
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (entity instanceof EnderDragon && entity.level() instanceof ServerLevel level) {
@@ -146,15 +165,27 @@ public class VanillaSkills implements ModInitializer {
             player.awardRecipesByKey(BOOK_RECIPES); // show our data recipes in the recipe book
         });
         ServerPlayerEvents.LEAVE.register(player -> {
-            PLAYERS.unload(player.getUUID());
+            PLAYERS.onLeave(player);
             DragonSet.onPlayerLeave(player.getUUID());
         });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> PLAYERS.applyAll(newPlayer));
 
         ServerTickEvents.END_SERVER_TICK.register(this::onServerTick);
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
-                SkillCommands.register(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            SkillCommands.register(dispatcher);
+            var questsNode = dispatcher.register(net.minecraft.commands.Commands.literal("quests")
+                    .executes(ctx -> {
+                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.gui.QuestMenu.open(ctx.getSource().getPlayerOrException());
+                        return 1;
+                    })
+                    .then(net.minecraft.commands.Commands.literal("board")
+                            .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                            .executes(ctx -> { BOARDS.place(ctx.getSource().getPlayerOrException()); return 1; })
+                            .then(net.minecraft.commands.Commands.literal("remove")
+                                    .executes(ctx -> { BOARDS.removeNear(ctx.getSource().getPlayerOrException()); return 1; }))));
+            dispatcher.register(net.minecraft.commands.Commands.literal("bounty").redirect(questsNode));
+        });
     }
 
     private void onServerTick(MinecraftServer srv) {
@@ -172,6 +203,9 @@ public class VanillaSkills implements ModInitializer {
                 PlayerSkillData data = PLAYERS.get(player.getUUID());
                 SkillEffects.refreshStatusEffects(player, data, tree);
             }
+        }
+        if (tickCounter % QUEST_ROTATION_INTERVAL == 0) {
+            QUESTS.tick(srv);
         }
     }
 }
