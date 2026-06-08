@@ -100,7 +100,8 @@ public class SkillTreeManager {
     // Lane icons on the lane-select screen, laid out as a tidy 6x2 block:
     //   row 1 (10..16): Vitality, Fleet Foot, Prospector, Fortune, Warrior, Guardian, Reach
     //   row 2 (19..25): Mountaineer, Aquatic, Armorsmith, Toolsmith, Brewmaster, Evasion, Cultivator
-    private static final int[] CATEGORY_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
+    //   row 3 (31):     Night Vision (capstone, centred under the two rows)
+    private static final int[] CATEGORY_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 31};
 
     private static SkillTree defaultTree() {
         SkillTree t = new SkillTree();
@@ -205,7 +206,7 @@ public class SkillTreeManager {
         // Evasion: +2% chance to completely dodge incoming arrow damage per node, up to 20%.
         // Expensive — fully dodging 1-in-5 arrows is a strong defensive perk.
         addLaneNodes(t, "evasion", "Evasion", "minecraft:arrow", 12,
-                gridSlots(10), new int[]{3, 5, 7, 9, 11, 13, 16, 19, 22, 26},
+                FIVE_AND_FIVE, new int[]{3, 5, 7, 9, 11, 13, 16, 19, 22, 26},
                 flagEffects("arrow_dodge_1", "arrow_dodge_2", "arrow_dodge_3", "arrow_dodge_4", "arrow_dodge_5",
                         "arrow_dodge_6", "arrow_dodge_7", "arrow_dodge_8", "arrow_dodge_9", "arrow_dodge_10"),
                 new String[]{"+2% chance to dodge arrows", "4% total", "6% total", "8% total", "10% total",
@@ -217,6 +218,12 @@ public class SkillTreeManager {
                 flagEffects("cultivator_1", "cultivator_2", "cultivator_3", "cultivator_4", "cultivator_5"),
                 new String[]{"+20% chance for bonus crops", "40% chance", "60% chance", "80% chance",
                         "100% chance (always bonus)"});
+
+        // Night Vision: a single capstone node granting permanent night vision.
+        addLaneNodes(t, "nightvision", "Night Vision", "minecraft:golden_carrot", 14,
+                new int[]{22}, new int[]{150},
+                new SkillEffect[][]{ { SkillEffect.status("minecraft:night_vision", 0) } },
+                new String[]{"Permanent Night Vision"});
 
         return t;
     }
@@ -304,26 +311,6 @@ public class SkillTreeManager {
             node.description.add(descriptions[i]);
             for (SkillEffect effect : effectsPerNode[i]) node.effects.add(effect);
             if (i > 0) node.requires.add(key + "_" + i);
-            t.nodes.add(node);
-        }
-    }
-
-    private static void addLane(SkillTree t, String key, String name, String icon, int laneIndex,
-                                SkillEffect[] effects, String[] descriptions) {
-        SkillEffect[][] perTier = new SkillEffect[effects.length][];
-        for (int i = 0; i < effects.length; i++) perTier[i] = new SkillEffect[]{effects[i]};
-        addLaneMulti(t, key, name, icon, laneIndex, perTier, descriptions);
-    }
-
-    private static void addLaneMulti(SkillTree t, String key, String name, String icon, int laneIndex,
-                                     SkillEffect[][] effectsPerTier, String[] descriptions) {
-        t.categories.add(new SkillCategory(key, name, icon, CATEGORY_SLOTS[laneIndex]));
-        String[] numerals = {"I", "II", "III"};
-        for (int i = 0; i < 3; i++) {
-            SkillNode node = new SkillNode(key + "_" + (i + 1), name + " " + numerals[i], key, TIER_SLOTS[i], i + 1, icon);
-            node.description.add(descriptions[i]);
-            for (SkillEffect effect : effectsPerTier[i]) node.effects.add(effect);
-            if (i > 0) node.requires.add(key + "_" + i);   // tier 1 has no prerequisite
             t.nodes.add(node);
         }
     }

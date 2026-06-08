@@ -1,5 +1,80 @@
 # VanillaSkills Changelog
 
+## [0.13.0] - 2026-06-07
+
+### Added
+- **Physical bounty board**: ops can summon a real, interactable board with
+  `/quests board` (alias `/bounty board`). It places a **lectern** where you're looking with a floating
+  golden **"✦ Bounty Board ✦"** label above it. Anyone can right-click the board to open the quest GUI —
+  no command needed. Remove the nearest board (within 6 blocks) with `/quests board remove`. Board
+  positions persist (`world/vanillaskills/questboards.json`) and the floating label is an invisible,
+  invulnerable marker armor stand that's cleaned up on removal.
+
+### Internal
+- Removed dead code: unused `AlloyRecipes` serializers (the rose gold / steel / crystallized-diamond
+  recipes use vanilla `crafting_shapeless`) and their registrations, the orphaned `addLane`/`addLaneMulti`
+  helpers in `SkillTreeManager`, and an unused `Map` import. No behavior change.
+
+## [0.12.0] - 2026-06-06
+
+### Added
+- **Bounty board** (`/quests`, alias `/bounty`): 3 shared quests that re-roll every **5 hours**.
+  Each is a gather-items (turn in at the board) or kill-mobs bounty worth a couple of **skill points**.
+  Anyone can do each once per rotation; progress is tracked per player and resets each rotation. Kill
+  progress counts toward active quests automatically; gather quests consume the items on claim. Board
+  state persists (`world/vanillaskills/questboard.json`); a chat announcement fires on each re-roll.
+
+## [0.11.1] - 2026-06-06
+
+### Changed
+- Night Vision capstone cost lowered to **150** (was 276).
+
+## [0.11.0] - 2026-06-06
+
+### Added
+- **Night Vision** capstone lane (centred below the lane grid): one node granting **permanent Night
+  Vision**, costing **276** — the surplus points a true completionist earns beyond the rest of the
+  tree, so doing every advancement affords the whole tree *and* this. Status effects now refresh at
+  20s (was 11s) so Night Vision never flashes.
+
+## [0.10.0] - 2026-06-06
+
+### Added
+- **Retexturable worn armor.** Each armor tier now uses its own equipment asset
+  (`vanillaskills:<tier>`) so resource packs can give each tier custom *worn* armor textures (not just
+  inventory icons). Default equipment assets are bundled (worn armor still looks like its base
+  material). NOTE: on a vanilla client with no resource pack, custom worn armor has no texture
+  (invisible) — modpacks should ship the bundled/required resource pack.
+
+## [0.9.3] - 2026-06-06
+
+### Fixed
+- **Skill Master never gave the 5 Dragon Ingots.** The reward was gated on the advancement's
+  done-state — once the advancement got marked complete (or the ingots fell into a full inventory),
+  the reward path was skipped forever. Now tracked by a flag in player data, so it reliably fires once
+  on the unlock/login that completes the tree. (Completion = every node in the *current* tree; if you
+  regenned and added lanes, those must be unlocked too.)
+
+## [0.9.2] - 2026-06-06
+
+### Fixed
+- **Datapack advancements no longer give points.** Only `minecraft:` and `vanillaskills:` advancements
+  are counted now — VanillaTweaks (and other datapacks) were granting points (e.g. +115). Run
+  `/skill recalc <player>` to strip already-credited datapack points from existing players.
+- **Advancement tab background** now renders: 26.1.2 expects a sprite path without `textures/`/`.png`,
+  so it's `minecraft:block/iron_block` (tiled iron) instead of the old full texture path.
+
+### Changed
+- **Evasion** uses the centered 5+5 node layout (matching Reach/Guardian/Fortune).
+
+## [0.9.1] - 2026-06-06
+
+### Fixed
+- **Losing bonus hearts on relog.** Vitality (and other) max-health is added via transient modifiers
+  reapplied on join — but the player loads first, so vanilla clamped current health to the base 20
+  before our modifiers existed. Now we record health on logout and restore it after the modifiers
+  reapply, so a player who logged out with full 3 rows logs back in with them full.
+
 ## [0.9.0] - 2026-06-05
 
 ### Added
