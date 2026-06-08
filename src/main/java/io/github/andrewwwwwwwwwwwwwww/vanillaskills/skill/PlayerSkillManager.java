@@ -59,6 +59,19 @@ public class PlayerSkillManager {
 
         applyAll(player);
         reevaluateAdvancements(player); // retroactively grant path/completion rewards
+
+        // Restore health AFTER max-health modifiers are reapplied — vanilla clamps it to the base
+        // max during load (before our transient modifiers exist), which would shrink the health bar.
+        if (data.lastHealth > 0f) {
+            player.setHealth(Math.min(player.getMaxHealth(), data.lastHealth));
+        }
+    }
+
+    /** Record the player's health on logout so it can be restored after modifiers reapply on join. */
+    public void onLeave(ServerPlayer player) {
+        PlayerSkillData data = get(player.getUUID());
+        data.lastHealth = player.getHealth();
+        unload(player.getUUID());
     }
 
     /** Re-check lane-completion and full-tree advancements (e.g. for trees finished before the feature existed). */
@@ -101,6 +114,7 @@ public class PlayerSkillManager {
 
     /** Called by the advancement mixin when an advancement completes. */
     public void onAdvancementCompleted(ServerPlayer player, String advancementId) {
+        if (!isCounted(advancementId)) return;
         if (points.ignoreRecipeAdvancements && isRecipe(advancementId)) return;
         PlayerSkillData data = get(player.getUUID());
         if (data.creditedAdvancements.contains(advancementId)) return;
@@ -120,6 +134,7 @@ public class PlayerSkillManager {
         if (server == null) return;
         for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
             String id = holder.id().toString();
+            if (!isCounted(id)) continue;
             if (points.ignoreRecipeAdvancements && isRecipe(id)) continue;
             if (data.creditedAdvancements.contains(id)) continue;
             if (player.getAdvancements().getOrStartProgress(holder).isDone()) {
@@ -145,6 +160,11 @@ public class PlayerSkillManager {
         data.pointsAvailable = Math.max(0, data.pointsEarned - spent);
         save(player.getUUID());
         return data.pointsEarned - before;
+    }
+
+    /** Only vanilla Minecraft and our own VanillaSkills advancements award points (not datapacks like VanillaTweaks). */
+    private static boolean isCounted(String advancementId) {
+        return advancementId.startsWith("minecraft:") || advancementId.startsWith("vanillaskills:");
     }
 
     private static boolean isRecipe(String advancementId) {
@@ -209,25 +229,22 @@ public class PlayerSkillManager {
 
     /** When every node in the tree is unlocked, grant the completion advancement + 5 Dragon Ingots (once). */
     private void checkCompletionist(ServerPlayer player, PlayerSkillData data) {
+        if (data.completionRewarded) return; // tracked in our own data, not the advancement state
         SkillTree tree = VanillaSkills.TREE.tree();
+        if (tree.nodes.isEmpty()) return;
         for (SkillNode n : tree.nodes) {
             if (!data.hasUnlocked(n.id)) return; // tree not fully unlocked
         }
-        MinecraftServer server = VanillaSkills.server;
-        if (server == null) return;
-        for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
-            if (holder.id().toString().equals("vanillaskills:completionist")) {
-                if (player.getAdvancements().getOrStartProgress(holder).isDone()) return; // already rewarded
-                player.getAdvancements().award(holder, "complete");
-                net.minecraft.world.item.ItemStack reward =
-                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot.create();
-                reward.setCount(5);
-                if (!player.getInventory().add(reward)) player.drop(reward, false);
-                player.sendSystemMessage(Component.literal("Skill tree mastered! +5 Dragon Ingots")
-                        .withStyle(ChatFormatting.GOLD));
-                return;
-            }
-        }
+
+        data.completionRewarded = true;
+        awardAdvancement(player, "vanillaskills:completionist", "complete");
+        net.minecraft.world.item.ItemStack reward =
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot.create();
+        reward.setCount(5);
+        if (!player.getInventory().add(reward)) player.drop(reward, false);
+        player.sendSystemMessage(Component.literal("Skill tree mastered! +5 Dragon Ingots")
+                .withStyle(ChatFormatting.GOLD));
+        save(player.getUUID());
     }
 
     /** Op command: clear all unlocks and refund earned points. */

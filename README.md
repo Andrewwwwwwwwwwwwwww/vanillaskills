@@ -25,12 +25,14 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
 - **Points** are earned from advancements (configurable per-advancement in
   `config/vanillaskills/points.json`; recipe advancements ignored; existing players
   are credited retroactively on first join).
-- **Tree** is defined in `config/vanillaskills/skilltree.json` (a default 12-lane starter tree —
+- **Tree** is defined in `config/vanillaskills/skilltree.json` (a default 15-lane tree —
   Vitality, Fleet Foot, Prospector, Fortune Finder, Warrior, Guardian (armor), Reach
   (block+entity interaction range), Mountaineer (step height), Aquatic (oxygen + underwater
-  speed/mining), plus **Armorsmith**/**Toolsmith** (5 nodes each — one per tier — gating crafting of
-  that tier's gear) and **Brewmaster** (5 nodes — beneficial potions up to +100% duration) — is
-  written on first run; all use vanilla attributes/flags, no client mod). Prospector now runs 5 nodes
+  speed/mining), **Armorsmith**/**Toolsmith** (5 nodes each — one per tier — gating crafting of
+  that tier's gear), **Brewmaster** (5 nodes — beneficial potions up to +100% duration),
+  **Evasion** (chance to dodge arrows), **Cultivator** (bonus crop yield), and a **Night Vision**
+  capstone (one node, cost 150, grants permanent night vision) — is written on first run; all use
+  vanilla attributes/flags, no client mod). Prospector now runs 5 nodes
   to +12 mining efficiency (instamine stone with an Efficiency V diamond pick). Effects support
   `attribute`, `status_effect`, and `flag` types. Attribute bonuses apply as transient
   modifiers on join/respawn, so they never duplicate.
@@ -46,6 +48,26 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
     up, click an empty slot to move it or another node to swap, right-click to delete
   - `/skill edit ...` — op, live-edit the server's tree (add/remove nodes, set
     cost/slot/icon/title/desc, requirements, attribute effects) writing back to JSON
+
+### Bounty board (quests)
+A shared quest system for earning extra skill points:
+
+- **`/quests`** (alias **`/bounty`**) — open the quest GUI. Three bounties are active at a time and
+  **re-roll every 5 hours**. Each is a *gather-items* (turn in at the board) or *kill-mobs* bounty
+  worth a couple of skill points. Anyone can do each once per rotation; progress is tracked per
+  player and resets each rotation. Kill progress counts automatically; gather quests consume the
+  items on claim (your own custom marked items don't count toward gather quests).
+- **Physical board:** **`/quests board`** (op) places a real, interactable **lectern** where you're
+  looking, with a floating gold "✦ Bounty Board ✦" label above it — anyone can right-click it to open
+  the quest GUI, no command needed. **`/quests board remove`** (op) removes the nearest board.
+  Board positions and quest state persist across restarts.
+
+### Advancements
+Custom mod advancements reward progression milestones — crafting each full armor set, discovering the
+upgrade templates, forging a Dragon Ingot, unlocking a full skill-tree path, and a **Skill Master**
+advancement for completing the *entire* skill tree (grants 5 Dragon Ingots). Only vanilla
+(`minecraft:`) and mod (`vanillaskills:`) advancements grant points — datapacks like VanillaTweaks
+are ignored.
 
 ### Craftable Fortune IV & V
 Fortune past the vanilla cap of III, obtainable only by crafting:
@@ -115,13 +137,10 @@ armor, only Steel Ingots repair Steel armor (plain copper / the wrong alloy won'
 
 ## Planned
 
-- In-game drag/click tree editor (currently editing is via `/skill edit` + JSON)
-- Diamond II & Netherite II armor tiers
-- New tool / weapon / armor tiers (hardwood, deepslate, rose gold, steel, etc.)
-- Custom smithing template for upgrades and repairs
-- Tier-specific combat effects (bleed, poison, burn, dash)
-- Craftable higher-tier enchantments (Fortune IV & V)
-- Quality-of-life: longer potions, stackable potions/soups, stronger tipped arrows
+- Bundled resource pack supplying textures for all custom items and worn armor (worn custom armor is
+  currently invisible on vanilla clients until the pack ships)
+- Additional tier-specific combat effects (bleed, poison)
+- Stronger tipped arrows
 
 ## Building
 

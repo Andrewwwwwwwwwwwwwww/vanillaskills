@@ -3,7 +3,7 @@
     "icon": { "id": "minecraft:written_book" },
     "title": "VanillaSkills",
     "description": "Master the skill tree and forge new gear",
-    "background": "minecraft:textures/block/iron_block.png",
+    "background": "minecraft:block/iron_block",
     "show_toast": false,
     "announce_to_chat": false
   },

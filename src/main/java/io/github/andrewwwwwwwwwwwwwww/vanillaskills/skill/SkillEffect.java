@@ -39,4 +39,12 @@ public class SkillEffect {
         e.name = name;
         return e;
     }
+
+    public static SkillEffect status(String effect, int amplifier) {
+        SkillEffect e = new SkillEffect();
+        e.type = "status_effect";
+        e.effect = effect;
+        e.amplifier = amplifier;
+        return e;
+    }
 }
