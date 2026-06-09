@@ -123,7 +123,7 @@ public class PlayerSkillManager {
         data.creditedAdvancements.add(advancementId);
         if (amount > 0) {
             data.grantPoints(amount);
-            player.sendSystemMessage(Component.literal("+" + amount + " skill point" + (amount == 1 ? "" : "s"))
+            player.sendSystemMessage(Component.literal("+" + amount + " Skill Shard" + (amount == 1 ? "" : "s"))
                     .withStyle(ChatFormatting.GREEN));
         }
         save(player.getUUID());
@@ -195,7 +195,7 @@ public class PlayerSkillManager {
             }
         }
         if (data.pointsAvailable < node.cost) {
-            player.sendSystemMessage(Component.literal("Not enough points (need " + node.cost + ").")
+            player.sendSystemMessage(Component.literal("Not enough Skill Shards (need " + node.cost + ").")
                     .withStyle(ChatFormatting.RED));
             return false;
         }
@@ -265,6 +265,49 @@ public class PlayerSkillManager {
         PlayerSkillData data = get(player.getUUID());
         data.grantPoints(amount);
         save(player.getUUID());
+    }
+
+    public void addQuestShards(ServerPlayer player, int amount) {
+        PlayerSkillData data = get(player.getUUID());
+        data.grantQuestShards(amount);
+        save(player.getUUID());
+    }
+
+    public int skillShards(ServerPlayer player) {
+        return get(player.getUUID()).pointsAvailable;
+    }
+
+    public int questShards(ServerPlayer player) {
+        return get(player.getUUID()).questShardsAvailable;
+    }
+
+    /** Spend available Skill Shards (does not reduce lifetime earned). Returns false if too few. */
+    public boolean spendSkillShards(ServerPlayer player, int amount) {
+        PlayerSkillData data = get(player.getUUID());
+        if (data.pointsAvailable < amount) return false;
+        data.pointsAvailable -= amount;
+        save(player.getUUID());
+        return true;
+    }
+
+    /** Spend available Quest Shards (does not reduce lifetime earned). Returns false if too few. */
+    public boolean spendQuestShards(ServerPlayer player, int amount) {
+        PlayerSkillData data = get(player.getUUID());
+        if (data.questShardsAvailable < amount) return false;
+        data.questShardsAvailable -= amount;
+        save(player.getUUID());
+        return true;
+    }
+
+    /** One-way conversion: spend 3 Quest Shards per Skill Shard. Returns false if too few. */
+    public boolean convertToSkillShards(ServerPlayer player, int skillAmount) {
+        PlayerSkillData data = get(player.getUUID());
+        int cost = skillAmount * QuestShop.CONVERT_RATIO;
+        if (skillAmount <= 0 || data.questShardsAvailable < cost) return false;
+        data.questShardsAvailable -= cost;
+        data.grantPoints(skillAmount); // permanent: counts toward earned so resets keep it
+        save(player.getUUID());
+        return true;
     }
 
     public void setPoints(ServerPlayer player, int amount) {

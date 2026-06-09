@@ -11,8 +11,10 @@ import java.util.Set;
 public class PlayerSkillData {
     public int version = 1;
     public Set<String> unlocked = new LinkedHashSet<>();
-    public int pointsAvailable = 0;
-    public int pointsEarned = 0;
+    public int pointsAvailable = 0; // Skill Shards available to spend
+    public int pointsEarned = 0;    // Skill Shards earned lifetime
+    public int questShardsAvailable = 0; // Quest Shards available to spend in the shop
+    public int questShardsEarned = 0;    // Quest Shards earned lifetime
     public float lastHealth = -1f; // health at last logout, restored after max-health modifiers reapply
     public boolean completionRewarded = false; // got the full-tree Dragon Ingot reward
     public Set<String> creditedAdvancements = new LinkedHashSet<>();
@@ -37,5 +39,10 @@ public class PlayerSkillData {
     public void grantPoints(int amount) {
         pointsAvailable += amount;
         pointsEarned += amount;
+    }
+
+    public void grantQuestShards(int amount) {
+        questShardsAvailable += amount;
+        questShardsEarned += amount;
     }
 }

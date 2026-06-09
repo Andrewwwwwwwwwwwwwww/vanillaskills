@@ -25,6 +25,8 @@ import java.util.List;
 public class QuestMenu extends ChestMenu {
     private static final int[] SLOTS = {11, 13, 15};
     private static final int INFO_SLOT = 4;
+    private static final int SHOP_SLOT = 22;
+    private static final int CLOSE_SLOT = 26;
 
     private final ServerPlayer player;
     private final SimpleContainer container;
@@ -44,23 +46,53 @@ public class QuestMenu extends ChestMenu {
     }
 
     private void populate() {
-        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, ItemStack.EMPTY);
+        ItemStack filler = filler();
+        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, filler.copy());
         container.setItem(INFO_SLOT, infoItem());
         List<Quest> active = VanillaSkills.QUESTS.active();
         for (int i = 0; i < active.size() && i < SLOTS.length; i++) {
             container.setItem(SLOTS[i], questItem(i, active.get(i)));
         }
+        container.setItem(SHOP_SLOT, shopButton());
+        container.setItem(CLOSE_SLOT, button(Items.BARRIER, "Close", ChatFormatting.RED, null));
     }
 
     private ItemStack infoItem() {
         long remaining = VanillaSkills.QUESTS.nextRotationMs() - System.currentTimeMillis();
         String when = remaining <= 0 ? "any moment" : (remaining / 3_600_000) + "h " + (remaining % 3_600_000 / 60_000) + "m";
+        int quest = VanillaSkills.PLAYERS.questShards(player);
         ItemStack stack = new ItemStack(Items.CLOCK);
         stack.set(DataComponents.CUSTOM_NAME, styled("Bounty Board", ChatFormatting.GOLD));
         stack.set(DataComponents.LORE, new ItemLore(List.of(
                 styled("Three bounties for everyone.", ChatFormatting.GRAY),
                 styled("New bounties in " + when, ChatFormatting.YELLOW),
+                Component.literal(""),
+                styled("Your Quest Shards: " + quest, ChatFormatting.LIGHT_PURPLE),
                 styled("Click a bounty to claim its reward.", ChatFormatting.DARK_GRAY))));
+        return stack;
+    }
+
+    private ItemStack shopButton() {
+        ItemStack stack = new ItemStack(Items.EMERALD);
+        stack.set(DataComponents.CUSTOM_NAME, styled("Quest Shop", ChatFormatting.GREEN));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(
+                styled("Spend Quest Shards on boost items,", ChatFormatting.GRAY),
+                styled("or convert them into Skill Shards.", ChatFormatting.GRAY),
+                Component.literal(""),
+                styled("Click to open", ChatFormatting.GREEN))));
+        return stack;
+    }
+
+    private ItemStack filler() {
+        ItemStack pane = new ItemStack(Items.LIGHT_GRAY_STAINED_GLASS_PANE);
+        pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
+        return pane;
+    }
+
+    private ItemStack button(net.minecraft.world.item.Item item, String name, ChatFormatting color, String desc) {
+        ItemStack stack = new ItemStack(item);
+        stack.set(DataComponents.CUSTOM_NAME, styled(name, color));
+        if (desc != null) stack.set(DataComponents.LORE, new ItemLore(List.of(styled(desc, ChatFormatting.GRAY))));
         return stack;
     }
 
@@ -76,7 +108,7 @@ public class QuestMenu extends ChestMenu {
         List<Component> lore = new ArrayList<>();
         String verb = q.type() == Quest.Type.KILL ? "Slain" : "Gathered";
         lore.add(styled(verb + ": " + progress + "/" + q.amount(), ChatFormatting.GRAY));
-        lore.add(styled("Reward: +" + q.reward() + " skill point" + (q.reward() == 1 ? "" : "s"), ChatFormatting.AQUA));
+        lore.add(styled("Reward: +" + q.reward() + " Quest Shard" + (q.reward() == 1 ? "" : "s"), ChatFormatting.LIGHT_PURPLE));
         lore.add(Component.literal(""));
         if (claimed) {
             lore.add(styled("Claimed — come back next rotation", ChatFormatting.DARK_GRAY));
@@ -100,6 +132,8 @@ public class QuestMenu extends ChestMenu {
     @Override
     public void clicked(int slotId, int button, ContainerInput input, Player clicker) {
         if (clicker instanceof ServerPlayer sp) {
+            if (slotId == CLOSE_SLOT) { sp.closeContainer(); return; }
+            if (slotId == SHOP_SLOT) { ShopMenu.open(sp); return; }
             for (int i = 0; i < SLOTS.length; i++) {
                 if (slotId == SLOTS[i]) {
                     Quests.claim(sp, i);
