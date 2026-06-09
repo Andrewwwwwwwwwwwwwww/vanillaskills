@@ -1,5 +1,16 @@
 # VanillaSkills Changelog
 
+## [0.15.1] - 2026-06-08
+
+### Changed
+- **Bigger, livelier bounty board.** The floating board is now a proper notice board: a **1.5×-scaled
+  title on a dark panel**, the **three active bounties with their Quest Shard rewards** listed, and a
+  **live "⏳ New bounties in 4h 12m" countdown** that refreshes every few seconds. A **slowly-spinning
+  Nether Star** floats above it. The right-click hitbox was enlarged to match.
+  - Note: per-player progress/claims still live in the GUI (a hologram is a shared world entity, so it
+    looks the same to everyone). Existing boards should be re-placed (`/quests board remove` then
+    `/quests board`) to pick up the new look.
+
 ## [0.15.0] - 2026-06-08
 
 ### Added
