@@ -62,6 +62,22 @@ public class PointsConfig {
         return cfg;
     }
 
+    /** Back up the existing points.json and overwrite it with the built-in defaults (op tool). */
+    public static PointsConfig regenerate() {
+        Path path = path();
+        try {
+            if (Files.exists(path)) {
+                Path backup = path.resolveSibling("points.backup-" + System.currentTimeMillis() + ".json");
+                Files.copy(path, backup, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            VanillaSkills.LOGGER.error("Failed to back up points.json before regen", e);
+        }
+        PointsConfig cfg = defaults();
+        cfg.save();
+        return cfg;
+    }
+
     public void save() {
         Path path = path();
         try {
