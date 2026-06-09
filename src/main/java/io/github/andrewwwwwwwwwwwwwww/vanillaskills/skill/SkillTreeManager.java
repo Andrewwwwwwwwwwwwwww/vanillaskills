@@ -62,12 +62,15 @@ public class SkillTreeManager {
     }
 
     /**
-     * Overwrite the tree with the built-in default (picking up new lanes/nodes after a mod update),
-     * backing up any existing skilltree.json first.
+     * Regenerate the tree from the built-in default, backing up the existing skilltree.json first.
+     * <p>When {@code preserve} is true (the normal {@code /skill regen}), an op's existing tree is kept
+     * concrete — every current lane/node is left exactly as-is and only brand-new lanes/nodes from the
+     * built-in default are appended. When false ({@code /skill regen fresh}), the tree is fully reset to
+     * the built-in default (discarding op customizations).
      *
      * @return the backup file path, or null if there was no existing file (or the backup failed).
      */
-    public Path regenerate() {
+    public Path regenerate(boolean preserve) {
         Path path = path();
         Path backup = null;
         try {
@@ -79,10 +82,25 @@ public class SkillTreeManager {
             VanillaSkills.LOGGER.error("Failed to back up skilltree.json before regen", e);
             backup = null;
         }
-        tree = defaultTree();
+        SkillTree def = defaultTree();
+        def.index();
+        if (preserve && tree != null && !tree.nodes.isEmpty()) {
+            tree.index();
+            int addedLanes = 0, addedNodes = 0;
+            for (SkillCategory c : def.categories) {
+                if (tree.category(c.id) == null) { tree.categories.add(c); addedLanes++; }
+            }
+            for (SkillNode n : def.nodes) {
+                if (tree.byId(n.id) == null) { tree.nodes.add(n); addedNodes++; }
+            }
+            VanillaSkills.LOGGER.info("Regen (preserve): kept existing tree, added {} new lane(s), {} new node(s)",
+                    addedLanes, addedNodes);
+        } else {
+            tree = def;
+            VanillaSkills.LOGGER.info("Regen (fresh): reset to built-in default ({} nodes)", tree.size());
+        }
         tree.index();
         save();
-        VanillaSkills.LOGGER.info("Regenerated default skill tree ({} nodes)", tree.size());
         return backup;
     }
 
