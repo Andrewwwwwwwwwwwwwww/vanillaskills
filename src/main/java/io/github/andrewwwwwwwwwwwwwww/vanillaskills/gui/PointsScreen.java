@@ -19,30 +19,40 @@ public final class PointsScreen {
 
     public static void open(ServerPlayer player) {
         PointsConfig cfg = VanillaSkills.PLAYERS.pointsConfig();
-        int per = cfg.perAdvancement;
+        int total = VanillaSkills.PLAYERS.totalEarnable();
         List<ItemStack> items = new ArrayList<>();
 
         items.add(item(Items.KNOWLEDGE_BOOK, "Earning Skill Shards", ChatFormatting.GOLD, List.of(
                 "Skill Shards come from completing advancements.",
-                "Each advancement counts once — they can't be farmed.")));
+                "Each advancement counts once — they can't be farmed.",
+                "An advancement's value depends on its difficulty.")));
 
-        items.add(item(Items.PAPER, "Every Advancement", ChatFormatting.YELLOW, List.of(
-                "+" + per + " Skill Shard" + (per == 1 ? "" : "s") + " each")));
+        items.add(item(Items.PAPER, "Tasks (common)", ChatFormatting.WHITE, List.of(
+                "Ordinary square-icon advancements.",
+                "+" + cfg.valueTask + " Skill Shard" + (cfg.valueTask == 1 ? "" : "s") + " each")));
 
-        items.add(item(Items.NETHER_STAR, "Major Milestones", ChatFormatting.LIGHT_PURPLE, List.of(
-                "Big goals — Nether, the End, bosses,",
-                "netherite, and full collections —",
-                "award far more than a normal advancement.")));
+        items.add(item(Items.GOLD_INGOT, "Goals", ChatFormatting.YELLOW, List.of(
+                "Rounded-icon goals — a bigger ask.",
+                "+" + cfg.valueGoal + " Skill Shards each")));
+
+        items.add(item(Items.NETHER_STAR, "Challenges (purple)", ChatFormatting.LIGHT_PURPLE, List.of(
+                "The hardest, purple-framed advancements.",
+                "+" + cfg.valueChallenge + " Skill Shards each")));
 
         items.add(item(Items.DIAMOND_CHESTPLATE, "VanillaSkills Goals", ChatFormatting.AQUA, List.of(
-                "Craft full armor sets, discover the",
-                "upgrade templates, forge a Dragon Ingot,",
-                "and finish skill paths for bonus Skill Shards.")));
+                "Craft full armor sets, discover the upgrade",
+                "templates, forge a Dragon Ingot, and finish",
+                "skill paths for bonus Skill Shards.")));
 
         if (cfg.startingPoints > 0) {
             items.add(item(Items.EXPERIENCE_BOTTLE, "Starting Bonus", ChatFormatting.GREEN, List.of(
                     "+" + cfg.startingPoints + " Skill Shards when you first join")));
         }
+
+        items.add(item(Items.BEACON, "The Grand Total", ChatFormatting.GOLD, List.of(
+                "There are about " + total + " Skill Shards to earn.",
+                "Doing every advancement unlocks the WHOLE",
+                "skill tree — it's priced to match.")));
 
         if (cfg.ignoreRecipeAdvancements) {
             items.add(item(Items.CRAFTING_TABLE, "Recipe Unlocks", ChatFormatting.GRAY, List.of(
