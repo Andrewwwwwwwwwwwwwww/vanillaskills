@@ -32,27 +32,29 @@ public final class ToolTiers {
     // Hardwood = stone tier (better than stone, can't mine diamond), crafted from Wood blocks.
     public static final ToolTier HARDWOOD = new ToolTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_tool_hardwood",
-            STONE_TOOLS, 200, 0.5, 0.1, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
+            STONE_TOOLS, 200, 0.5, 0.1, 0.0, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
 
     // Rose Gold = gold tier (gold speed, can't mine diamond) but far more durable; quick strikes.
     public static final ToolTier ROSE_GOLD = new ToolTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_tool_rose_gold",
-            GOLD_TOOLS, 250, 0.5, 0.2, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
+            GOLD_TOOLS, 250, 0.5, 0.2, 0.0, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
 
     // Steel = iron tier (mines diamond), more durable than iron but below diamond; hits harder.
     public static final ToolTier STEEL = new ToolTier(
             "steel", "Steel", 0xB8C0C8, "vs_tool_steel",
-            IRON_TOOLS, 800, 1.0, 0.1, itemSet(IRON_INGOT), Alloys::isSteelIngot);
+            IRON_TOOLS, 800, 1.0, 0.1, 0.0, itemSet(IRON_INGOT), Alloys::isSteelIngot);
 
     // Crystalline = diamond tier (mines like diamond), between diamond and netherite; sharper hits.
     public static final ToolTier CRYSTAL = new ToolTier(
             "crystal", "Crystalline", 0xB389E8, "vs_tool_crystal",
-            DIAMOND_TOOLS, 1800, 1.0, 0.1, itemSet(DIAMOND), Alloys::isCrystallizedDiamond);
+            DIAMOND_TOOLS, 1800, 1.0, 0.1, 0.0, itemSet(DIAMOND), Alloys::isCrystallizedDiamond);
 
     // Dragon = netherite tier (top), highest durability; strongest strikes. Crafted from Dragon Ingots.
+    // The pickaxe carries +18 mining_efficiency so Efficiency V + Haste II + full Prospector instamine
+    // deepslate (needs effective mining speed >= 90: (9 + 26 + 12 + 18) * 1.4 = 91).
     public static final ToolTier DRAGON = new ToolTier(
             "dragon", "Dragon", 0xC23BD6, "vs_tool_dragon",
-            NETHERITE_TOOLS, 2500, 1.5, 0.1, itemSet(NETHERITE_INGOT),
+            NETHERITE_TOOLS, 2500, 1.5, 0.1, 18.0, itemSet(NETHERITE_INGOT),
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot::isDragonIngot);
 
     public static final List<ToolTier> TIERS = List.of(HARDWOOD, ROSE_GOLD, STEEL, CRYSTAL, DRAGON);

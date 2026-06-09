@@ -1,5 +1,39 @@
 # VanillaSkills Changelog
 
+## [0.15.0] - 2026-06-08
+
+### Added
+- **Deepslate gate:** deepslate and its ore variants now require a **Steel-tier or better pickaxe**
+  (Steel, Diamond, Crystalline, Netherite, Dragon) — iron and below can't break them. Forces unlocking
+  the Toolsmith Steel node to mine the deep layer. (Creative bypasses.)
+- **Bulk-buy & cascade refund in the skill tree:** **left-click** a node to buy it *and every locked
+  prerequisite below it* in one purchase (if you can afford the whole chain); **right-click** an
+  unlocked node to **refund it and everything above it that depends on it**, returning all the Shards.
+
+### Changed
+- **Advancement values are now difficulty-weighted.** Instead of a flat 5 per advancement, value is read
+  from each advancement's frame: **task ≈ 1, goal ≈ 5, challenge (purple) ≈ 20**, with milestone
+  overrides; root advancements give 0. This removes the "everything gives 5" feel and makes hard/purple
+  advancements pay far more.
+- **Night Vision** is now **locked until you've earned 1/3 of all possible advancement points**, then
+  costs a flat **75**. The rest of the tree is **scaled so the whole tree (including NV) costs exactly
+  the total earnable points** — doing every advancement affords the entire tree once.
+- **Quest rewards roughly tripled and tiered by difficulty** (easy 4–5, medium 6–7, hard 8–9), so a full
+  board of 3 bounties yields ~16–22 Quest Shards — about half the daily shop.
+- **Dragon pickaxe gains +18 mining_efficiency**, so Efficiency V + Haste II + full Prospector now
+  instamines deepslate (effective speed 91 ≥ the 90 needed).
+- **GUI polish:** the Earning-Skill-Shards and Your-Stats screens are now framed and centered (no more
+  corner-packed icons); the Stats screen also shows your Skill/Quest Shard balances and progress.
+
+### Fixed
+- **`/skill recalc` no longer wipes a player's 5 starting Skill Shards** — it now re-seeds the starting
+  bonus before re-tallying advancements.
+
+### Upgrade notes (ops)
+- Run **`/skill regen`** once after updating to rebuild the tree with the new pricing + NV gate.
+- Run **`/skill recalc <player>`** for existing players to reprice their earned Shards under the new
+  difficulty weighting.
+
 ## [0.14.2] - 2026-06-08
 
 ### Changed

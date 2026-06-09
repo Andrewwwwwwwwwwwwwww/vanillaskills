@@ -28,12 +28,13 @@ public class ToolTier {
     private final int durability;
     private final double attackDamageBonus;
     private final double attackSpeedBonus;
+    private final double pickaxeMiningBonus; // flat mining_efficiency baked onto this tier's pickaxe
     private final HolderSet<Item> repairItems;
     public final Predicate<ItemStack> material;
 
     public ToolTier(String id, String displayName, int nameColor, String markerKey,
                     Item[] baseItems, int durability, double attackDamageBonus, double attackSpeedBonus,
-                    HolderSet<Item> repairItems, Predicate<ItemStack> material) {
+                    double pickaxeMiningBonus, HolderSet<Item> repairItems, Predicate<ItemStack> material) {
         this.id = id;
         this.displayName = displayName;
         this.nameColor = nameColor;
@@ -42,6 +43,7 @@ public class ToolTier {
         this.durability = durability;
         this.attackDamageBonus = attackDamageBonus;
         this.attackSpeedBonus = attackSpeedBonus;
+        this.pickaxeMiningBonus = pickaxeMiningBonus;
         this.repairItems = repairItems;
         this.material = material;
     }
@@ -55,7 +57,7 @@ public class ToolTier {
                 new CustomModelData(List.of(), List.of(), List.of("vanillaskills:" + id + "_" + kind.lower()), List.of()));
         stack.set(DataComponents.MAX_DAMAGE, durability);
         stack.set(DataComponents.REPAIRABLE, new Repairable(repairItems));
-        applyAttributes(stack, baseItem);
+        applyAttributes(stack, baseItem, kind);
         return stack;
     }
 
@@ -64,8 +66,9 @@ public class ToolTier {
      * Spears now use the real vanilla spear item, which already carries its own reach and slower
      * swing, so no spear-specific tweaks are needed here.
      */
-    private void applyAttributes(ItemStack stack, Item baseItem) {
-        if (attackDamageBonus == 0 && attackSpeedBonus == 0) return;
+    private void applyAttributes(ItemStack stack, Item baseItem, ToolKind kind) {
+        boolean mining = pickaxeMiningBonus != 0 && kind == ToolKind.PICKAXE;
+        if (attackDamageBonus == 0 && attackSpeedBonus == 0 && !mining) return;
 
         ItemAttributeModifiers base = new ItemStack(baseItem).get(DataComponents.ATTRIBUTE_MODIFIERS);
         if (base == null) base = ItemAttributeModifiers.EMPTY;
@@ -79,6 +82,15 @@ public class ToolTier {
                 mod = new AttributeModifier(mod.id(), mod.amount() + attackSpeedBonus, mod.operation());
             }
             b.add(entry.attribute(), mod, entry.slot(), entry.display());
+        }
+        if (mining) {
+            // Flat mining-speed boost so the top-tier pickaxe + Efficiency V + Haste II + full
+            // Prospector can instamine deepslate (needs effective speed >= 90).
+            b.add(Attributes.MINING_EFFICIENCY,
+                    new AttributeModifier(
+                            net.minecraft.resources.Identifier.fromNamespaceAndPath("vanillaskills", id + ".pickaxe.mining"),
+                            pickaxeMiningBonus, AttributeModifier.Operation.ADD_VALUE),
+                    net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND);
         }
         stack.set(DataComponents.ATTRIBUTE_MODIFIERS, b.build());
     }

@@ -221,11 +221,39 @@ public class SkillTreeManager {
 
         // Night Vision: a single capstone node granting permanent night vision.
         addLaneNodes(t, "nightvision", "Night Vision", "minecraft:golden_carrot", 14,
-                new int[]{22}, new int[]{150},
+                new int[]{22}, new int[]{75},
                 new SkillEffect[][]{ { SkillEffect.status("minecraft:night_vision", 0) } },
                 new String[]{"Permanent Night Vision"});
 
+        applyEconomy(t, economyP);
         return t;
+    }
+
+    /** P = total earnable Skill Shards, set at server start so the default tree can be priced against it. */
+    public static int economyP = 0;
+
+    /**
+     * Price the tree against the total earnable points (P): Night Vision costs a flat 75 and is gated
+     * behind earning P/3, while every other node is scaled so the whole tree (including NV) sums to
+     * exactly P — so doing every advancement affords the entire tree once.
+     */
+    private static void applyEconomy(SkillTree t, int P) {
+        if (P <= 80) return; // not computed yet (e.g. before server start) — leave hand-tuned costs
+        final int nvCost = 75;
+        int baseSum = 0;
+        for (SkillNode n : t.nodes) {
+            if (!"nightvision".equals(n.category)) baseSum += n.cost;
+        }
+        if (baseSum <= 0) return;
+        double f = (double) (P - nvCost) / baseSum;
+        for (SkillNode n : t.nodes) {
+            if ("nightvision".equals(n.category)) {
+                n.cost = nvCost;
+                n.minEarned = Math.round(P / 3.0f);
+            } else {
+                n.cost = Math.max(1, (int) Math.round(n.cost * f));
+            }
+        }
     }
 
     /** A many-node lane where each node adds {@code perNode} of one attribute, at the given slots. */
