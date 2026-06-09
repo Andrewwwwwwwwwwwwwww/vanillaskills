@@ -1,5 +1,17 @@
 # VanillaSkills Changelog
 
+## [0.16.12] - 2026-06-09
+
+### Fixed
+- **Back arrow restored in lane view.** Moving Skill Points to the bottom-left had collided with the
+  Back button, hiding it (and making the Points slot act as Back). Back is now its own bottom-centre
+  button; Points/Stats stay in the corners.
+
+### Changed
+- **Removed player skill refunds.** Skill unlocks are now permanent — there's no right-click refund, so
+  players can't swap perks back and forth to dodge doing the advancements. (Ops can still `/skill reset
+  <player>` for a full respec.)
+
 ## [0.16.11] - 2026-06-09
 
 ### Changed
