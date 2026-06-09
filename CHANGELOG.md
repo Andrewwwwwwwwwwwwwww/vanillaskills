@@ -1,5 +1,31 @@
 # VanillaSkills Changelog
 
+## [0.16.1] - 2026-06-09
+
+### Changed (skill-tree rebalance — Phase 2)
+- **Advancement values widened:** task **2**, goal **12**, challenge/purple **45**, milestone overrides
+  ~doubled. Normal advancements barely change; hard/purple ones pay much more. Total earnable (P) ≈ 1090.
+- **End-loaded cost ramps** on every lane — early nodes are cheap, the final nodes ramp hard, so
+  maxing one path costs about as much as several other lanes. (e.g. Guardian/Vitality/Warrior:
+  `2,2,3,4,5,7,10,14,23,30`.)
+- **Node-count changes:** Vitality → **10 nodes** (+2 hearts each, +40 HP), Warrior → **10 nodes**
+  (+1 dmg each), Reach → **5 nodes** (+0.5 block & entity reach each, +2.5 total).
+- **Lane cost targets** (relative; the tree auto-scales so its total = P): Vitality/Fleet/Warrior/
+  Guardian ~100, Reach ~115, Aquatic ~125, Brewmaster ~100, Evasion ~100, Fortune/Prospector/
+  Cultivator ~50, Mountaineer ~25, Night Vision 75.
+- **Brewmaster** now caps at **+50%** potion duration (5 nodes × +10%).
+- **Force tree = P:** the whole Skill-Shard tree (lanes + Night Vision) scales to exactly the total
+  earnable advancement points, so doing every advancement affords it once. (Armorsmith/Toolsmith are
+  excluded — they become Quest-Shard lanes in Phase 3; their costs here are interim.)
+
+### Fixed
+- **Cultivator** now scales reliably: each level rolls an independent ~50% chance for a bonus crop, so
+  at max (5) you average ~+2.5 per crop instead of the old single capped roll that felt like level 1.
+
+### Upgrade notes (ops)
+- Run **`/skill regen`** to rebuild the tree with the new ramps/costs, then **`/skill recalc <player>`**
+  for existing players to reprice earned Shards. The startup log prints the new total (P).
+
 ## [0.16.0] - 2026-06-09
 
 ### Changed

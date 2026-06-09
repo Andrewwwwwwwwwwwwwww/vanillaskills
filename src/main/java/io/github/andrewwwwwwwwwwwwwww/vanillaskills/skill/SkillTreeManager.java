@@ -94,7 +94,6 @@ public class SkillTreeManager {
     // bottom-row Back/Points/Stats buttons.
     private static final int[] TIER_SLOTS_5 = {40, 31, 22, 13, 4};
     // Cost progression for the 5-node craft/brew lanes (start at 10, scaling).
-    private static final int[] COSTS_5 = {10, 15, 20, 25, 30};
     // Two centred rows of five (rows 2-3, columns 2-6) for 10-node lanes.
     private static final int[] FIVE_AND_FIVE = {20, 21, 22, 23, 24, 29, 30, 31, 32, 33};
     // Lane icons on the lane-select screen, laid out as a tidy 6x2 block:
@@ -109,20 +108,22 @@ public class SkillTreeManager {
         t.title = "Skills";
         t.rows = 6;
 
-        // Vitality: +1 heart (2 HP) per node, up to 3 full rows of hearts (60 HP total) in 20 nodes.
+        // Vitality: +2 hearts (4 HP) per node over 10 nodes (+40 HP). End-loaded cost ramp.
         addScalingLane(t, "health", "Vitality", "minecraft:golden_apple", 0,
-                "minecraft:max_health", "add_value", 2.0, gridSlots(20),
-                n -> "+1 heart — +" + (2 * n) + " HP total");
+                "minecraft:max_health", "add_value", 4.0, gridSlots(10),
+                new int[]{2, 2, 3, 4, 5, 7, 10, 14, 23, 30},
+                n -> "+2 hearts — +" + (4 * n) + " HP total");
 
-        // Fleet Foot: +2% movement speed per node, up to +30%.
+        // Fleet Foot: +2% movement speed per node, up to +30% (15 nodes).
         addScalingLane(t, "speed", "Fleet Foot", "minecraft:feather", 1,
                 "minecraft:movement_speed", "add_multiplied_base", 0.02, gridSlots(15),
+                new int[]{1, 1, 1, 2, 2, 3, 3, 4, 5, 6, 8, 11, 15, 18, 20},
                 n -> "+2% movement speed — +" + (2 * n) + "% total");
 
         // Prospector: 5 nodes totalling +12 mining efficiency, enough that an Efficiency V diamond
         // pickaxe (speed 34) clears the 45-speed instamine threshold for stone — i.e. Haste II speeds.
         addLaneNodes(t, "mining", "Prospector", "minecraft:diamond_pickaxe", 2,
-                TIER_SLOTS_5, new int[]{2, 4, 6, 8, 10},
+                TIER_SLOTS_5, new int[]{3, 6, 9, 14, 18},
                 new SkillEffect[][]{
                         {SkillEffect.attribute("minecraft:mining_efficiency", "add_value", 2.0)},
                         {SkillEffect.attribute("minecraft:mining_efficiency", "add_value", 2.0)},
@@ -133,30 +134,35 @@ public class SkillTreeManager {
                 new String[]{"+2 mining efficiency", "+2 (4 total)", "+2 (6 total)", "+3 (9 total)",
                         "+3 (12 total) — instamine stone with an Efficiency V diamond pickaxe"});
 
-        // Fortune Finder: +0.5 luck per node, up to +5.
+        // Fortune Finder: +0.5 luck per node, up to +5 (10 nodes).
         addScalingLane(t, "luck", "Fortune Finder", "minecraft:rabbit_foot", 3,
                 "minecraft:luck", "add_value", 0.5, FIVE_AND_FIVE,
+                new int[]{1, 1, 2, 2, 3, 4, 5, 7, 11, 14},
                 n -> "+0.5 luck — +" + fmt(0.5 * n) + " total");
 
-        // Warrior: +0.5 attack damage per node, up to +10.
+        // Warrior: +1 attack damage per node, up to +10 (10 nodes). End-loaded cost ramp.
         addScalingLane(t, "damage", "Warrior", "minecraft:iron_sword", 4,
-                "minecraft:attack_damage", "add_value", 0.5, gridSlots(20),
-                n -> "+0.5 attack damage — +" + fmt(0.5 * n) + " total");
+                "minecraft:attack_damage", "add_value", 1.0, gridSlots(10),
+                new int[]{2, 2, 3, 4, 5, 7, 10, 14, 23, 30},
+                n -> "+1 attack damage — +" + n + " total");
 
-        // Guardian: +1 armor per node, up to +10.
+        // Guardian: +1 armor per node, up to +10 (10 nodes). End-loaded — maxing is a real investment.
         addScalingLane(t, "guardian", "Guardian", "minecraft:iron_chestplate", 5,
                 "minecraft:armor", "add_value", 1.0, FIVE_AND_FIVE,
+                new int[]{2, 2, 3, 4, 5, 7, 10, 14, 23, 30},
                 n -> "+1 armor — +" + n + " total");
 
-        // Reach: +0.25 block & entity interaction range per node, up to +2.5.
-        addScalingLaneMulti(t, "reach", "Reach", "minecraft:spyglass", 6, FIVE_AND_FIVE,
+        // Reach: +0.5 block & entity interaction range per node, up to +2.5 (5 nodes). Pricey — extra
+        // reach is very strong, and the ramp climbs hard.
+        addScalingLaneMulti(t, "reach", "Reach", "minecraft:spyglass", 6, TIER_SLOTS_5,
+                new int[]{5, 12, 22, 34, 42},
                 new String[]{"minecraft:block_interaction_range", "minecraft:entity_interaction_range"},
-                "add_value", 0.25,
-                n -> "+0.25 block & entity reach — +" + fmt(0.25 * n) + " total");
+                "add_value", 0.5,
+                n -> "+0.5 block & entity reach — +" + fmt(0.5 * n) + " total");
 
         // Mountaineer: pricier than the other short lanes — auto-stepping full blocks is strong QoL.
         addLaneNodes(t, "mountaineer", "Mountaineer", "minecraft:ladder", 7,
-                TIER_SLOTS, new int[]{5, 10, 15},
+                TIER_SLOTS, new int[]{4, 8, 13},
                 new SkillEffect[][]{
                         {SkillEffect.attribute("minecraft:step_height", "add_value", 0.2)},
                         {SkillEffect.attribute("minecraft:step_height", "add_value", 0.2)},
@@ -167,7 +173,7 @@ public class SkillTreeManager {
         // Aquatic: 9 nodes spreading three underwater perks — breath, swim speed, underwater mining.
         // Costs ramp up steeply so reaching full underwater capability is a real investment.
         addLaneNodes(t, "aquatic", "Aquatic", "minecraft:heart_of_the_sea", 8,
-                gridSlots(9), new int[]{3, 5, 7, 9, 11, 13, 16, 19, 24},
+                gridSlots(9), new int[]{3, 5, 7, 9, 12, 15, 19, 25, 30},
                 new SkillEffect[][]{
                         {SkillEffect.attribute("minecraft:oxygen_bonus", "add_value", 1.0)},
                         {SkillEffect.attribute("minecraft:oxygen_bonus", "add_value", 1.0)},
@@ -184,29 +190,33 @@ public class SkillTreeManager {
                         "+27% underwater mining", "+54% underwater mining", "Full underwater mining"});
 
         // Armorsmith: one node per armor tier, unlocking the right to craft that tier's armor.
-        addLaneNodes(t, "armorsmith", "Armorsmith", "minecraft:smithing_table", 9, TIER_SLOTS_5, COSTS_5,
+        // (Phase 3 will expand this to a 10-tier Quest-Shard lane; costs here are interim.)
+        addLaneNodes(t, "armorsmith", "Armorsmith", "minecraft:smithing_table", 9, TIER_SLOTS_5,
+                new int[]{3, 5, 8, 12, 18},
                 flagEffects("craft_armor_hardwood", "craft_armor_rose_gold", "craft_armor_steel",
                         "craft_armor_crystal", "craft_armor_dragon"),
                 new String[]{"Craft Hardwood armor", "Craft Rose Gold armor", "Craft Steel armor",
                         "Craft Crystalline armor", "Craft Dragon armor (smithing upgrade)"});
 
         // Toolsmith: one node per tool tier.
-        addLaneNodes(t, "toolsmith", "Toolsmith", "minecraft:crafting_table", 10, TIER_SLOTS_5, COSTS_5,
+        addLaneNodes(t, "toolsmith", "Toolsmith", "minecraft:crafting_table", 10, TIER_SLOTS_5,
+                new int[]{3, 5, 8, 12, 18},
                 flagEffects("craft_tool_hardwood", "craft_tool_rose_gold", "craft_tool_steel",
                         "craft_tool_crystal", "craft_tool_dragon"),
                 new String[]{"Craft Hardwood tools", "Craft Rose Gold tools", "Craft Steel tools",
                         "Craft Crystalline tools", "Craft Dragon tools"});
 
-        // Brewmaster: each node extends beneficial potion durations by a further +20% (up to +100%).
-        addLaneNodes(t, "brewmaster", "Brewmaster", "minecraft:brewing_stand", 11, TIER_SLOTS_5, COSTS_5,
+        // Brewmaster: each node extends beneficial potion durations by a further +10% (up to +50%).
+        addLaneNodes(t, "brewmaster", "Brewmaster", "minecraft:brewing_stand", 11, TIER_SLOTS_5,
+                new int[]{8, 14, 20, 26, 32},
                 flagEffects("long_potions_1", "long_potions_2", "long_potions_3", "long_potions_4", "long_potions_5"),
-                new String[]{"Beneficial potions +20% duration", "+40% total", "+60% total", "+80% total",
-                        "+100% total (well past the 8-min cap)"});
+                new String[]{"Beneficial potions +10% duration", "+20% total", "+30% total", "+40% total",
+                        "+50% total"});
 
         // Evasion: +2% chance to completely dodge incoming arrow damage per node, up to 20%.
         // Expensive — fully dodging 1-in-5 arrows is a strong defensive perk.
         addLaneNodes(t, "evasion", "Evasion", "minecraft:arrow", 12,
-                FIVE_AND_FIVE, new int[]{3, 5, 7, 9, 11, 13, 16, 19, 22, 26},
+                FIVE_AND_FIVE, new int[]{2, 2, 3, 4, 5, 7, 10, 14, 23, 30},
                 flagEffects("arrow_dodge_1", "arrow_dodge_2", "arrow_dodge_3", "arrow_dodge_4", "arrow_dodge_5",
                         "arrow_dodge_6", "arrow_dodge_7", "arrow_dodge_8", "arrow_dodge_9", "arrow_dodge_10"),
                 new String[]{"+2% chance to dodge arrows", "4% total", "6% total", "8% total", "10% total",
@@ -214,7 +224,7 @@ public class SkillTreeManager {
 
         // Cultivator: each node adds +20% chance for bonus crops when harvesting mature crops (→100%).
         addLaneNodes(t, "cultivator", "Cultivator", "minecraft:wheat", 13,
-                TIER_SLOTS_5, new int[]{3, 5, 8, 11, 15},
+                TIER_SLOTS_5, new int[]{3, 6, 9, 14, 18},
                 flagEffects("cultivator_1", "cultivator_2", "cultivator_3", "cultivator_4", "cultivator_5"),
                 new String[]{"+20% chance for bonus crops", "40% chance", "60% chance", "80% chance",
                         "100% chance (always bonus)"});
@@ -240,9 +250,13 @@ public class SkillTreeManager {
     private static void applyEconomy(SkillTree t, int P) {
         if (P <= 80) return; // not computed yet (e.g. before server start) — leave hand-tuned costs
         final int nvCost = 75;
+        // Night Vision is fixed (75); Armorsmith/Toolsmith are funded by Quest Shards, not Skill Shards,
+        // so they're excluded from the Skill-Shard budget. Everything else scales so the Skill-Shard
+        // tree (core lanes + NV) sums to exactly P.
         int baseSum = 0;
         for (SkillNode n : t.nodes) {
-            if (!"nightvision".equals(n.category)) baseSum += n.cost;
+            if (isFixedOrQuestLane(n)) continue;
+            baseSum += n.cost;
         }
         if (baseSum <= 0) return;
         double f = (double) (P - nvCost) / baseSum;
@@ -250,15 +264,19 @@ public class SkillTreeManager {
             if ("nightvision".equals(n.category)) {
                 n.cost = nvCost;
                 n.minEarned = Math.round(P / 3.0f);
-            } else {
+            } else if (!isFixedOrQuestLane(n)) {
                 n.cost = Math.max(1, (int) Math.round(n.cost * f));
             }
         }
     }
 
-    /** A many-node lane where each node adds {@code perNode} of one attribute, at the given slots. */
+    private static boolean isFixedOrQuestLane(SkillNode n) {
+        return "nightvision".equals(n.category) || "armorsmith".equals(n.category) || "toolsmith".equals(n.category);
+    }
+
+    /** A many-node lane where each node adds {@code perNode} of one attribute, with an explicit cost ramp. */
     private static void addScalingLane(SkillTree t, String key, String name, String icon, int laneIndex,
-                                       String attribute, String operation, double perNode, int[] slots,
+                                       String attribute, String operation, double perNode, int[] slots, int[] costs,
                                        java.util.function.IntFunction<String> describe) {
         int count = slots.length;
         SkillEffect[][] effects = new SkillEffect[count][];
@@ -267,12 +285,12 @@ public class SkillTreeManager {
             effects[i] = new SkillEffect[]{SkillEffect.attribute(attribute, operation, perNode)};
             descriptions[i] = describe.apply(i + 1);
         }
-        addLaneNodes(t, key, name, icon, laneIndex, slots, scalingCosts(count), effects, descriptions);
+        addLaneNodes(t, key, name, icon, laneIndex, slots, costs, effects, descriptions);
     }
 
-    /** Like {@link #addScalingLane} but each node adds {@code perNode} to several attributes at once. */
+    /** {@link #addScalingLaneMulti} with an explicit (hand-authored, end-loaded) cost ramp. */
     private static void addScalingLaneMulti(SkillTree t, String key, String name, String icon, int laneIndex,
-                                            int[] slots, String[] attributes, String operation, double perNode,
+                                            int[] slots, int[] costs, String[] attributes, String operation, double perNode,
                                             java.util.function.IntFunction<String> describe) {
         int count = slots.length;
         SkillEffect[][] effects = new SkillEffect[count][];
@@ -283,7 +301,7 @@ public class SkillTreeManager {
             effects[i] = node;
             descriptions[i] = describe.apply(i + 1);
         }
-        addLaneNodes(t, key, name, icon, laneIndex, slots, scalingCosts(count), effects, descriptions);
+        addLaneNodes(t, key, name, icon, laneIndex, slots, costs, effects, descriptions);
     }
 
     /**
@@ -299,13 +317,6 @@ public class SkillTreeManager {
             slots[i] = 10 + row * 9 + col; // start at slot 10 (row 1, col 1)
         }
         return slots;
-    }
-
-    /** Placeholder gentle cost ramp (1,1,1,1,2,2,...) — tuned later with the points system. */
-    private static int[] scalingCosts(int count) {
-        int[] costs = new int[count];
-        for (int i = 0; i < count; i++) costs[i] = 1 + i / 4;
-        return costs;
     }
 
     private static String fmt(double v) {
