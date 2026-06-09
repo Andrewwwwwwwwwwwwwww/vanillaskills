@@ -185,7 +185,15 @@ public class VanillaSkills implements ModInitializer {
                             .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
                             .executes(ctx -> { BOARDS.place(ctx.getSource().getPlayerOrException()); return 1; })
                             .then(net.minecraft.commands.Commands.literal("remove")
-                                    .executes(ctx -> { BOARDS.removeNear(ctx.getSource().getPlayerOrException()); return 1; }))));
+                                    .executes(ctx -> { BOARDS.removeNear(ctx.getSource().getPlayerOrException()); return 1; })))
+                    .then(net.minecraft.commands.Commands.literal("reroll")
+                            .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                            .executes(ctx -> {
+                                QUESTS.forceReroll();
+                                ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                        "Bounties re-rolled."), true);
+                                return 1;
+                            })));
             dispatcher.register(net.minecraft.commands.Commands.literal("bounty").redirect(questsNode));
         });
     }
