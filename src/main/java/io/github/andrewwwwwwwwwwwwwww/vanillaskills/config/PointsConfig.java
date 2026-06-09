@@ -18,15 +18,26 @@ import java.util.Map;
 public class PointsConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public int perAdvancement = 1;
+    public int perAdvancement = 1;          // fallback when an advancement has no display frame
+    public int valueTask = 1;               // common square-frame advancements
+    public int valueGoal = 5;               // rounded-frame goals
+    public int valueChallenge = 20;         // purple challenge-frame advancements
     public boolean ignoreRecipeAdvancements = true;
     public int startingPoints = 0;
     public Map<String, Integer> advancementOverrides = new HashMap<>();
 
-    public int pointsFor(String advancementId) {
-        Integer override = advancementOverrides.get(advancementId);
+    /** Value for an advancement: explicit override first, else by its frame type (task/goal/challenge). */
+    public int pointsFor(net.minecraft.advancements.AdvancementHolder holder) {
+        Integer override = advancementOverrides.get(holder.id().toString());
         if (override != null) return override;
-        return perAdvancement;
+        net.minecraft.advancements.AdvancementType type = holder.value().display()
+                .map(net.minecraft.advancements.DisplayInfo::getType)
+                .orElse(net.minecraft.advancements.AdvancementType.TASK);
+        return switch (type) {
+            case CHALLENGE -> valueChallenge;
+            case GOAL -> valueGoal;
+            default -> valueTask;
+        };
     }
 
     private static Path path() {
@@ -63,14 +74,20 @@ public class PointsConfig {
 
     private static PointsConfig defaults() {
         PointsConfig cfg = new PointsConfig();
-        cfg.perAdvancement = 5;
+        cfg.perAdvancement = 1;
+        cfg.valueTask = 1;       // trivial/common advancements give little
+        cfg.valueGoal = 5;       // goals give a moderate amount
+        cfg.valueChallenge = 20; // purple challenges give a lot
         cfg.startingPoints = 5;
         cfg.ignoreRecipeAdvancements = true;
 
-        // Progression-weighted milestones (these REPLACE the base per-advancement value).
-        // Tuned so a near-completionist earns ~900-930 points — slightly above the ~826 needed
-        // for the whole tree, so full completion is a genuine late-game goal.
+        // Per-advancement overrides REPLACE the frame-based value above. Roots are free entries.
         Map<String, Integer> o = cfg.advancementOverrides;
+        o.put("minecraft:story/root", 0);
+        o.put("minecraft:nether/root", 0);
+        o.put("minecraft:end/root", 0);
+        o.put("minecraft:adventure/root", 0);
+        o.put("minecraft:husbandry/root", 0);
         // Story
         o.put("minecraft:story/smelt_iron", 8);
         o.put("minecraft:story/mine_diamond", 12);

@@ -156,22 +156,24 @@ public class SkillTreeMenu extends ChestMenu {
                 : affordable ? ChatFormatting.YELLOW : ChatFormatting.GRAY;
         stack.set(DataComponents.CUSTOM_NAME, styled(node.title + (unlocked ? " ✔" : ""), nameColor));
 
+        boolean gated = node.minEarned > 0 && data.pointsEarned < node.minEarned;
+
         List<Component> lore = new ArrayList<>();
         for (String line : node.description) lore.add(styled(line, ChatFormatting.GRAY));
         lore.add(Component.literal(""));
         if (unlocked) {
             lore.add(styled("Unlocked", ChatFormatting.GREEN));
+            lore.add(styled("Right-click: refund (+ skills above it)", ChatFormatting.DARK_GRAY));
+        } else if (node.minEarned > 0) {
+            lore.add(styled("Cost " + node.cost, ChatFormatting.YELLOW));
+            lore.add(gated
+                    ? styled("Locked: earn " + node.minEarned + " Skill Shards first (" + data.pointsEarned + "/" + node.minEarned + ")", ChatFormatting.RED)
+                    : styled("Left-click to unlock", ChatFormatting.GREEN));
         } else if (!prereqMet) {
-            List<String> missing = new ArrayList<>();
-            for (String req : node.requires) {
-                if (!data.hasUnlocked(req)) {
-                    SkillNode rn = VanillaSkills.TREE.tree().byId(req);
-                    missing.add(rn != null ? rn.title : req);
-                }
-            }
-            lore.add(styled("Requires: " + String.join(", ", missing), ChatFormatting.RED));
+            lore.add(styled("Left-click: buy this + the skills below it", ChatFormatting.GRAY));
+            lore.add(styled("Cost to here: " + node.cost + " (this node)", ChatFormatting.DARK_GRAY));
         } else if (affordable) {
-            lore.add(styled("Click to unlock — cost " + node.cost, ChatFormatting.YELLOW));
+            lore.add(styled("Left-click to unlock — cost " + node.cost, ChatFormatting.YELLOW));
         } else {
             lore.add(styled("Cost " + node.cost + " (need more Skill Shards)", ChatFormatting.RED));
         }
@@ -352,7 +354,13 @@ public class SkillTreeMenu extends ChestMenu {
             handleNodeEdit(slotId, button);
         } else {
             SkillNode node = VanillaSkills.TREE.tree().nodeInCategoryAtSlot(category, slotId);
-            if (node != null) VanillaSkills.PLAYERS.unlock(sp, node.id);
+            if (node != null) {
+                if (button == 1) {
+                    VanillaSkills.PLAYERS.refundChain(sp, node.id);   // right-click: refund this + dependents
+                } else {
+                    VanillaSkills.PLAYERS.unlockChain(sp, node.id);   // left-click: buy up to this node
+                }
+            }
         }
         return false;
     }
