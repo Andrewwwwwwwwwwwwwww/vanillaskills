@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.15.3] - 2026-06-08
+
+### Changed
+- Bounty board tuning: text back to **1× scale**, and the Nether Star is **bigger (0.9×) and raised
+  above the text** instead of sitting small in the middle of it.
+
 ## [0.15.2] - 2026-06-08
 
 ### Added
