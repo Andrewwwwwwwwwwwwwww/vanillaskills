@@ -3,17 +3,16 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
-import io.github.andrewwwwwwwwwwwwwww.vanillaskills.mixin.ArmorStandAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -25,13 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Physical bounty boards: an op summons a lectern with floating "Bounty Board" text that anyone can
- * right-click to open the quest GUI. Board positions persist to world/vanillaskills/questboards.json;
- * the floating text is an invisible marker armor stand tagged so it can be cleaned up on removal.
+ * Physical bounty boards rendered as holograms-style floating text. An op summons a board with
+ * {@code /quests board}; it spawns a native text-display entity plus an overlapping invisible
+ * {@link Interaction} entity that anyone can right-click to open the quest GUI. Board anchors persist
+ * to {@code world/vanillaskills/questboards.json}; the entities are tagged so they can be cleaned up.
  */
 public class BountyBoards {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final String TAG = "vanillaskills_board";
+    public static final String TAG = "vanillaskills_board";
     private static final double REMOVE_RANGE_SQR = 36.0; // 6 blocks
 
     private List<Entry> boards = new ArrayList<>();
@@ -47,48 +47,57 @@ public class BountyBoards {
         return level.dimension().identifier().toString();
     }
 
-    public boolean isBoard(ServerLevel level, BlockPos pos) {
-        String dim = dimId(level);
-        for (Entry e : boards) {
-            if (e.dim.equals(dim) && e.x == pos.getX() && e.y == pos.getY() && e.z == pos.getZ()) return true;
-        }
-        return false;
-    }
-
     public void place(ServerPlayer op) {
         ServerLevel level = (ServerLevel) op.level();
-        BlockPos pos;
+        BlockPos base;
         HitResult hit = op.pick(6.0, 1.0f, false);
         if (hit.getType() == HitResult.Type.BLOCK && hit instanceof BlockHitResult bhr) {
-            pos = bhr.getBlockPos().relative(bhr.getDirection());
+            base = bhr.getBlockPos();
         } else {
-            pos = op.blockPosition();
+            base = op.blockPosition();
         }
-        if (isBoard(level, pos)) {
-            op.sendSystemMessage(Component.literal("There's already a board there.").withStyle(ChatFormatting.RED));
-            return;
-        }
-
-        level.setBlockAndUpdate(pos, Blocks.LECTERN.defaultBlockState());
-
-        ArmorStand stand = EntityType.ARMOR_STAND.create(level, EntitySpawnReason.COMMAND);
-        if (stand != null) {
-            stand.snapTo(pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, 0.0f, 0.0f);
-            stand.setInvisible(true);
-            stand.setNoGravity(true);
-            stand.setInvulnerable(true);
-            stand.setCustomName(Component.literal("✦ Bounty Board ✦")
-                    .withStyle(s -> s.withColor(0xFFD700).withItalic(false)));
-            stand.setCustomNameVisible(true);
-            stand.addTag(TAG);
-            ((ArmorStandAccessor) stand).vanillaskills$setMarker(true);
-            level.addFreshEntity(stand);
+        for (Entry e : boards) {
+            if (e.dim.equals(dimId(level)) && e.x == base.getX() && e.y == base.getY() && e.z == base.getZ()) {
+                op.sendSystemMessage(Component.literal("There's already a board there.").withStyle(ChatFormatting.RED));
+                return;
+            }
         }
 
-        boards.add(new Entry(dimId(level), pos.getX(), pos.getY(), pos.getZ()));
+        double ax = base.getX() + 0.5, ay = base.getY() + 1.3, az = base.getZ() + 0.5;
+        spawnEntities(level, ax, ay, az);
+
+        boards.add(new Entry(dimId(level), base.getX(), base.getY(), base.getZ()));
         save();
-        op.sendSystemMessage(Component.literal("Bounty board placed — right-click it to open the quests.")
+        op.sendSystemMessage(Component.literal("Bounty board placed — right-click the floating text to open the quests.")
                 .withStyle(ChatFormatting.GREEN));
+    }
+
+    private static void spawnEntities(ServerLevel level, double ax, double ay, double az) {
+        Display.TextDisplay text = new Display.TextDisplay(EntityType.TEXT_DISPLAY, level);
+        Component label = Component.literal("✦ Bounty Board ✦")
+                .withStyle(s -> s.withColor(0xFFD700).withItalic(false))
+                .append(Component.literal("\n"))
+                .append(Component.literal("Right-click to view bounties")
+                        .withStyle(s -> s.withColor(0xAAAAAA).withItalic(false)));
+        text.setText(label);
+        text.setBillboardConstraints(Display.BillboardConstraints.CENTER);
+        configure(text);
+        text.snapTo(ax, ay, az, 0.0f, 0.0f);
+        level.addFreshEntity(text);
+
+        Interaction interaction = new Interaction(EntityType.INTERACTION, level);
+        interaction.setWidth(1.6f);
+        interaction.setHeight(1.0f);
+        interaction.setResponse(true);
+        configure(interaction);
+        interaction.snapTo(ax, ay - 0.5, az, 0.0f, 0.0f); // anchor is bottom centre
+        level.addFreshEntity(interaction);
+    }
+
+    private static void configure(Entity e) {
+        e.setNoGravity(true);
+        e.setInvulnerable(true);
+        e.addTag(TAG);
     }
 
     public void removeNear(ServerPlayer op) {
@@ -107,13 +116,9 @@ public class BountyBoards {
             op.sendSystemMessage(Component.literal("No bounty board within 6 blocks.").withStyle(ChatFormatting.RED));
             return;
         }
-        BlockPos bp = new BlockPos(best.x, best.y, best.z);
-        if (level.getBlockState(bp).is(Blocks.LECTERN)) {
-            level.setBlockAndUpdate(bp, Blocks.AIR.defaultBlockState());
-        }
-        AABB box = new AABB(bp).inflate(2.0);
-        for (ArmorStand s : level.getEntitiesOfClass(ArmorStand.class, box, e -> e.entityTags().contains(TAG))) {
-            s.discard();
+        AABB box = new AABB(new BlockPos(best.x, best.y, best.z)).inflate(2.0);
+        for (Entity e : level.getEntitiesOfClass(Entity.class, box, en -> en.entityTags().contains(TAG))) {
+            e.discard();
         }
         boards.remove(best);
         save();
