@@ -232,7 +232,7 @@ public class SkillTreeManager {
                 "minecraft:netherite_chestplate"});
 
         // Toolsmith: the same 10-tier Quest-Shard ladder, gating each tool tier.
-        addLaneNodes(t, "toolsmith", "Toolsmith", "minecraft:crafting_table", 10, FIVE_AND_FIVE,
+        addLaneNodes(t, "toolsmith", "Toolsmith", "minecraft:anvil", 10, FIVE_AND_FIVE,
                 TIER_COSTS,
                 flagEffects("craft_tool_hardwood", "craft_tool_copper", "craft_tool_gold",
                         "craft_tool_rose_gold", "craft_tool_iron", "craft_tool_steel",
@@ -276,6 +276,9 @@ public class SkillTreeManager {
                 new int[]{22}, new int[]{75},
                 new SkillEffect[][]{ { SkillEffect.status("minecraft:night_vision", 0) } },
                 new String[]{"Permanent Night Vision"});
+
+        // Recipes: a movable pseudo-lane (no nodes) that opens the custom-recipe book when clicked.
+        t.categories.add(new SkillCategory("recipes", "Recipes", "minecraft:crafting_table", 28));
 
         applyEconomy(t, economyP);
         return t;
