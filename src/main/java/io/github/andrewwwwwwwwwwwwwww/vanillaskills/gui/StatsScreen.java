@@ -33,6 +33,9 @@ public final class StatsScreen {
                 data.questShardsAvailable + " available",
                 "spend them at the bounty board shop")));
 
+        // Aquatic lane summary (what the player has unlocked in that lane).
+        items.add(aquaticSummary(player));
+
         // Attribute totals.
         add(items, player, Attributes.MAX_HEALTH, Items.APPLE, "Max Health");
         add(items, player, Attributes.ARMOR, Items.IRON_CHESTPLATE, "Armor");
@@ -44,6 +47,28 @@ public final class StatsScreen {
         add(items, player, Attributes.MINING_EFFICIENCY, Items.IRON_PICKAXE, "Mining Efficiency");
         add(items, player, Attributes.LUCK, Items.RABBIT_FOOT, "Luck");
         InfoMenu.open(player, styled("Your Stats", ChatFormatting.AQUA), 4, items);
+    }
+
+    /** Summarises how much of the Aquatic lane the player has unlocked: breaths, swim speed, mine speed. */
+    private static ItemStack aquaticSummary(ServerPlayer player) {
+        var tree = VanillaSkills.TREE.tree();
+        var data = VanillaSkills.PLAYERS.get(player.getUUID());
+        double breaths = 0, swim = 0, mine = 0;
+        for (io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillNode node : tree.nodesIn("aquatic")) {
+            if (!data.hasUnlocked(node.id)) continue;
+            for (io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillEffect e : node.effects) {
+                if (!"attribute".equals(e.type) || e.attribute == null) continue;
+                switch (e.attribute) {
+                    case "minecraft:oxygen_bonus" -> breaths += e.amount;
+                    case "minecraft:water_movement_efficiency" -> swim += e.amount;
+                    case "minecraft:submerged_mining_speed" -> mine += e.amount;
+                }
+            }
+        }
+        return info(Items.HEART_OF_THE_SEA, "Aquatic", ChatFormatting.AQUA, List.of(
+                "Breaths: +" + (int) Math.round(breaths),
+                "Swim Speed: +" + Math.round(swim * 100) + "%",
+                "Mine Speed: +" + Math.round(mine * 100) + "%"));
     }
 
     private static ItemStack info(Item icon, String label, ChatFormatting color, List<String> lore) {

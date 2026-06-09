@@ -188,6 +188,7 @@ public class VanillaSkills implements ModInitializer {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             SkillCommands.register(dispatcher);
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.command.HelpCommand.register(dispatcher);
             var questsNode = dispatcher.register(net.minecraft.commands.Commands.literal("quests")
                     .executes(ctx -> {
                         io.github.andrewwwwwwwwwwwwwww.vanillaskills.gui.QuestMenu.open(ctx.getSource().getPlayerOrException());
