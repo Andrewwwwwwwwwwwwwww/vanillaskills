@@ -1,5 +1,13 @@
 # VanillaSkills Changelog
 
+## [0.16.9] - 2026-06-09
+
+### Changed
+- **Guide book refresh** (`/skill guide`): rewritten to cover the current systems — the two currencies
+  (Skill Shards / Quest Shards), the bounty board + Quest Shop + converter, the noob window, the
+  Quest-Shard crafting ladders that gate every tier, the deepslate gate, the corrected Brewmaster cap
+  (+50%), and a pointer to the in-game Recipes book. Removed stale pages.
+
 ## [0.16.8] - 2026-06-09
 
 ### Added
