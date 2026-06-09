@@ -41,22 +41,29 @@ public class SkillTreeMenu extends ChestMenu {
     private final ServerPlayer player;
     private final SimpleContainer container;
     private final boolean editMode;
+    private final boolean layoutMode;   // lane-select: drag lane icons to rearrange them
     private final String category;   // null = lane-select view
     private String selected;         // node id picked up in edit mode
+    private String selectedCategory; // lane id picked up in layout mode
 
     public static void open(ServerPlayer player) {
-        openInternal(player, false, null);
+        openInternal(player, false, false, null);
     }
 
     public static void openEditor(ServerPlayer player) {
-        openInternal(player, true, null);
+        openInternal(player, true, false, null);
+    }
+
+    /** Open the lane-select screen in layout mode: click a lane to pick it up, click a spot to move/swap. */
+    public static void openLayout(ServerPlayer player) {
+        openInternal(player, false, true, null);
     }
 
     public static void openCategory(ServerPlayer player, String categoryId, boolean editMode) {
-        openInternal(player, editMode, categoryId);
+        openInternal(player, editMode, false, categoryId);
     }
 
-    private static void openInternal(ServerPlayer player, boolean editMode, String category) {
+    private static void openInternal(ServerPlayer player, boolean editMode, boolean layoutMode, String category) {
         SkillTree tree = VanillaSkills.TREE.tree();
         String base;
         if (category != null) {
@@ -65,16 +72,17 @@ public class SkillTreeMenu extends ChestMenu {
         } else {
             base = tree.title == null ? "Skills" : tree.title;
         }
-        Component title = Component.literal(editMode ? base + " (Edit Mode)" : base);
+        Component title = Component.literal(layoutMode ? base + " (Layout)" : editMode ? base + " (Edit Mode)" : base);
         player.openMenu(new SimpleMenuProvider(
-                (syncId, inv, p) -> new SkillTreeMenu(syncId, inv, (ServerPlayer) p, editMode, category), title));
+                (syncId, inv, p) -> new SkillTreeMenu(syncId, inv, (ServerPlayer) p, editMode, layoutMode, category), title));
     }
 
-    public SkillTreeMenu(int syncId, Inventory inv, ServerPlayer player, boolean editMode, String category) {
+    public SkillTreeMenu(int syncId, Inventory inv, ServerPlayer player, boolean editMode, boolean layoutMode, String category) {
         super(menuTypeFor(VanillaSkills.TREE.tree().rows), syncId, inv,
                 new SimpleContainer(VanillaSkills.TREE.tree().slotCount()), clampRows(VanillaSkills.TREE.tree().rows));
         this.player = player;
         this.editMode = editMode;
+        this.layoutMode = layoutMode;
         this.category = category;
         this.container = (SimpleContainer) getContainer();
         populate();
@@ -102,10 +110,13 @@ public class SkillTreeMenu extends ChestMenu {
         for (int i = 0; i < size; i++) container.setItem(i, ItemStack.EMPTY);
 
         if (category == null) {
+            if (!editMode && !layoutMode) decorateCategoryScreen();
             for (SkillCategory cat : tree.categories()) {
                 container.setItem(cat.slot, buildCategoryItem(cat, data));
             }
-            if (editMode) {
+            if (layoutMode) {
+                container.setItem(size - 1, layoutHelp());
+            } else if (editMode) {
                 container.setItem(size - 1, buildEditInfo(true));
             } else {
                 container.setItem(POINTS_SLOT, buildCounter(data));
@@ -127,15 +138,56 @@ public class SkillTreeMenu extends ChestMenu {
 
     // ---- lane select ----
 
+    /** Frames the lane-select screen into a "Skills (Skill Shards)" zone and a "Crafting (Quest Shards)" strip. */
+    private void decorateCategoryScreen() {
+        ItemStack pane = filler(net.minecraft.world.item.Items.LIGHT_GRAY_STAINED_GLASS_PANE);
+        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, pane.copy());
+        // Header.
+        container.setItem(4, header(net.minecraft.world.item.Items.NETHER_STAR, "✦ Skills ✦",
+                ChatFormatting.AQUA, "Paid with Skill Shards (advancements)"));
+        // Divider row (row 3, slots 27-35) separating skills from the crafting strip, with a centred label.
+        ItemStack divider = filler(net.minecraft.world.item.Items.PURPLE_STAINED_GLASS_PANE);
+        for (int s = 27; s <= 35; s++) container.setItem(s, divider.copy());
+        container.setItem(31, header(net.minecraft.world.item.Items.SMITHING_TABLE, "✦ Crafting ✦",
+                ChatFormatting.LIGHT_PURPLE, "Paid with Quest Shards (bounties)"));
+    }
+
+    private ItemStack filler(net.minecraft.world.item.Item item) {
+        ItemStack pane = new ItemStack(item);
+        pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
+        return pane;
+    }
+
+    private ItemStack header(net.minecraft.world.item.Item item, String name, ChatFormatting color, String sub) {
+        ItemStack stack = new ItemStack(item);
+        Guis.hideStats(stack);
+        stack.set(DataComponents.CUSTOM_NAME, styled(name, color));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(styled(sub, ChatFormatting.GRAY))));
+        return stack;
+    }
+
     private ItemStack buildCategoryItem(SkillCategory cat, PlayerSkillData data) {
         SkillTree tree = VanillaSkills.TREE.tree();
         int total = 0, unlocked = 0;
+        boolean quest = false;
         for (SkillNode node : tree.nodesIn(cat.id)) {
             total++;
             if (data.hasUnlocked(node.id)) unlocked++;
+            if (node.isQuestCurrency()) quest = true;
         }
         ItemStack stack = new ItemStack(resolveItem(cat.icon));
         Guis.hideStats(stack);
+        // Layout mode: every lane is draggable; show the picked-up one as "(moving)".
+        if (layoutMode) {
+            boolean moving = cat.id.equals(selectedCategory);
+            stack.set(DataComponents.CUSTOM_NAME, styled(cat.title + (moving ? " (moving)" : ""),
+                    moving ? ChatFormatting.GOLD : (quest ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.AQUA)));
+            stack.set(DataComponents.LORE, new ItemLore(List.of(
+                    styled(quest ? "Crafting (Quest Shards)" : "Skill (Skill Shards)", ChatFormatting.GRAY),
+                    styled(moving ? "Click a spot to place it" : "Click to pick up & move", ChatFormatting.YELLOW))));
+            if (moving) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+            return stack;
+        }
         // A locked lane (e.g. Night Vision) stays sealed until its earned-Shard gate is met — and we
         // deliberately don't reveal the requirement, so players can't bee-line to it.
         if (!editMode && isLaneLocked(cat, data)) {
@@ -143,9 +195,12 @@ public class SkillTreeMenu extends ChestMenu {
             stack.set(DataComponents.LORE, new ItemLore(List.of(styled("🔒 Locked", ChatFormatting.RED))));
             return stack;
         }
-        stack.set(DataComponents.CUSTOM_NAME, styled(cat.title, ChatFormatting.AQUA));
+        // Crafting lanes are tinted purple (Quest Shards); skill lanes stay aqua (Skill Shards).
+        ChatFormatting nameColor = quest ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.AQUA;
+        stack.set(DataComponents.CUSTOM_NAME, styled(cat.title, nameColor));
         stack.set(DataComponents.LORE, new ItemLore(List.of(
                 styled(unlocked + "/" + total + " unlocked", ChatFormatting.GRAY),
+                styled(quest ? "Quest Shards" : "Skill Shards", quest ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.AQUA),
                 styled(editMode ? "Click to edit this lane" : "Click to open", ChatFormatting.YELLOW))));
         if (total > 0 && unlocked == total) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         return stack;
@@ -329,13 +384,50 @@ public class SkillTreeMenu extends ChestMenu {
     public void clicked(int slotId, int button, ContainerInput input, Player clicker) {
         if (slotId >= 0 && slotId < container.getContainerSize() && clicker instanceof ServerPlayer sp) {
             if (category == null) {
-                if (handleLaneSelectClick(sp, slotId)) return;
+                if (layoutMode) handleLayoutClick(sp, slotId);
+                else if (handleLaneSelectClick(sp, slotId)) return;
             } else {
                 if (handleLaneViewClick(sp, slotId, button)) return;
             }
         }
         populate();
         sendAllDataToRemote();
+    }
+
+    /** Layout mode: pick up a lane, then click an empty spot to move it or another lane to swap. */
+    private void handleLayoutClick(ServerPlayer sp, int slotId) {
+        SkillTree tree = VanillaSkills.TREE.tree();
+        SkillCategory cat = tree.categoryAtSlot(slotId);
+        if (selectedCategory == null) {
+            if (cat != null) selectedCategory = cat.id; // pick up
+            return;
+        }
+        SkillCategory sel = tree.category(selectedCategory);
+        if (sel == null) { selectedCategory = null; return; }
+        if (cat != null && cat.id.equals(selectedCategory)) { selectedCategory = null; return; } // deselect
+        if (slotId == POINTS_SLOT || slotId == STATS_SLOT || slotId == container.getContainerSize() - 1) {
+            sp.sendSystemMessage(Component.literal("That spot is reserved (Points/Stats buttons).")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+        if (cat == null) {
+            sel.slot = slotId;                              // move to an empty spot
+        } else {
+            int tmp = sel.slot; sel.slot = cat.slot; cat.slot = tmp; // swap two lanes
+        }
+        VanillaSkills.TREE.touchAndSave();
+        selectedCategory = null;
+    }
+
+    private ItemStack layoutHelp() {
+        ItemStack stack = new ItemStack(Items.PAPER);
+        stack.set(DataComponents.CUSTOM_NAME, styled("Layout Mode", ChatFormatting.GOLD));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(
+                styled("Click a lane to pick it up,", ChatFormatting.GRAY),
+                styled("then click an empty spot to move it", ChatFormatting.GRAY),
+                styled("or another lane to swap them.", ChatFormatting.GRAY),
+                styled("Changes save automatically. Close when done.", ChatFormatting.DARK_GRAY))));
+        return stack;
     }
 
     /** @return true if a sub-screen was opened (this menu is being replaced). */
@@ -364,7 +456,7 @@ public class SkillTreeMenu extends ChestMenu {
 
     private boolean handleLaneViewClick(ServerPlayer sp, int slotId, int button) {
         if (slotId == BACK_SLOT) {
-            openInternal(sp, editMode, null);
+            openInternal(sp, editMode, false, null);
             return true;
         }
         if (!editMode && slotId == POINTS_SLOT) {
