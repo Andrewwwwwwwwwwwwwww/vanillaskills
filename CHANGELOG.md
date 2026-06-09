@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.16.11] - 2026-06-09
+
+### Changed
+- Recipe book: shifted the arrow and result one slot left so the recipe is centred with even (2-wide)
+  margins on both sides.
+
 ## [0.16.10] - 2026-06-09
 
 ### Added

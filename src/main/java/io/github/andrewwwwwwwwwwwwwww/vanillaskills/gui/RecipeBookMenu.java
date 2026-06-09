@@ -20,8 +20,8 @@ import java.util.List;
 /** A paginated book of the mod's custom crafting recipes — one 3x3 recipe per page. */
 public class RecipeBookMenu extends ChestMenu {
     private static final int[] GRID_SLOTS = {11, 12, 13, 20, 21, 22, 29, 30, 31};
-    private static final int ARROW_SLOT = 24;
-    private static final int RESULT_SLOT = 25;
+    private static final int ARROW_SLOT = 23;
+    private static final int RESULT_SLOT = 24;
     private static final int TITLE_SLOT = 4;
     private static final int BACK_SLOT = 45;
     private static final int PREV_SLOT = 48;
