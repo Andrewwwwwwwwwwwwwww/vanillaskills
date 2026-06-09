@@ -34,13 +34,36 @@ public class InfoMenu extends ChestMenu {
         super(menuTypeFor(rows), syncId, inv, new SimpleContainer(rows * 9), rows);
         this.player = player;
         this.container = (SimpleContainer) getContainer();
-        for (int i = 0; i < items.size() && i < container.getContainerSize() - 1; i++) {
-            container.setItem(i, items.get(i));
+
+        // Framed background.
+        ItemStack filler = filler();
+        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, filler.copy());
+
+        // Lay the content items in centered rows of up to 7, starting below the top border.
+        int perRow = 7;
+        int chunks = Math.max(1, (int) Math.ceil(items.size() / (double) perRow));
+        int startRow = Math.max(1, (rows - chunks) / 2); // vertically centered band
+        int idx = 0;
+        for (int c = 0; c < chunks && idx < items.size(); c++) {
+            int remaining = items.size() - idx;
+            int rowCount = Math.min(perRow, remaining);
+            int startCol = (9 - rowCount) / 2;
+            int row = Math.min(rows - 2, startRow + c);
+            for (int k = 0; k < rowCount; k++) {
+                container.setItem(row * 9 + startCol + k, items.get(idx++));
+            }
         }
+
         ItemStack back = new ItemStack(Items.ARROW);
         back.set(DataComponents.CUSTOM_NAME, Component.literal("Back")
                 .withStyle(ChatFormatting.YELLOW).withStyle(s -> s.withItalic(false)));
         container.setItem(container.getContainerSize() - 1, back);
+    }
+
+    private static ItemStack filler() {
+        ItemStack pane = new ItemStack(Items.LIGHT_GRAY_STAINED_GLASS_PANE);
+        pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
+        return pane;
     }
 
     private static MenuType<ChestMenu> menuTypeFor(int rows) {

@@ -14,7 +14,10 @@ import net.minecraft.world.level.storage.LevelResource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +29,7 @@ public class PlayerSkillManager {
 
     private final Map<UUID, PlayerSkillData> cache = new ConcurrentHashMap<>();
     private PointsConfig points = new PointsConfig();
+    private int totalEarnable = 0; // P = total points a completionist can earn (computed at start)
 
     public void setPointsConfig(PointsConfig points) {
         this.points = points;
@@ -119,7 +123,8 @@ public class PlayerSkillManager {
         PlayerSkillData data = get(player.getUUID());
         if (data.creditedAdvancements.contains(advancementId)) return;
 
-        int amount = points.pointsFor(advancementId);
+        AdvancementHolder holder = findHolder(advancementId);
+        int amount = holder != null ? points.pointsFor(holder) : points.perAdvancement;
         data.creditedAdvancements.add(advancementId);
         if (amount > 0) {
             data.grantPoints(amount);
@@ -138,24 +143,53 @@ public class PlayerSkillManager {
             if (points.ignoreRecipeAdvancements && isRecipe(id)) continue;
             if (data.creditedAdvancements.contains(id)) continue;
             if (player.getAdvancements().getOrStartProgress(holder).isDone()) {
-                int amount = points.pointsFor(id);
+                int amount = points.pointsFor(holder);
                 data.creditedAdvancements.add(id);
                 if (amount > 0) data.grantPoints(amount);
             }
         }
     }
 
+    /** Finds a loaded advancement by id string, or null. */
+    private static AdvancementHolder findHolder(String id) {
+        MinecraftServer server = VanillaSkills.server;
+        if (server == null) return null;
+        for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
+            if (holder.id().toString().equals(id)) return holder;
+        }
+        return null;
+    }
+
+    /** Total points a player can ever earn: starting bonus + every counted, non-recipe advancement. */
+    public int computeTotalEarnable() {
+        int total = points.startingPoints;
+        MinecraftServer server = VanillaSkills.server;
+        if (server != null) {
+            for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
+                String id = holder.id().toString();
+                if (!isCounted(id)) continue;
+                if (points.ignoreRecipeAdvancements && isRecipe(id)) continue;
+                total += points.pointsFor(holder);
+            }
+        }
+        totalEarnable = total;
+        VanillaSkills.LOGGER.info("Total earnable Skill Shards (P) = {}", total);
+        return total;
+    }
+
+    public int totalEarnable() {
+        return totalEarnable;
+    }
+
     /** Op command: wipe credited advancements and re-tally (e.g. after editing points.json). */
     public int recalc(ServerPlayer player) {
         PlayerSkillData data = get(player.getUUID());
         int before = data.pointsEarned;
+        int spent = data.pointsEarned - data.pointsAvailable; // points already spent on unlocks
         data.creditedAdvancements.clear();
-        // Re-tally fully from scratch for earned points; keep spent unlocks intact.
-        int earnedBefore = data.pointsEarned;
-        int availableBefore = data.pointsAvailable;
-        data.pointsEarned = 0;
-        // recompute earned from advancements
-        int spent = earnedBefore - availableBefore; // points already spent on unlocks
+        // Seed with the starting bonus so a player with no advancements keeps their 5 starting points,
+        // then re-tally earned from advancements; spent unlocks are preserved.
+        data.pointsEarned = points.startingPoints;
         tallyExistingAdvancements(player, data);
         data.pointsAvailable = Math.max(0, data.pointsEarned - spent);
         save(player.getUUID());
@@ -194,6 +228,11 @@ public class PlayerSkillManager {
                 return false;
             }
         }
+        if (node.minEarned > 0 && data.pointsEarned < node.minEarned) {
+            player.sendSystemMessage(Component.literal("Unlocks after earning " + node.minEarned
+                    + " Skill Shards (you've earned " + data.pointsEarned + ").").withStyle(ChatFormatting.RED));
+            return false;
+        }
         if (data.pointsAvailable < node.cost) {
             player.sendSystemMessage(Component.literal("Not enough Skill Shards (need " + node.cost + ").")
                     .withStyle(ChatFormatting.RED));
@@ -208,6 +247,112 @@ public class PlayerSkillManager {
         save(player.getUUID());
         player.sendSystemMessage(Component.literal("Unlocked " + node.title + "!").withStyle(ChatFormatting.GREEN));
         return true;
+    }
+
+    /** Buy a node AND every locked prerequisite below it in one go, if the player can afford the whole chain. */
+    public boolean unlockChain(ServerPlayer player, String nodeId) {
+        SkillTree tree = VanillaSkills.TREE.tree();
+        SkillNode target = tree.byId(nodeId);
+        if (target == null) {
+            player.sendSystemMessage(Component.literal("That skill no longer exists.").withStyle(ChatFormatting.RED));
+            return false;
+        }
+        PlayerSkillData data = get(player.getUUID());
+        if (data.hasUnlocked(nodeId)) return false;
+
+        LinkedHashSet<String> chain = new LinkedHashSet<>();
+        if (!resolveChain(tree, data, nodeId, chain, new HashSet<>())) {
+            player.sendSystemMessage(Component.literal("This skill's requirements can't be resolved.").withStyle(ChatFormatting.RED));
+            return false;
+        }
+        int total = 0, maxGate = 0;
+        for (String id : chain) {
+            SkillNode n = tree.byId(id);
+            if (n == null) continue;
+            total += n.cost;
+            maxGate = Math.max(maxGate, n.minEarned);
+        }
+        if (maxGate > 0 && data.pointsEarned < maxGate) {
+            player.sendSystemMessage(Component.literal("Unlocks after earning " + maxGate
+                    + " Skill Shards (you've earned " + data.pointsEarned + ").").withStyle(ChatFormatting.RED));
+            return false;
+        }
+        if (data.pointsAvailable < total) {
+            player.sendSystemMessage(Component.literal("Not enough Skill Shards (need " + total + " for the chain).")
+                    .withStyle(ChatFormatting.RED));
+            return false;
+        }
+        for (String id : chain) {
+            SkillNode n = tree.byId(id);
+            if (n == null || data.hasUnlocked(id)) continue;
+            data.pointsAvailable -= n.cost;
+            data.unlocked.add(id);
+            SkillEffects.applyNode(player, n);
+            checkPathAdvancement(player, n, data);
+        }
+        checkCompletionist(player, data);
+        save(player.getUUID());
+        int count = chain.size();
+        player.sendSystemMessage(Component.literal("Unlocked " + count + " skill" + (count == 1 ? "" : "s")
+                + " for " + total + " Skill Shards.").withStyle(ChatFormatting.GREEN));
+        return true;
+    }
+
+    /** Refund a node and every unlocked node that depends on it (cascade), returning all their Shards. */
+    public boolean refundChain(ServerPlayer player, String nodeId) {
+        SkillTree tree = VanillaSkills.TREE.tree();
+        SkillNode target = tree.byId(nodeId);
+        if (target == null) return false;
+        if (SkillTree.ROOT_ID.equals(nodeId)) {
+            player.sendSystemMessage(Component.literal("The base node can't be refunded.").withStyle(ChatFormatting.RED));
+            return false;
+        }
+        PlayerSkillData data = get(player.getUUID());
+        if (!data.hasUnlocked(nodeId)) return false;
+
+        Set<String> remove = new LinkedHashSet<>();
+        for (String uid : data.unlocked) {
+            if (uid.equals(nodeId) || dependsOn(tree, uid, nodeId, new HashSet<>())) remove.add(uid);
+        }
+        int refunded = 0;
+        for (String id : remove) {
+            SkillNode n = tree.byId(id);
+            if (n == null) continue;
+            SkillEffects.removeNode(player, n);
+            data.unlocked.remove(id);
+            data.pointsAvailable += n.cost;
+            refunded += n.cost;
+        }
+        save(player.getUUID());
+        int count = remove.size();
+        player.sendSystemMessage(Component.literal("Refunded " + count + " skill" + (count == 1 ? "" : "s")
+                + " for " + refunded + " Skill Shards.").withStyle(ChatFormatting.YELLOW));
+        return true;
+    }
+
+    /** DFS that adds {@code nodeId}'s locked prerequisites (prereqs first) then the node itself to {@code chain}. */
+    private static boolean resolveChain(SkillTree tree, PlayerSkillData data, String nodeId,
+                                        LinkedHashSet<String> chain, Set<String> visiting) {
+        if (data.hasUnlocked(nodeId) || chain.contains(nodeId)) return true;
+        if (!visiting.add(nodeId)) return false; // cycle
+        SkillNode n = tree.byId(nodeId);
+        if (n == null) return false;
+        for (String req : n.requires) {
+            if (!resolveChain(tree, data, req, chain, visiting)) return false;
+        }
+        chain.add(nodeId);
+        visiting.remove(nodeId);
+        return true;
+    }
+
+    /** True if {@code nodeId} (transitively) requires {@code targetId}. */
+    private static boolean dependsOn(SkillTree tree, String nodeId, String targetId, Set<String> seen) {
+        SkillNode n = tree.byId(nodeId);
+        if (n == null || !seen.add(nodeId)) return false;
+        for (String req : n.requires) {
+            if (req.equals(targetId) || dependsOn(tree, req, targetId, seen)) return true;
+        }
+        return false;
     }
 
     /** Grants the "Specialist" advancement when the player has fully unlocked a lane. */

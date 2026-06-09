@@ -12,6 +12,7 @@ public class SkillNode {
     public List<String> description = new ArrayList<>();
     public String icon = "minecraft:stone";
     public int cost = 1;
+    public int minEarned = 0;  // requires this many lifetime-earned Skill Shards before it can be unlocked
     public List<String> requires = new ArrayList<>();
     public String category;   // which lane this node belongs to (null -> default lane)
     public int slot;          // position within its lane's view

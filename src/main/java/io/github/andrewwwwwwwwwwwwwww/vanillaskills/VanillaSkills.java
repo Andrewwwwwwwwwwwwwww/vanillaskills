@@ -96,6 +96,9 @@ public class VanillaSkills implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(srv -> {
             server = srv;
             PLAYERS.setPointsConfig(PointsConfig.load());
+            // Compute total earnable points (P) before building the tree so the default tree can be
+            // priced against it (whole tree = P, Night Vision gated at P/3).
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillTreeManager.economyP = PLAYERS.computeTotalEarnable();
             TREE.load();
             QUESTS.load();
             BOARDS.load();
@@ -135,6 +138,10 @@ public class VanillaSkills implements ModInitializer {
                 level.addFreshEntity(drop);
             }
         });
+
+        // Deepslate gate: only a Steel-tier-or-better pickaxe can break deepslate & its ores.
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) ->
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.DeepslateGate.canBreak(player, state));
 
         // Cultivator skill: chance for bonus crops when harvesting a mature crop.
         net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {

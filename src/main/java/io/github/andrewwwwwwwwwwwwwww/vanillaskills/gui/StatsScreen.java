@@ -1,5 +1,6 @@
 package io.github.andrewwwwwwwwwwwwwww.vanillaskills.gui;
 
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -21,6 +22,18 @@ public final class StatsScreen {
 
     public static void open(ServerPlayer player) {
         List<ItemStack> items = new ArrayList<>();
+
+        // Currencies & progression first.
+        var data = VanillaSkills.PLAYERS.get(player.getUUID());
+        int total = VanillaSkills.PLAYERS.totalEarnable();
+        items.add(info(Items.EXPERIENCE_BOTTLE, "Skill Shards", ChatFormatting.AQUA, List.of(
+                data.pointsAvailable + " available",
+                "earned " + data.pointsEarned + (total > 0 ? " of ~" + total + " possible" : ""))));
+        items.add(info(Items.AMETHYST_SHARD, "Quest Shards", ChatFormatting.LIGHT_PURPLE, List.of(
+                data.questShardsAvailable + " available",
+                "spend them at the bounty board shop")));
+
+        // Attribute totals.
         add(items, player, Attributes.MAX_HEALTH, Items.APPLE, "Max Health");
         add(items, player, Attributes.ARMOR, Items.IRON_CHESTPLATE, "Armor");
         add(items, player, Attributes.ARMOR_TOUGHNESS, Items.DIAMOND_CHESTPLATE, "Armor Toughness");
@@ -30,7 +43,16 @@ public final class StatsScreen {
         add(items, player, Attributes.MOVEMENT_SPEED, Items.FEATHER, "Movement Speed");
         add(items, player, Attributes.MINING_EFFICIENCY, Items.IRON_PICKAXE, "Mining Efficiency");
         add(items, player, Attributes.LUCK, Items.RABBIT_FOOT, "Luck");
-        InfoMenu.open(player, styled("Your Stats", ChatFormatting.AQUA), 3, items);
+        InfoMenu.open(player, styled("Your Stats", ChatFormatting.AQUA), 4, items);
+    }
+
+    private static ItemStack info(Item icon, String label, ChatFormatting color, List<String> lore) {
+        ItemStack stack = new ItemStack(icon);
+        stack.set(DataComponents.CUSTOM_NAME, styled(label, color));
+        List<Component> lines = new ArrayList<>();
+        for (String l : lore) lines.add(styled(l, ChatFormatting.GRAY));
+        stack.set(DataComponents.LORE, new ItemLore(lines));
+        return stack;
     }
 
     private static void add(List<ItemStack> items, ServerPlayer player, Holder<Attribute> attribute, Item icon, String label) {
