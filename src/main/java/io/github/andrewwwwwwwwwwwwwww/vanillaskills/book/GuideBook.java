@@ -28,7 +28,7 @@ public final class GuideBook {
 
             A server-side progression overhaul.
 
-            Use /skill to open your skill tree. Earn skill points by completing advancements.
+            Use /skill to open your skill tree. Earn Skill Shards by completing advancements.
 
             Turn the page for features & crafting.""",
 
@@ -36,7 +36,7 @@ public final class GuideBook {
             Skill Tree
 
             /skill - open the tree
-            /skill points - your points
+            /skill points - your Skill & Quest Shards
 
             Click a node to unlock it if you can afford it and meet its requirements.
 
