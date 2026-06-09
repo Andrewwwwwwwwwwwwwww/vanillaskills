@@ -106,8 +106,10 @@ public class QuestMenu extends ChestMenu {
         stack.set(DataComponents.CUSTOM_NAME, styled(q.title() + (claimed ? " ✔" : ""), nameColor));
 
         List<Component> lore = new ArrayList<>();
-        String verb = q.type() == Quest.Type.KILL ? "Slain" : "Gathered";
-        lore.add(styled(verb + ": " + progress + "/" + q.amount(), ChatFormatting.GRAY));
+        if (q.type() != Quest.Type.FREEBIE) {
+            String verb = q.type() == Quest.Type.KILL ? "Slain" : "Gathered";
+            lore.add(styled(verb + ": " + progress + "/" + q.amount(), ChatFormatting.GRAY));
+        }
         lore.add(styled("Reward: +" + q.reward() + " Quest Shard" + (q.reward() == 1 ? "" : "s"), ChatFormatting.LIGHT_PURPLE));
         lore.add(Component.literal(""));
         if (claimed) {
@@ -123,6 +125,7 @@ public class QuestMenu extends ChestMenu {
     }
 
     private static net.minecraft.world.item.Item iconFor(Quest q) {
+        if (q.type() == Quest.Type.FREEBIE) return Items.EMERALD;
         if (q.type() == Quest.Type.GATHER) return Quests.item(q.target());
         if (q.target().equals(Quest.ANY_HOSTILE)) return Items.IRON_SWORD;
         net.minecraft.world.item.Item egg = Quests.item(q.target() + "_spawn_egg");

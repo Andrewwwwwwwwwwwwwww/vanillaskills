@@ -65,6 +65,7 @@ public final class Quests {
     public static int progress(ServerPlayer player, int index) {
         Quest q = VanillaSkills.QUESTS.active(index);
         if (q == null) return 0;
+        if (q.type() == Quest.Type.FREEBIE) return q.amount(); // always ready
         if (q.type() == Quest.Type.KILL) {
             return Math.min(q.amount(), VanillaSkills.PLAYERS.get(player.getUUID()).questKills.getOrDefault(index, 0));
         }
@@ -87,7 +88,7 @@ public final class Quests {
                 player.sendSystemMessage(Component.literal("Not done yet: " + cur + "/" + q.amount()).withStyle(ChatFormatting.RED));
                 return;
             }
-        } else {
+        } else if (q.type() == Quest.Type.GATHER) {
             int have = countItem(player, q.target());
             if (have < q.amount()) {
                 player.sendSystemMessage(Component.literal("You need " + (q.amount() - have) + " more.").withStyle(ChatFormatting.RED));
@@ -95,6 +96,7 @@ public final class Quests {
             }
             removeItem(player, q.target(), q.amount());
         }
+        // FREEBIE: nothing to verify or consume — just claim it.
         data.questClaimed.add(index);
         VanillaSkills.PLAYERS.addQuestShards(player, q.reward());
         player.sendSystemMessage(Component.literal("Bounty complete: " + q.title() + "  +" + q.reward()

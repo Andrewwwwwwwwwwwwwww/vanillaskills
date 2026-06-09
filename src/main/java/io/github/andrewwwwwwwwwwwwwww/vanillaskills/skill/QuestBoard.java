@@ -22,6 +22,10 @@ public class QuestBoard {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final long INTERVAL_MS = 5L * 60 * 60 * 1000; // 5 hours
     private static final int ACTIVE_COUNT = 3;
+    /** Early-game "noob" window: lategame quests stay hidden until this much active server time. */
+    private static final long NOOB_THRESHOLD_MS = 150L * 60 * 60 * 1000; // 150 hours
+    /** Active time added each tick() call (called every 200 ticks = ~10s of server uptime). */
+    private static final long TICK_PERIOD_MS = 10_000;
     private final Random random = new Random();
 
     private State state = new State();
@@ -30,7 +34,23 @@ public class QuestBoard {
     private static class State {
         long rotationId = 0;
         long nextRotationMs = 0;
+        long activeMs = 0;            // cumulative server-active time (for the noob window)
         int[] activeIndices = new int[0];
+    }
+
+    /** True while the server is still in its early-game window (lategame quests hidden). */
+    public boolean isNoob() {
+        return state.activeMs < NOOB_THRESHOLD_MS;
+    }
+
+    public long noobRemainingMs() {
+        return Math.max(0, NOOB_THRESHOLD_MS - state.activeMs);
+    }
+
+    /** Reset the noob timer back to 0 (op) — re-enters the early-game window. */
+    public void resetNoobTimer() {
+        state.activeMs = 0;
+        save();
     }
 
     public long rotationId() {
@@ -72,10 +92,17 @@ public class QuestBoard {
     }
 
     public void tick(MinecraftServer server) {
+        long before = state.activeMs;
+        state.activeMs += TICK_PERIOD_MS; // accrue server-active time toward leaving the noob window
+        boolean leftNoob = before < NOOB_THRESHOLD_MS && state.activeMs >= NOOB_THRESHOLD_MS;
         if (System.currentTimeMillis() >= state.nextRotationMs) {
             reroll(System.currentTimeMillis());
             server.getPlayerList().getPlayers().forEach(p -> p.sendSystemMessage(Component.literal(
                     "New bounties are available! Use /quests").withStyle(ChatFormatting.GOLD)));
+        } else if (leftNoob) {
+            // The early-game window just ended — reroll so the harder quests can appear.
+            reroll(System.currentTimeMillis());
+            save();
         }
     }
 
@@ -92,11 +119,29 @@ public class QuestBoard {
     }
 
     private int[] pickDistinct(int count) {
-        List<Integer> idx = new ArrayList<>();
-        for (int i = 0; i < QuestPool.ALL.size(); i++) idx.add(i);
-        java.util.Collections.shuffle(idx, random);
-        int[] out = new int[Math.min(count, idx.size())];
-        for (int i = 0; i < out.length; i++) out[i] = idx.get(i);
+        boolean noob = isNoob();
+        // Candidate pool: drop lategame quests while in the noob window.
+        List<Integer> pool = new ArrayList<>();
+        for (int i = 0; i < QuestPool.ALL.size(); i++) {
+            if (noob && QuestPool.ALL.get(i).lategame()) continue;
+            pool.add(i);
+        }
+        // Weighted distinct sampling (rarer quests like the freebie have lower weight).
+        List<Integer> chosen = new ArrayList<>();
+        int n = Math.min(count, pool.size());
+        for (int k = 0; k < n; k++) {
+            int total = 0;
+            for (int idx : pool) total += Math.max(1, QuestPool.ALL.get(idx).weight());
+            int r = random.nextInt(total);
+            int removeAt = pool.size() - 1;
+            for (int j = 0; j < pool.size(); j++) {
+                r -= Math.max(1, QuestPool.ALL.get(pool.get(j)).weight());
+                if (r < 0) { removeAt = j; break; }
+            }
+            chosen.add(pool.remove(removeAt));
+        }
+        int[] out = new int[chosen.size()];
+        for (int i = 0; i < out.length; i++) out[i] = chosen.get(i);
         return out;
     }
 

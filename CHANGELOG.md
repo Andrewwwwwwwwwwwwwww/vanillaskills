@@ -1,5 +1,17 @@
 # VanillaSkills Changelog
 
+## [0.16.3] - 2026-06-09
+
+### Added
+- **Freebie quest:** a rare "Daily Bonus" bounty worth **3 Quest Shards**, claimable instantly. The
+  board now supports per-quest **weighting**, and the freebie is weighted to appear less often.
+- **Early-game "noob" window:** for the first **150 hours of cumulative server-active time**, the
+  harder quests stay hidden from the board — **Ender Pearls, Emeralds, Endermen, Blazes, Piglins,
+  Witches, Drowned** (Diamonds stay available so players can still farm/sell them). After 150h the
+  full pool unlocks (the board rerolls automatically when the window ends).
+- **`/quests noobtimer`** shows time left in the early-game window; **`/quests noobtimer reset`** (op)
+  resets it back to the full 150 hours and rerolls.
+
 ## [0.16.2] - 2026-06-09
 
 ### Added (Phase 3 — Quest-Shard crafting ladders)

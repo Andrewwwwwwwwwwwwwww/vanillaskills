@@ -212,7 +212,26 @@ public class VanillaSkills implements ModInitializer {
                                 ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
                                         "Bounties re-rolled."), true);
                                 return 1;
-                            })));
+                            }))
+                    .then(net.minecraft.commands.Commands.literal("noobtimer")
+                            .executes(ctx -> {
+                                long rem = QUESTS.noobRemainingMs();
+                                String msg = QUESTS.isNoob()
+                                        ? "Early-game window: " + (rem / 3_600_000) + "h " + (rem % 3_600_000 / 60_000)
+                                                + "m left (harder quests still hidden)."
+                                        : "Early-game window has ended — all quests are available.";
+                                ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(msg), false);
+                                return 1;
+                            })
+                            .then(net.minecraft.commands.Commands.literal("reset")
+                                    .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                                    .executes(ctx -> {
+                                        QUESTS.resetNoobTimer();
+                                        QUESTS.forceReroll();
+                                        ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                                "Bounty board reset to the 150-hour early-game window."), true);
+                                        return 1;
+                                    }))));
             dispatcher.register(net.minecraft.commands.Commands.literal("bounty").redirect(questsNode));
         });
     }
