@@ -181,6 +181,38 @@ public class PlayerSkillManager {
         return totalEarnable;
     }
 
+    /** Total Skill Shards obtainable from our own (vanillaskills:) advancements. */
+    public int customAdvancementTotal() {
+        int total = 0;
+        MinecraftServer server = VanillaSkills.server;
+        if (server != null) {
+            for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
+                String id = holder.id().toString();
+                if (!id.startsWith("vanillaskills:")) continue;
+                if (points.ignoreRecipeAdvancements && isRecipe(id)) continue;
+                total += points.pointsFor(holder);
+            }
+        }
+        return total;
+    }
+
+    /** Total Skill Shards a left-click on this node would charge (it buys the node + locked prereqs). */
+    public int chainCost(ServerPlayer player, String nodeId) {
+        SkillTree tree = VanillaSkills.TREE.tree();
+        PlayerSkillData data = get(player.getUUID());
+        LinkedHashSet<String> chain = new LinkedHashSet<>();
+        if (!resolveChain(tree, data, nodeId, chain, new HashSet<>())) {
+            SkillNode n = tree.byId(nodeId);
+            return n != null ? n.cost : 0;
+        }
+        int total = 0;
+        for (String id : chain) {
+            SkillNode n = tree.byId(id);
+            if (n != null) total += n.cost;
+        }
+        return total;
+    }
+
     /** Op command: wipe credited advancements and re-tally (e.g. after editing points.json). */
     public int recalc(ServerPlayer player) {
         PlayerSkillData data = get(player.getUUID());

@@ -135,12 +135,28 @@ public class SkillTreeMenu extends ChestMenu {
             if (data.hasUnlocked(node.id)) unlocked++;
         }
         ItemStack stack = new ItemStack(resolveItem(cat.icon));
+        Guis.hideStats(stack);
+        // A locked lane (e.g. Night Vision) stays sealed until its earned-Shard gate is met — and we
+        // deliberately don't reveal the requirement, so players can't bee-line to it.
+        if (!editMode && isLaneLocked(cat, data)) {
+            stack.set(DataComponents.CUSTOM_NAME, styled(cat.title, ChatFormatting.DARK_GRAY));
+            stack.set(DataComponents.LORE, new ItemLore(List.of(styled("🔒 Locked", ChatFormatting.RED))));
+            return stack;
+        }
         stack.set(DataComponents.CUSTOM_NAME, styled(cat.title, ChatFormatting.AQUA));
         stack.set(DataComponents.LORE, new ItemLore(List.of(
                 styled(unlocked + "/" + total + " unlocked", ChatFormatting.GRAY),
                 styled(editMode ? "Click to edit this lane" : "Click to open", ChatFormatting.YELLOW))));
         if (total > 0 && unlocked == total) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         return stack;
+    }
+
+    /** True if any node in this lane is still gated behind an earned-Shard requirement the player hasn't met. */
+    private static boolean isLaneLocked(SkillCategory cat, PlayerSkillData data) {
+        for (SkillNode node : VanillaSkills.TREE.tree().nodesIn(cat.id)) {
+            if (node.minEarned > 0 && data.pointsEarned < node.minEarned) return true;
+        }
+        return false;
     }
 
     // ---- lane view (nodes) ----
@@ -150,13 +166,17 @@ public class SkillTreeMenu extends ChestMenu {
         boolean prereqMet = node.requires.stream().allMatch(data::hasUnlocked);
         boolean affordable = data.pointsAvailable >= node.cost;
 
-        ItemStack stack = new ItemStack(resolveItem(node.icon));
-        ChatFormatting nameColor = unlocked ? ChatFormatting.GREEN
-                : !prereqMet ? ChatFormatting.RED
-                : affordable ? ChatFormatting.YELLOW : ChatFormatting.GRAY;
-        stack.set(DataComponents.CUSTOM_NAME, styled(node.title + (unlocked ? " ✔" : ""), nameColor));
-
         boolean gated = node.minEarned > 0 && data.pointsEarned < node.minEarned;
+        int chain = VanillaSkills.PLAYERS.chainCost(player, node.id); // total a left-click would charge
+        boolean affordableChain = data.pointsAvailable >= chain;
+
+        ItemStack stack = new ItemStack(resolveItem(node.icon));
+        Guis.hideStats(stack);
+        ChatFormatting nameColor = unlocked ? ChatFormatting.GREEN
+                : gated ? ChatFormatting.DARK_GRAY
+                : !prereqMet ? ChatFormatting.GRAY
+                : affordable ? ChatFormatting.YELLOW : ChatFormatting.RED;
+        stack.set(DataComponents.CUSTOM_NAME, styled(node.title + (unlocked ? " ✔" : ""), nameColor));
 
         List<Component> lore = new ArrayList<>();
         for (String line : node.description) lore.add(styled(line, ChatFormatting.GRAY));
@@ -164,18 +184,13 @@ public class SkillTreeMenu extends ChestMenu {
         if (unlocked) {
             lore.add(styled("Unlocked", ChatFormatting.GREEN));
             lore.add(styled("Right-click: refund (+ skills above it)", ChatFormatting.DARK_GRAY));
-        } else if (node.minEarned > 0) {
-            lore.add(styled("Cost " + node.cost, ChatFormatting.YELLOW));
-            lore.add(gated
-                    ? styled("Locked: earn " + node.minEarned + " Skill Shards first (" + data.pointsEarned + "/" + node.minEarned + ")", ChatFormatting.RED)
-                    : styled("Left-click to unlock", ChatFormatting.GREEN));
-        } else if (!prereqMet) {
-            lore.add(styled("Left-click: buy this + the skills below it", ChatFormatting.GRAY));
-            lore.add(styled("Cost to here: " + node.cost + " (this node)", ChatFormatting.DARK_GRAY));
-        } else if (affordable) {
-            lore.add(styled("Left-click to unlock — cost " + node.cost, ChatFormatting.YELLOW));
+        } else if (gated) {
+            lore.add(styled("🔒 Locked", ChatFormatting.RED)); // requirement intentionally hidden
         } else {
-            lore.add(styled("Cost " + node.cost + " (need more Skill Shards)", ChatFormatting.RED));
+            lore.add(styled("Cost: " + chain, affordableChain ? ChatFormatting.YELLOW : ChatFormatting.RED));
+            if (!prereqMet) lore.add(styled("Buys this + the skills below it", ChatFormatting.DARK_GRAY));
+            else lore.add(styled("Left-click to unlock", ChatFormatting.DARK_GRAY));
+            if (!affordableChain) lore.add(styled("Not enough Skill Shards", ChatFormatting.RED));
         }
         stack.set(DataComponents.LORE, new ItemLore(lore));
         if (unlocked) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
@@ -185,6 +200,7 @@ public class SkillTreeMenu extends ChestMenu {
     private ItemStack buildEditItem(SkillNode node) {
         boolean isSelected = node.id.equals(selected);
         ItemStack stack = new ItemStack(resolveItem(node.icon));
+        Guis.hideStats(stack);
         stack.set(DataComponents.CUSTOM_NAME,
                 styled(node.title + (isSelected ? " (moving)" : ""), isSelected ? ChatFormatting.GOLD : ChatFormatting.AQUA));
         List<Component> lore = new ArrayList<>();
@@ -330,6 +346,11 @@ public class SkillTreeMenu extends ChestMenu {
         }
         SkillCategory cat = VanillaSkills.TREE.tree().categoryAtSlot(slotId);
         if (cat != null) {
+            if (!editMode && isLaneLocked(cat, VanillaSkills.PLAYERS.get(sp.getUUID()))) {
+                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("🔒 That path is still locked.")
+                        .withStyle(ChatFormatting.RED));
+                return false;
+            }
             openCategory(sp, cat.id, editMode);
             return true;
         }

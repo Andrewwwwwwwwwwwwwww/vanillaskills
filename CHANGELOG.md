@@ -1,5 +1,24 @@
 # VanillaSkills Changelog
 
+## [0.16.0] - 2026-06-09
+
+### Changed
+- **Bounty board:** removed the Nether Star and the background panel — it's now just clean floating
+  text, with an added **"or use /quests"** line under the right-click prompt.
+- **Cleaner GUI tooltips:** skill-tree lane/node icons and the info screens no longer show the icon
+  item's intrinsic stats (e.g. "+6 armor"); only the custom name + description show.
+- **Skill node tooltip:** now says **"Cost: X"** where X is the **actual total a click will charge**
+  (the node plus any locked prerequisites below it), instead of the misleading "Cost to here".
+- **Night Vision** lane is now **sealed on the home screen** ("🔒 Locked", can't be opened) until its
+  earned-Shard gate is met — and the requirement number is **hidden**, so players can't bee-line to it.
+- **Earning Skill Shards screen:** the goals entry now shows the **total Shards from VanillaSkills'
+  own advancements**, and the old "recipe unlocks" entry is replaced with a **Daily Bounties** entry
+  pointing at the board → Quest Shards → conversion.
+- **Aquatic** lane reordered so the **three breath nodes come first**.
+
+### Added
+- Op commands **`/skill points <player> reset`** and **`/skill questshards <player> reset`** (set to 0).
+
 ## [0.15.3] - 2026-06-08
 
 ### Changed

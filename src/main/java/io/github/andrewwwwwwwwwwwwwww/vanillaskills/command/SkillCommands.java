@@ -55,7 +55,9 @@ public final class SkillCommands {
                                         .executes(ctx -> adjustPoints(ctx, true))))
                         .then(Commands.literal("set")
                                 .then(Commands.argument("amount", IntegerArgumentType.integer(0))
-                                        .executes(ctx -> adjustPoints(ctx, false))))));
+                                        .executes(ctx -> adjustPoints(ctx, false))))
+                        .then(Commands.literal("reset")
+                                .executes(ctx -> resetPoints(ctx, false)))));
 
         root.then(Commands.literal("questshards")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -65,7 +67,9 @@ public final class SkillCommands {
                                         .executes(ctx -> adjustQuestShards(ctx, true))))
                         .then(Commands.literal("set")
                                 .then(Commands.argument("amount", IntegerArgumentType.integer(0))
-                                        .executes(ctx -> adjustQuestShards(ctx, false))))));
+                                        .executes(ctx -> adjustQuestShards(ctx, false))))
+                        .then(Commands.literal("reset")
+                                .executes(ctx -> resetPoints(ctx, true)))));
 
         root.then(Commands.literal("reset")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -139,6 +143,16 @@ public final class SkillCommands {
         PlayerSkillData data = VanillaSkills.PLAYERS.get(target.getUUID());
         ctx.getSource().sendSuccess(() -> Component.literal(
                 target.getName().getString() + " now has " + data.questShardsAvailable + " Quest Shards."), true);
+        return 1;
+    }
+
+    private static int resetPoints(CommandContext<CommandSourceStack> ctx, boolean quest) throws CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+        if (quest) VanillaSkills.PLAYERS.setQuestShards(target, 0);
+        else VanillaSkills.PLAYERS.setPoints(target, 0);
+        String which = quest ? "Quest Shards" : "Skill Shards";
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                target.getName().getString() + "'s " + which + " reset to 0."), true);
         return 1;
     }
 
