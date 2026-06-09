@@ -214,23 +214,24 @@ public class VanillaSkills implements ModInitializer {
                                         "Bounties re-rolled."), true);
                                 return 1;
                             }))
-                    .then(net.minecraft.commands.Commands.literal("noobtimer")
-                            .executes(ctx -> {
-                                long rem = QUESTS.noobRemainingMs();
-                                String msg = QUESTS.isNoob()
-                                        ? "Early-game window: " + (rem / 3_600_000) + "h " + (rem % 3_600_000 / 60_000)
-                                                + "m left (harder quests still hidden)."
-                                        : "Early-game window has ended — all quests are available.";
-                                ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(msg), false);
-                                return 1;
-                            })
-                            .then(net.minecraft.commands.Commands.literal("reset")
-                                    .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                    .then(net.minecraft.commands.Commands.literal("graduate")
+                            .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                            .then(net.minecraft.commands.Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
                                     .executes(ctx -> {
-                                        QUESTS.resetNoobTimer();
-                                        QUESTS.forceReroll();
+                                        ServerPlayer t = net.minecraft.commands.arguments.EntityArgument.getPlayer(ctx, "player");
+                                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Quests.forceGraduate(t);
                                         ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
-                                                "Bounty board reset to the 150-hour early-game window."), true);
+                                                t.getName().getString() + " graduated to the main bounty board."), true);
+                                        return 1;
+                                    })))
+                    .then(net.minecraft.commands.Commands.literal("starter")
+                            .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                            .then(net.minecraft.commands.Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
+                                    .executes(ctx -> {
+                                        ServerPlayer t = net.minecraft.commands.arguments.EntityArgument.getPlayer(ctx, "player");
+                                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Quests.resetToStarter(t);
+                                        ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                                t.getName().getString() + " sent back to the starter board."), true);
                                         return 1;
                                     }))));
             dispatcher.register(net.minecraft.commands.Commands.literal("bounty").redirect(questsNode));
