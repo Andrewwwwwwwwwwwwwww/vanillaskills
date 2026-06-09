@@ -42,10 +42,11 @@ public class BountyBoards {
     public static final String TAG = "vanillaskills_board";
     private static final double REMOVE_RANGE_SQR = 36.0; // 6 blocks
 
-    private static final float SCALE = 1.5f;             // text size
+    private static final float SCALE = 1.0f;             // text size
+    private static final float STAR_SCALE = 0.9f;         // Nether Star size
     private static final int BG_COLOR = 0xB0000000;       // semi-transparent dark panel
     private static final int LINE_WIDTH = 220;
-    private static final double STAR_Y = 1.9;             // Nether Star height above the anchor
+    private static final double STAR_Y = 1.6;             // Nether Star height above the anchor
     private static final long SPIN_PERIOD = 80L;          // ticks per full Nether Star spin
     public static final int SPIN_INTERVAL = 10;           // ticks between spin updates
 
@@ -168,7 +169,7 @@ public class BountyBoards {
 
     private static Transformation spinAt(float angle) {
         return new Transformation(new Vector3f(0f, 0f, 0f),
-                new Quaternionf().rotateY(angle), new Vector3f(0.55f, 0.55f, 0.55f), new Quaternionf());
+                new Quaternionf().rotateY(angle), new Vector3f(STAR_SCALE, STAR_SCALE, STAR_SCALE), new Quaternionf());
     }
 
     private static ServerLevel levelFor(MinecraftServer server, String dim) {
