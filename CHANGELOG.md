@@ -1,5 +1,16 @@
 # VanillaSkills Changelog
 
+## [0.14.2] - 2026-06-08
+
+### Changed
+- **All set-bonus armor now shows a live "what you're missing" checklist when worn**, matching Rose
+  Gold. While wearing any piece of the **Crystalline** or **Dragon** set, the tooltip shows the set
+  count (n/4), a +/- list of which slots are filled, and whether the bonus is active — so you can see
+  what you still need. Stored (un-worn) pieces revert to the static description. Generalised the old
+  Rose Gold-only logic into a shared `ArmorSetTooltips` so every set tier behaves identically.
+  (Hardwood and Steel have no full-set-gated bonus — their movement/toughness is per-piece — so they
+  show no checklist.)
+
 ## [0.14.1] - 2026-06-08
 
 ### Added
