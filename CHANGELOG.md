@@ -1,5 +1,18 @@
 # VanillaSkills Changelog
 
+## [0.16.6] - 2026-06-09
+
+### Added
+- **In-game recipe book.** A movable **Recipes** lane (crafting-table icon) on the skill screen opens a
+  paginated book of the mod's custom recipes — one 3x3 layout per page with the result: Dragon Ingot,
+  Steel Shield, Dragon/Fortune upgrade templates, Fortune IV & V books, Rose Gold Ingot, Steel Ingot,
+  Crystallized Diamond. Page through with Prev/Next.
+
+### Changed
+- **Skill screen layout:** Skill Points moved to the **bottom-left** corner, the Stats head to the
+  **bottom-right** corner. **Toolsmith** now uses an **anvil** icon. Removed the purple divider strip
+  through the middle of the lane-select screen (currency is still shown by the purple lane names).
+
 ## [0.16.5] - 2026-06-09
 
 ### Added
