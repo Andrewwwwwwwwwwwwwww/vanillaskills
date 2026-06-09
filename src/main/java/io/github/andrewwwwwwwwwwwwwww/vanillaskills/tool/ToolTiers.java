@@ -34,20 +34,20 @@ public final class ToolTiers {
             "hardwood", "Hardwood", 0x9A6B3F, "vs_tool_hardwood",
             STONE_TOOLS, 200, 0.5, 0.1, 0.0, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
 
-    // Rose Gold = gold tier (gold speed, can't mine diamond) but far more durable; quick strikes.
+    // Rose Gold = gold tier, between gold and iron in damage (gold sword 4 -> 5), quick strikes.
     public static final ToolTier ROSE_GOLD = new ToolTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_tool_rose_gold",
-            GOLD_TOOLS, 250, 0.5, 0.2, 0.0, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
+            GOLD_TOOLS, 250, 1.0, 0.2, 0.0, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
 
-    // Steel = iron tier (mines diamond), more durable than iron but below diamond; hits harder.
+    // Steel = iron tier, between iron and diamond in damage (iron sword 6 -> 6.5), more durable than iron.
     public static final ToolTier STEEL = new ToolTier(
             "steel", "Steel", 0xB8C0C8, "vs_tool_steel",
-            IRON_TOOLS, 800, 1.0, 0.1, 0.0, itemSet(IRON_INGOT), Alloys::isSteelIngot);
+            IRON_TOOLS, 800, 0.5, 0.1, 0.0, itemSet(IRON_INGOT), Alloys::isSteelIngot);
 
-    // Crystalline = diamond tier (mines like diamond), between diamond and netherite; sharper hits.
+    // Crystalline = diamond tier, between diamond and netherite in damage (diamond sword 7 -> 7.5).
     public static final ToolTier CRYSTAL = new ToolTier(
             "crystal", "Crystalline", 0xB389E8, "vs_tool_crystal",
-            DIAMOND_TOOLS, 1800, 1.0, 0.1, 0.0, itemSet(DIAMOND), Alloys::isCrystallizedDiamond);
+            DIAMOND_TOOLS, 1800, 0.5, 0.1, 0.0, itemSet(DIAMOND), Alloys::isCrystallizedDiamond);
 
     // Dragon = netherite tier (top), highest durability; strongest strikes. Crafted from Dragon Ingots.
     // The pickaxe carries +18 mining_efficiency so Efficiency V + Haste II + full Prospector instamine
