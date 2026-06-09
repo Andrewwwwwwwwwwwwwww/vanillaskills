@@ -94,6 +94,10 @@ public final class SkillCommands {
                 .executes(ctx -> regen(ctx, true))
                 .then(Commands.literal("fresh").executes(ctx -> regen(ctx, false))));
 
+        root.then(Commands.literal("regenpoints")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .executes(SkillCommands::regenPoints));
+
         root.then(editTree());
 
         LiteralCommandNode<CommandSourceStack> node = dispatcher.register(root);
@@ -193,6 +197,18 @@ public final class SkillCommands {
         }
         ctx.getSource().sendSuccess(() -> Component.literal(
                 "Reloaded skill tree (" + VanillaSkills.TREE.tree().size() + " nodes) and Skill Shard config.")
+                .withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    private static int regenPoints(CommandContext<CommandSourceStack> ctx) {
+        PointsConfig cfg = PointsConfig.regenerate();
+        VanillaSkills.PLAYERS.setPointsConfig(cfg);
+        int p = VanillaSkills.PLAYERS.computeTotalEarnable();
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "Reset points.json to defaults (task " + cfg.valueTask + " / goal " + cfg.valueGoal
+                + " / challenge " + cfg.valueChallenge + "). Total earnable = " + p
+                + ". Run /skill recalc <player> to reprice, and /skill regen fresh to re-price the tree.")
                 .withStyle(ChatFormatting.GREEN), true);
         return 1;
     }
