@@ -206,6 +206,7 @@ public class VanillaSkills implements ModInitializer {
         }
         if (tickCounter % ROSE_GOLD_INTERVAL == 0) {
             RoseGoldSet.tick(srv);
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorSetTooltips.tick(srv);
         }
         if (tickCounter % STATUS_REFRESH_INTERVAL == 0) {
             SkillTree tree = TREE.tree();
