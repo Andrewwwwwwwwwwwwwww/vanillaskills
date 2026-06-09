@@ -48,6 +48,7 @@ public final class StatsScreen {
 
     private static ItemStack info(Item icon, String label, ChatFormatting color, List<String> lore) {
         ItemStack stack = new ItemStack(icon);
+        Guis.hideStats(stack);
         stack.set(DataComponents.CUSTOM_NAME, styled(label, color));
         List<Component> lines = new ArrayList<>();
         for (String l : lore) lines.add(styled(l, ChatFormatting.GRAY));
@@ -57,6 +58,7 @@ public final class StatsScreen {
 
     private static void add(List<ItemStack> items, ServerPlayer player, Holder<Attribute> attribute, Item icon, String label) {
         ItemStack stack = new ItemStack(icon);
+        Guis.hideStats(stack);
         stack.set(DataComponents.CUSTOM_NAME, styled(label, ChatFormatting.AQUA));
         double value = player.getAttributeValue(attribute);
         stack.set(DataComponents.LORE, new ItemLore(List.of(styled(format(value), ChatFormatting.WHITE))));

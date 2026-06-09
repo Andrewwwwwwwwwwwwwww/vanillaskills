@@ -39,10 +39,12 @@ public final class PointsScreen {
                 "The hardest, purple-framed advancements.",
                 "+" + cfg.valueChallenge + " Skill Shards each")));
 
+        int custom = VanillaSkills.PLAYERS.customAdvancementTotal();
         items.add(item(Items.DIAMOND_CHESTPLATE, "VanillaSkills Goals", ChatFormatting.AQUA, List.of(
                 "Craft full armor sets, discover the upgrade",
                 "templates, forge a Dragon Ingot, and finish",
-                "skill paths for bonus Skill Shards.")));
+                "skill paths for bonus Skill Shards.",
+                "Worth " + custom + " Skill Shards in total.")));
 
         if (cfg.startingPoints > 0) {
             items.add(item(Items.EXPERIENCE_BOTTLE, "Starting Bonus", ChatFormatting.GREEN, List.of(
@@ -54,16 +56,17 @@ public final class PointsScreen {
                 "Doing every advancement unlocks the WHOLE",
                 "skill tree — it's priced to match.")));
 
-        if (cfg.ignoreRecipeAdvancements) {
-            items.add(item(Items.CRAFTING_TABLE, "Recipe Unlocks", ChatFormatting.GRAY, List.of(
-                    "Give no Skill Shards.")));
-        }
+        items.add(item(Items.WRITABLE_BOOK, "Daily Bounties", ChatFormatting.LIGHT_PURPLE, List.of(
+                "The bounty board gives Quest Shards,",
+                "which you can convert to Skill Shards",
+                "(3:1) at the shop — extra progress every day.")));
 
         InfoMenu.open(player, styled("Earning Skill Shards", ChatFormatting.AQUA), 6, items);
     }
 
     private static ItemStack item(net.minecraft.world.item.Item icon, String name, ChatFormatting color, List<String> lore) {
         ItemStack stack = new ItemStack(icon);
+        Guis.hideStats(stack);
         stack.set(DataComponents.CUSTOM_NAME, styled(name, color));
         List<Component> lines = new ArrayList<>();
         for (String line : lore) lines.add(styled(line, ChatFormatting.GRAY));

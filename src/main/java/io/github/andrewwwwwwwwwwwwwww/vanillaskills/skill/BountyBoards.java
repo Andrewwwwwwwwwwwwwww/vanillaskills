@@ -2,7 +2,6 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.math.Transformation;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -15,16 +14,11 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Interaction;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,13 +36,8 @@ public class BountyBoards {
     public static final String TAG = "vanillaskills_board";
     private static final double REMOVE_RANGE_SQR = 36.0; // 6 blocks
 
-    private static final float SCALE = 1.0f;             // text size
-    private static final float STAR_SCALE = 0.9f;         // Nether Star size
-    private static final int BG_COLOR = 0xB0000000;       // semi-transparent dark panel
     private static final int LINE_WIDTH = 220;
-    private static final double STAR_Y = 1.6;             // Nether Star height above the anchor
-    private static final long SPIN_PERIOD = 80L;          // ticks per full Nether Star spin
-    public static final int SPIN_INTERVAL = 10;           // ticks between spin updates
+    public static final int REFRESH_INTERVAL = 100;       // ticks between text refreshes (countdown)
 
     private List<Entry> boards = new ArrayList<>();
 
@@ -79,7 +68,7 @@ public class BountyBoards {
             }
         }
 
-        double ax = base.getX() + 0.5, ay = base.getY() + 1.6, az = base.getZ() + 0.5;
+        double ax = base.getX() + 0.5, ay = base.getY() + 1.3, az = base.getZ() + 0.5;
         spawnEntities(level, ax, ay, az);
 
         boards.add(new Entry(dimId(level), base.getX(), base.getY(), base.getZ()));
@@ -92,30 +81,19 @@ public class BountyBoards {
         Display.TextDisplay text = new Display.TextDisplay(EntityType.TEXT_DISPLAY, level);
         text.setText(boardText());
         text.setBillboardConstraints(Display.BillboardConstraints.CENTER);
-        text.setBackgroundColor(BG_COLOR);
+        text.setBackgroundColor(0); // transparent — no panel, just text
         text.setLineWidth(LINE_WIDTH);
         text.setViewRange(1.5f);
-        text.setTransformation(scale(SCALE));
         configure(text);
         text.snapTo(ax, ay, az, 0.0f, 0.0f);
         level.addFreshEntity(text);
 
-        Display.ItemDisplay star = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, level);
-        star.setItemStack(new ItemStack(Items.NETHER_STAR));
-        star.setItemTransform(ItemDisplayContext.GROUND);
-        star.setBillboardConstraints(Display.BillboardConstraints.FIXED);
-        star.setViewRange(1.5f);
-        star.setTransformation(spinAt(0f));
-        configure(star);
-        star.snapTo(ax, ay + STAR_Y, az, 0.0f, 0.0f);
-        level.addFreshEntity(star);
-
         Interaction interaction = new Interaction(EntityType.INTERACTION, level);
-        interaction.setWidth(3.0f);
-        interaction.setHeight(3.4f);
+        interaction.setWidth(2.4f);
+        interaction.setHeight(1.8f);
         interaction.setResponse(true);
         configure(interaction);
-        interaction.snapTo(ax, ay - 1.5, az, 0.0f, 0.0f); // anchor is bottom centre
+        interaction.snapTo(ax, ay - 0.9, az, 0.0f, 0.0f); // anchor is bottom centre
         level.addFreshEntity(interaction);
     }
 
@@ -140,36 +118,21 @@ public class BountyBoards {
         c.append(Component.literal("⏳ New bounties in " + when).withStyle(s -> s.withColor(0xFFD54A).withItalic(false)));
         c.append(Component.literal("\n"));
         c.append(Component.literal("▶ Right-click to open ◀").withStyle(s -> s.withColor(0xBBBBBB).withItalic(false)));
+        c.append(Component.literal("\n"));
+        c.append(Component.literal("or use /quests").withStyle(s -> s.withColor(0x888888).withItalic(false)));
         return c;
     }
 
-    /** Called periodically (every {@link #SPIN_INTERVAL} ticks) to spin the star and refresh the text. */
+    /** Called periodically to refresh the board text (so the countdown stays current). */
     public void tick(MinecraftServer server, long tickCount) {
-        boolean refreshText = tickCount % 100 == 0;
-        Component text = refreshText ? boardText() : null;
+        if (tickCount % REFRESH_INTERVAL != 0) return;
+        Component text = boardText();
         for (ServerLevel level : server.getAllLevels()) {
-            float angle = (level.getGameTime() % SPIN_PERIOD) / (float) SPIN_PERIOD * (float) (Math.PI * 2);
-            Transformation spin = spinAt(angle);
             for (Entity e : level.getEntities(EntityTypeTest.forClass(Entity.class),
                     en -> en.entityTags().contains(TAG))) {
-                if (e instanceof Display.ItemDisplay item) {
-                    item.setTransformation(spin);
-                    item.setTransformationInterpolationDuration(SPIN_INTERVAL);
-                    item.setTransformationInterpolationDelay(0);
-                } else if (refreshText && e instanceof Display.TextDisplay td) {
-                    td.setText(text);
-                }
+                if (e instanceof Display.TextDisplay td) td.setText(text);
             }
         }
-    }
-
-    private static Transformation scale(float s) {
-        return new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(s, s, s), new Quaternionf());
-    }
-
-    private static Transformation spinAt(float angle) {
-        return new Transformation(new Vector3f(0f, 0f, 0f),
-                new Quaternionf().rotateY(angle), new Vector3f(STAR_SCALE, STAR_SCALE, STAR_SCALE), new Quaternionf());
     }
 
     private static ServerLevel levelFor(MinecraftServer server, String dim) {
