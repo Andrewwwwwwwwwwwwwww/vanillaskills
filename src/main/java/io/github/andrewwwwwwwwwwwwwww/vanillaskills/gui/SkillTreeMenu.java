@@ -34,9 +34,9 @@ import java.util.List;
  * with a category set it shows that lane's nodes. Edit mode lets ops manage lanes and nodes.
  */
 public class SkillTreeMenu extends ChestMenu {
-    private static final int POINTS_SLOT = 48;
-    private static final int STATS_SLOT = 50;
-    private static final int BACK_SLOT = 45;
+    private static final int POINTS_SLOT = 45;  // bottom-left corner (lane-select)
+    private static final int STATS_SLOT = 53;   // bottom-right corner (lane-select)
+    private static final int BACK_SLOT = 45;    // bottom-left (lane view)
 
     private final ServerPlayer player;
     private final SimpleContainer container;
@@ -110,7 +110,6 @@ public class SkillTreeMenu extends ChestMenu {
         for (int i = 0; i < size; i++) container.setItem(i, ItemStack.EMPTY);
 
         if (category == null) {
-            if (!editMode && !layoutMode) decorateCategoryScreen();
             for (SkillCategory cat : tree.categories()) {
                 container.setItem(cat.slot, buildCategoryItem(cat, data));
             }
@@ -138,36 +137,18 @@ public class SkillTreeMenu extends ChestMenu {
 
     // ---- lane select ----
 
-    /** Frames the lane-select screen into a "Skills (Skill Shards)" zone and a "Crafting (Quest Shards)" strip. */
-    private void decorateCategoryScreen() {
-        ItemStack pane = filler(net.minecraft.world.item.Items.LIGHT_GRAY_STAINED_GLASS_PANE);
-        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, pane.copy());
-        // Header.
-        container.setItem(4, header(net.minecraft.world.item.Items.NETHER_STAR, "✦ Skills ✦",
-                ChatFormatting.AQUA, "Paid with Skill Shards (advancements)"));
-        // Divider row (row 3, slots 27-35) separating skills from the crafting strip, with a centred label.
-        ItemStack divider = filler(net.minecraft.world.item.Items.PURPLE_STAINED_GLASS_PANE);
-        for (int s = 27; s <= 35; s++) container.setItem(s, divider.copy());
-        container.setItem(31, header(net.minecraft.world.item.Items.SMITHING_TABLE, "✦ Crafting ✦",
-                ChatFormatting.LIGHT_PURPLE, "Paid with Quest Shards (bounties)"));
-    }
-
-    private ItemStack filler(net.minecraft.world.item.Item item) {
-        ItemStack pane = new ItemStack(item);
-        pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
-        return pane;
-    }
-
-    private ItemStack header(net.minecraft.world.item.Item item, String name, ChatFormatting color, String sub) {
-        ItemStack stack = new ItemStack(item);
-        Guis.hideStats(stack);
-        stack.set(DataComponents.CUSTOM_NAME, styled(name, color));
-        stack.set(DataComponents.LORE, new ItemLore(List.of(styled(sub, ChatFormatting.GRAY))));
-        return stack;
-    }
-
     private ItemStack buildCategoryItem(SkillCategory cat, PlayerSkillData data) {
         SkillTree tree = VanillaSkills.TREE.tree();
+        // Recipes is a pseudo-lane that opens the custom-recipe book.
+        if ("recipes".equals(cat.id)) {
+            ItemStack r = new ItemStack(resolveItem(cat.icon));
+            Guis.hideStats(r);
+            r.set(DataComponents.CUSTOM_NAME, styled("Recipes", ChatFormatting.GOLD));
+            r.set(DataComponents.LORE, new ItemLore(List.of(
+                    styled("All custom crafting recipes", ChatFormatting.GRAY),
+                    styled(layoutMode ? "Click to pick up & move" : "Click to view", ChatFormatting.YELLOW))));
+            return r;
+        }
         int total = 0, unlocked = 0;
         boolean quest = false;
         for (SkillNode node : tree.nodesIn(cat.id)) {
@@ -442,6 +423,10 @@ public class SkillTreeMenu extends ChestMenu {
         }
         SkillCategory cat = VanillaSkills.TREE.tree().categoryAtSlot(slotId);
         if (cat != null) {
+            if (!editMode && "recipes".equals(cat.id)) {
+                RecipeBookMenu.open(sp, 0);
+                return true;
+            }
             if (!editMode && isLaneLocked(cat, VanillaSkills.PLAYERS.get(sp.getUUID()))) {
                 sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("🔒 That path is still locked.")
                         .withStyle(ChatFormatting.RED));
