@@ -118,6 +118,7 @@ public class SkillTreeMenu extends ChestMenu {
             } else if (editMode) {
                 container.setItem(size - 1, buildEditInfo(true));
             } else {
+                container.setItem(4, skillsHeader());
                 container.setItem(POINTS_SLOT, buildCounter(data));
                 container.setItem(STATS_SLOT, buildStatsHead());
             }
@@ -386,8 +387,8 @@ public class SkillTreeMenu extends ChestMenu {
         SkillCategory sel = tree.category(selectedCategory);
         if (sel == null) { selectedCategory = null; return; }
         if (cat != null && cat.id.equals(selectedCategory)) { selectedCategory = null; return; } // deselect
-        if (slotId == POINTS_SLOT || slotId == STATS_SLOT || slotId == container.getContainerSize() - 1) {
-            sp.sendSystemMessage(Component.literal("That spot is reserved (Points/Stats buttons).")
+        if (slotId == POINTS_SLOT || slotId == STATS_SLOT || slotId == 4 || slotId == container.getContainerSize() - 1) {
+            sp.sendSystemMessage(Component.literal("That spot is reserved (header / Points / Stats).")
                     .withStyle(ChatFormatting.RED));
             return;
         }
@@ -398,6 +399,15 @@ public class SkillTreeMenu extends ChestMenu {
         }
         VanillaSkills.TREE.touchAndSave();
         selectedCategory = null;
+    }
+
+    private ItemStack skillsHeader() {
+        ItemStack stack = new ItemStack(Items.NETHER_STAR);
+        Guis.hideStats(stack);
+        stack.set(DataComponents.CUSTOM_NAME, styled("✦ Skills ✦", ChatFormatting.GOLD));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(
+                styled("Spend Skill Shards & Quest Shards here", ChatFormatting.GRAY))));
+        return stack;
     }
 
     private ItemStack layoutHelp() {

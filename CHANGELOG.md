@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [0.16.8] - 2026-06-09
+
+### Added
+- Restored the **✦ Skills ✦ nether-star header** at the top of the lane-select screen (without the
+  old divider strip).
+- **`/skill regenpoints`** (op) — resets `points.json` (the advancement point values) to the current
+  built-in defaults, backing up the old file. Use this when the Skill-Shard info tab / totals still
+  show old advancement values because an existing `points.json` was never updated.
+
 ## [0.16.7] - 2026-06-09
 
 ### Changed
