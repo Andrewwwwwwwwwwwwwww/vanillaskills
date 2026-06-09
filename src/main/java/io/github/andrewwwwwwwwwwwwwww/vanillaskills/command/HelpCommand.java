@@ -26,8 +26,7 @@ public final class HelpCommand {
         line(source, "/skill", "open your skill tree");
         line(source, "/skill points", "view your Skill & Quest Shards");
         line(source, "/skill guide", "open the in-game guide book");
-        line(source, "/quests", "open the bounty board (alias /bounty)");
-        line(source, "/quests noobtimer", "time left in the early-game window");
+        line(source, "/quests", "open your bounty board (alias /bounty)");
         source.sendSystemMessage(Component.literal("Ops: /help admin for admin commands.")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
@@ -38,8 +37,7 @@ public final class HelpCommand {
         line(source, "/skill", "open your skill tree");
         line(source, "/skill points", "view your Skill & Quest Shards");
         line(source, "/skill guide", "open the guide book");
-        line(source, "/quests", "open the bounty board (alias /bounty)");
-        line(source, "/quests noobtimer", "time left in the early-game window");
+        line(source, "/quests", "open your bounty board (alias /bounty)");
         source.sendSystemMessage(Component.literal("Admin / op commands:").withStyle(ChatFormatting.GRAY));
         line(source, "/skill points <player> add|set|reset <n>", "grant/set/clear Skill Shards");
         line(source, "/skill questshards <player> add|set|reset <n>", "grant/set/clear Quest Shards");
@@ -52,8 +50,9 @@ public final class HelpCommand {
         line(source, "/skill layout", "drag the lane icons around to rearrange them");
         line(source, "/skill edit ...", "live-edit nodes (cost/slot/effects/requires)");
         line(source, "/quests board [remove|refresh]", "place / remove / re-render a bounty board");
-        line(source, "/quests reroll", "force a fresh set of bounties now");
-        line(source, "/quests noobtimer reset", "reset the 150-hour early-game window");
+        line(source, "/quests reroll", "force a fresh set of universal bounties now");
+        line(source, "/quests graduate <player>", "move a player to the main bounty board");
+        line(source, "/quests starter <player>", "send a player back to the starter board");
     }
 
     private static void header(CommandSourceStack source, String text) {

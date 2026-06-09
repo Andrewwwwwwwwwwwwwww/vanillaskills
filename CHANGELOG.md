@@ -1,5 +1,16 @@
 # VanillaSkills Changelog
 
+## [0.17.0] - 2026-06-09
+
+### Changed (bounty board redesign)
+- **Personal starter board → graduation.** The server-wide 150-hour noob timer is gone. New players now
+  get their **own** random board of early-game quests (the non-lategame pool). After completing **15
+  quests** they **graduate** to the shared **universal board**, which has **every quest** unlocked and
+  is the prominent, persistent one. Both boards share the same 5-hour rotation.
+- The quest GUI shows your **starter progress (X/15)** until you graduate, then the main board.
+- Replaced `/quests noobtimer` with **`/quests graduate <player>`** and **`/quests starter <player>`**
+  (ops) for moving players between the two boards.
+
 ## [0.16.12] - 2026-06-09
 
 ### Fixed
