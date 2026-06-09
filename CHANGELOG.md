@@ -1,5 +1,23 @@
 # VanillaSkills Changelog
 
+## [0.16.5] - 2026-06-09
+
+### Added
+- **Your Stats: Aquatic summary** — a new entry showing how much of the Aquatic lane you've unlocked:
+  **Breaths**, **Swim Speed**, and **Mine Speed** (computed from your unlocked Aquatic nodes).
+- **`/help`** — lists the player-facing VanillaSkills commands; **`/help admin`** (op) lists those plus
+  all the op/admin commands.
+
+### Changed
+- **`/skill regen` now preserves op changes.** Once an op customizes the tree (layout, edits), those
+  are concrete: a normal `/skill regen` keeps the existing tree exactly and only appends brand-new
+  lanes/nodes from the latest built-in default. **`/skill regen fresh`** does the old full reset to the
+  built-in default (use this once to pull a big balance/structure update).
+
+### Upgrade note
+- To pick up the new sectioned layout + 10-tier Quest-Shard crafting lanes, run **`/skill regen fresh`
+  once**. After that, your layout/edits survive a plain `/skill regen`.
+
 ## [0.16.4] - 2026-06-09
 
 ### Added
