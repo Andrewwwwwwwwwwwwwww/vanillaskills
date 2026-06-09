@@ -34,9 +34,9 @@ import java.util.List;
  * with a category set it shows that lane's nodes. Edit mode lets ops manage lanes and nodes.
  */
 public class SkillTreeMenu extends ChestMenu {
-    private static final int POINTS_SLOT = 45;  // bottom-left corner (lane-select)
-    private static final int STATS_SLOT = 53;   // bottom-right corner (lane-select)
-    private static final int BACK_SLOT = 45;    // bottom-left (lane view)
+    private static final int POINTS_SLOT = 45;  // bottom-left corner
+    private static final int STATS_SLOT = 53;   // bottom-right corner
+    private static final int BACK_SLOT = 49;    // bottom-centre (lane view)
 
     private final ServerPlayer player;
     private final SimpleContainer container;
@@ -224,7 +224,6 @@ public class SkillTreeMenu extends ChestMenu {
         lore.add(Component.literal(""));
         if (unlocked) {
             lore.add(styled("Unlocked", ChatFormatting.GREEN));
-            lore.add(styled("Right-click: refund (+ skills above it)", ChatFormatting.DARK_GRAY));
         } else if (gated) {
             lore.add(styled("🔒 Locked", ChatFormatting.RED)); // requirement intentionally hidden
         } else {
@@ -467,11 +466,7 @@ public class SkillTreeMenu extends ChestMenu {
         } else {
             SkillNode node = VanillaSkills.TREE.tree().nodeInCategoryAtSlot(category, slotId);
             if (node != null) {
-                if (button == 1) {
-                    VanillaSkills.PLAYERS.refundChain(sp, node.id);   // right-click: refund this + dependents
-                } else {
-                    VanillaSkills.PLAYERS.unlockChain(sp, node.id);   // left-click: buy up to this node
-                }
+                VanillaSkills.PLAYERS.unlockChain(sp, node.id);   // buy this node + everything below it
             }
         }
         return false;
