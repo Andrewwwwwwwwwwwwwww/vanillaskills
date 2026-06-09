@@ -20,16 +20,22 @@ public class PlayerSkillData {
     public Set<String> creditedAdvancements = new LinkedHashSet<>();
     public boolean initialized = false;
 
-    // Bounty board progress for the current rotation.
+    // Bounty board progress for the current rotation (slot 0-2 -> kills / claimed).
     public long questRotation = -1;
     public Map<Integer, Integer> questKills = new HashMap<>();
     public Set<Integer> questClaimed = new LinkedHashSet<>();
+
+    // Starter (personal) bounty board: new players complete 15 quests to graduate to the universal board.
+    public int questsCompleted = 0;
+    public boolean graduated = false;
+    public int[] starterSlots = new int[0]; // this rotation's 3 personal quest indices (pre-graduation)
 
     public void normalize() {
         if (unlocked == null) unlocked = new LinkedHashSet<>();
         if (creditedAdvancements == null) creditedAdvancements = new LinkedHashSet<>();
         if (questKills == null) questKills = new HashMap<>();
         if (questClaimed == null) questClaimed = new LinkedHashSet<>();
+        if (starterSlots == null) starterSlots = new int[0];
     }
 
     public boolean hasUnlocked(String id) {

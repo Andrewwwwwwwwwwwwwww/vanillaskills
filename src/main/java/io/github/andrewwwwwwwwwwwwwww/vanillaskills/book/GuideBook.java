@@ -62,7 +62,7 @@ public final class GuideBook {
 
             Three bounties at a time, refreshing every 5 hours. Gather items or slay mobs for Quest Shards.
 
-            New servers hide the hardest quests for the first 150 hours.""",
+            New players start on a personal starter board - complete 15 quests to join the main board.""",
 
             """
             Quest Shop
