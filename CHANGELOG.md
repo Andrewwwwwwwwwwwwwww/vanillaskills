@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.14.1] - 2026-06-08
+
+### Added
+- Op test/admin commands: **`/skill questshards <player> add|set <n>`** to grant or set Quest Shards,
+  and **`/quests reroll`** to force a fresh set of bounties immediately.
+
 ## [0.14.0] - 2026-06-08
 
 ### Added

@@ -273,6 +273,14 @@ public class PlayerSkillManager {
         save(player.getUUID());
     }
 
+    public void setQuestShards(ServerPlayer player, int amount) {
+        PlayerSkillData data = get(player.getUUID());
+        int spent = data.questShardsEarned - data.questShardsAvailable;
+        data.questShardsAvailable = Math.max(0, amount);
+        data.questShardsEarned = data.questShardsAvailable + Math.max(0, spent);
+        save(player.getUUID());
+    }
+
     public int skillShards(ServerPlayer player) {
         return get(player.getUUID()).pointsAvailable;
     }

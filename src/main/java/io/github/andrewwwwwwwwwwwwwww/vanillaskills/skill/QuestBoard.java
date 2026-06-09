@@ -79,6 +79,11 @@ public class QuestBoard {
         }
     }
 
+    /** Force a fresh rotation right now (op/testing). */
+    public void forceReroll() {
+        reroll(System.currentTimeMillis());
+    }
+
     private void reroll(long now) {
         state.rotationId++;
         state.nextRotationMs = now + INTERVAL_MS;
