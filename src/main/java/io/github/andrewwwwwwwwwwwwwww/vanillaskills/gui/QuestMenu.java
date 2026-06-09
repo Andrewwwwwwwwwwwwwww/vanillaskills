@@ -49,7 +49,7 @@ public class QuestMenu extends ChestMenu {
         ItemStack filler = filler();
         for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, filler.copy());
         container.setItem(INFO_SLOT, infoItem());
-        List<Quest> active = VanillaSkills.QUESTS.active();
+        List<Quest> active = Quests.activeFor(player);
         for (int i = 0; i < active.size() && i < SLOTS.length; i++) {
             container.setItem(SLOTS[i], questItem(i, active.get(i)));
         }
@@ -61,14 +61,24 @@ public class QuestMenu extends ChestMenu {
         long remaining = VanillaSkills.QUESTS.nextRotationMs() - System.currentTimeMillis();
         String when = remaining <= 0 ? "any moment" : (remaining / 3_600_000) + "h " + (remaining % 3_600_000 / 60_000) + "m";
         int quest = VanillaSkills.PLAYERS.questShards(player);
+        boolean graduated = Quests.isGraduated(player);
+
+        List<Component> lore = new ArrayList<>();
+        if (graduated) {
+            lore.add(styled("The main bounty board — shared by everyone.", ChatFormatting.GRAY));
+        } else {
+            lore.add(styled("Your starter board.", ChatFormatting.GRAY));
+            lore.add(styled("Complete " + Quests.GRADUATE_AT + " quests to join the main board: "
+                    + Quests.graduationProgress(player) + "/" + Quests.GRADUATE_AT, ChatFormatting.AQUA));
+        }
+        lore.add(styled("New bounties in " + when, ChatFormatting.YELLOW));
+        lore.add(Component.literal(""));
+        lore.add(styled("Your Quest Shards: " + quest, ChatFormatting.LIGHT_PURPLE));
+        lore.add(styled("Click a bounty to claim its reward.", ChatFormatting.DARK_GRAY));
+
         ItemStack stack = new ItemStack(Items.CLOCK);
-        stack.set(DataComponents.CUSTOM_NAME, styled("Bounty Board", ChatFormatting.GOLD));
-        stack.set(DataComponents.LORE, new ItemLore(List.of(
-                styled("Three bounties for everyone.", ChatFormatting.GRAY),
-                styled("New bounties in " + when, ChatFormatting.YELLOW),
-                Component.literal(""),
-                styled("Your Quest Shards: " + quest, ChatFormatting.LIGHT_PURPLE),
-                styled("Click a bounty to claim its reward.", ChatFormatting.DARK_GRAY))));
+        stack.set(DataComponents.CUSTOM_NAME, styled(graduated ? "Bounty Board" : "Starter Board", ChatFormatting.GOLD));
+        stack.set(DataComponents.LORE, new ItemLore(lore));
         return stack;
     }
 
