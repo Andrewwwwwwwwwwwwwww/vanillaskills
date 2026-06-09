@@ -13,7 +13,12 @@ public class SkillNode {
     public String icon = "minecraft:stone";
     public int cost = 1;
     public int minEarned = 0;  // requires this many lifetime-earned Skill Shards before it can be unlocked
+    public String currency = "skill"; // "skill" = Skill Shards, "quest" = Quest Shards
     public List<String> requires = new ArrayList<>();
+
+    public boolean isQuestCurrency() {
+        return "quest".equals(currency);
+    }
     public String category;   // which lane this node belongs to (null -> default lane)
     public int slot;          // position within its lane's view
     public List<SkillEffect> effects = new ArrayList<>();
@@ -36,5 +41,6 @@ public class SkillNode {
         if (effects == null) effects = new ArrayList<>();
         if (title == null) title = id;
         if (icon == null) icon = "minecraft:stone";
+        if (currency == null) currency = "skill";
     }
 }

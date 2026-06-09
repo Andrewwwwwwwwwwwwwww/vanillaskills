@@ -19,16 +19,55 @@ import net.minecraft.world.item.ItemStack;
 public final class CraftingGate {
     private CraftingGate() {}
 
-    /** True if this crafted stack is VanillaSkills gear whose per-tier craft skill isn't unlocked. */
+    /** True if this crafted stack is gear whose per-tier craft skill isn't unlocked (custom OR vanilla). */
     public static boolean isLocked(Player player, ItemStack stack) {
         if (stack.isEmpty()) return false;
+        // Custom tiers first (marker-based) — these reuse vanilla base items + a marker.
         for (ArmorTier tier : ArmorTiers.TIERS) {
             if (tier.isWorn(stack)) return !hasFlag(player, "craft_armor_" + tier.id);
         }
         for (ToolTier tier : ToolTiers.TIERS) {
             if (Markers.has(stack, tier.markerKey)) return !hasFlag(player, "craft_tool_" + tier.id);
         }
+        // Vanilla tiers (no custom marker): copper/gold/iron/diamond/netherite armour & tools.
+        String armorTier = VANILLA_ARMOR.get(stack.getItem());
+        if (armorTier != null) return !hasFlag(player, "craft_armor_" + armorTier);
+        String toolTier = VANILLA_TOOL.get(stack.getItem());
+        if (toolTier != null) return !hasFlag(player, "craft_tool_" + toolTier);
         return false;
+    }
+
+    private static final java.util.Map<net.minecraft.world.item.Item, String> VANILLA_ARMOR = new java.util.HashMap<>();
+    private static final java.util.Map<net.minecraft.world.item.Item, String> VANILLA_TOOL = new java.util.HashMap<>();
+    static {
+        armorTier("copper", net.minecraft.world.item.Items.COPPER_HELMET, net.minecraft.world.item.Items.COPPER_CHESTPLATE,
+                net.minecraft.world.item.Items.COPPER_LEGGINGS, net.minecraft.world.item.Items.COPPER_BOOTS);
+        armorTier("gold", net.minecraft.world.item.Items.GOLDEN_HELMET, net.minecraft.world.item.Items.GOLDEN_CHESTPLATE,
+                net.minecraft.world.item.Items.GOLDEN_LEGGINGS, net.minecraft.world.item.Items.GOLDEN_BOOTS);
+        armorTier("iron", net.minecraft.world.item.Items.IRON_HELMET, net.minecraft.world.item.Items.IRON_CHESTPLATE,
+                net.minecraft.world.item.Items.IRON_LEGGINGS, net.minecraft.world.item.Items.IRON_BOOTS);
+        armorTier("diamond", net.minecraft.world.item.Items.DIAMOND_HELMET, net.minecraft.world.item.Items.DIAMOND_CHESTPLATE,
+                net.minecraft.world.item.Items.DIAMOND_LEGGINGS, net.minecraft.world.item.Items.DIAMOND_BOOTS);
+        armorTier("netherite", net.minecraft.world.item.Items.NETHERITE_HELMET, net.minecraft.world.item.Items.NETHERITE_CHESTPLATE,
+                net.minecraft.world.item.Items.NETHERITE_LEGGINGS, net.minecraft.world.item.Items.NETHERITE_BOOTS);
+        toolTier("copper", net.minecraft.world.item.Items.COPPER_PICKAXE, net.minecraft.world.item.Items.COPPER_AXE,
+                net.minecraft.world.item.Items.COPPER_SHOVEL, net.minecraft.world.item.Items.COPPER_HOE, net.minecraft.world.item.Items.COPPER_SWORD);
+        toolTier("gold", net.minecraft.world.item.Items.GOLDEN_PICKAXE, net.minecraft.world.item.Items.GOLDEN_AXE,
+                net.minecraft.world.item.Items.GOLDEN_SHOVEL, net.minecraft.world.item.Items.GOLDEN_HOE, net.minecraft.world.item.Items.GOLDEN_SWORD);
+        toolTier("iron", net.minecraft.world.item.Items.IRON_PICKAXE, net.minecraft.world.item.Items.IRON_AXE,
+                net.minecraft.world.item.Items.IRON_SHOVEL, net.minecraft.world.item.Items.IRON_HOE, net.minecraft.world.item.Items.IRON_SWORD);
+        toolTier("diamond", net.minecraft.world.item.Items.DIAMOND_PICKAXE, net.minecraft.world.item.Items.DIAMOND_AXE,
+                net.minecraft.world.item.Items.DIAMOND_SHOVEL, net.minecraft.world.item.Items.DIAMOND_HOE, net.minecraft.world.item.Items.DIAMOND_SWORD);
+        toolTier("netherite", net.minecraft.world.item.Items.NETHERITE_PICKAXE, net.minecraft.world.item.Items.NETHERITE_AXE,
+                net.minecraft.world.item.Items.NETHERITE_SHOVEL, net.minecraft.world.item.Items.NETHERITE_HOE, net.minecraft.world.item.Items.NETHERITE_SWORD);
+    }
+
+    private static void armorTier(String tier, net.minecraft.world.item.Item... items) {
+        for (net.minecraft.world.item.Item i : items) VANILLA_ARMOR.put(i, tier);
+    }
+
+    private static void toolTier(String tier, net.minecraft.world.item.Item... items) {
+        for (net.minecraft.world.item.Item i : items) VANILLA_TOOL.put(i, tier);
     }
 
     /** True if the player has unlocked the Armorsmith node that permits the Dragon smithing upgrade. */

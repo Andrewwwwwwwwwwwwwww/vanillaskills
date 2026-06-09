@@ -164,18 +164,22 @@ public class SkillTreeMenu extends ChestMenu {
     private ItemStack buildNodeItem(SkillNode node, PlayerSkillData data) {
         boolean unlocked = data.hasUnlocked(node.id);
         boolean prereqMet = node.requires.stream().allMatch(data::hasUnlocked);
-        boolean affordable = data.pointsAvailable >= node.cost;
+
+        boolean quest = node.isQuestCurrency();
+        String curName = quest ? "Quest Shards" : "Skill Shards";
+        ChatFormatting curColor = quest ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.YELLOW;
+        int balance = quest ? data.questShardsAvailable : data.pointsAvailable;
 
         boolean gated = node.minEarned > 0 && data.pointsEarned < node.minEarned;
         int chain = VanillaSkills.PLAYERS.chainCost(player, node.id); // total a left-click would charge
-        boolean affordableChain = data.pointsAvailable >= chain;
+        boolean affordableChain = balance >= chain;
 
         ItemStack stack = new ItemStack(resolveItem(node.icon));
         Guis.hideStats(stack);
         ChatFormatting nameColor = unlocked ? ChatFormatting.GREEN
                 : gated ? ChatFormatting.DARK_GRAY
                 : !prereqMet ? ChatFormatting.GRAY
-                : affordable ? ChatFormatting.YELLOW : ChatFormatting.RED;
+                : affordableChain ? curColor : ChatFormatting.RED;
         stack.set(DataComponents.CUSTOM_NAME, styled(node.title + (unlocked ? " ✔" : ""), nameColor));
 
         List<Component> lore = new ArrayList<>();
@@ -187,10 +191,10 @@ public class SkillTreeMenu extends ChestMenu {
         } else if (gated) {
             lore.add(styled("🔒 Locked", ChatFormatting.RED)); // requirement intentionally hidden
         } else {
-            lore.add(styled("Cost: " + chain, affordableChain ? ChatFormatting.YELLOW : ChatFormatting.RED));
+            lore.add(styled("Cost: " + chain + " " + curName, affordableChain ? curColor : ChatFormatting.RED));
             if (!prereqMet) lore.add(styled("Buys this + the skills below it", ChatFormatting.DARK_GRAY));
             else lore.add(styled("Left-click to unlock", ChatFormatting.DARK_GRAY));
-            if (!affordableChain) lore.add(styled("Not enough Skill Shards", ChatFormatting.RED));
+            if (!affordableChain) lore.add(styled("Not enough " + curName, ChatFormatting.RED));
         }
         stack.set(DataComponents.LORE, new ItemLore(lore));
         if (unlocked) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);

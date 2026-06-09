@@ -96,6 +96,8 @@ public class SkillTreeManager {
     // Cost progression for the 5-node craft/brew lanes (start at 10, scaling).
     // Two centred rows of five (rows 2-3, columns 2-6) for 10-node lanes.
     private static final int[] FIVE_AND_FIVE = {20, 21, 22, 23, 24, 29, 30, 31, 32, 33};
+    // Quest-Shard cost ramp for the 10-tier Armorsmith/Toolsmith ladders (cheap early, steep at the top).
+    private static final int[] TIER_COSTS = {1, 2, 3, 5, 8, 12, 20, 35, 60, 100};
     // Lane icons on the lane-select screen, laid out as a tidy 6x2 block:
     //   row 1 (10..16): Vitality, Fleet Foot, Prospector, Fortune, Warrior, Guardian, Reach
     //   row 2 (19..25): Mountaineer, Aquatic, Armorsmith, Toolsmith, Brewmaster, Evasion, Cultivator
@@ -189,22 +191,41 @@ public class SkillTreeManager {
                         "+34% swim speed", "+67% swim speed", "Full surface swim speed",
                         "+27% underwater mining", "+54% underwater mining", "Full underwater mining"});
 
-        // Armorsmith: one node per armor tier, unlocking the right to craft that tier's armor.
-        // (Phase 3 will expand this to a 10-tier Quest-Shard lane; costs here are interim.)
-        addLaneNodes(t, "armorsmith", "Armorsmith", "minecraft:smithing_table", 9, TIER_SLOTS_5,
-                new int[]{3, 5, 8, 12, 18},
-                flagEffects("craft_armor_hardwood", "craft_armor_rose_gold", "craft_armor_steel",
-                        "craft_armor_crystal", "craft_armor_dragon"),
-                new String[]{"Craft Hardwood armor", "Craft Rose Gold armor", "Craft Steel armor",
-                        "Craft Crystalline armor", "Craft Dragon armor (smithing upgrade)"});
+        // Armorsmith: a 10-tier ladder (paid in QUEST SHARDS) that gates crafting each armour tier,
+        // climbing Hardwood → Copper → Gold → Rose Gold → Iron → Steel → Diamond → Crystalline →
+        // Netherite → Dragon. Strict chain; pricier toward the top.
+        addLaneNodes(t, "armorsmith", "Armorsmith", "minecraft:smithing_table", 9, FIVE_AND_FIVE,
+                TIER_COSTS,
+                flagEffects("craft_armor_hardwood", "craft_armor_copper", "craft_armor_gold",
+                        "craft_armor_rose_gold", "craft_armor_iron", "craft_armor_steel",
+                        "craft_armor_diamond", "craft_armor_crystal", "craft_armor_netherite",
+                        "craft_armor_dragon"),
+                new String[]{"Craft Hardwood armor", "Craft Copper armor", "Craft Gold armor",
+                        "Craft Rose Gold armor", "Craft Iron armor", "Craft Steel armor",
+                        "Craft Diamond armor", "Craft Crystalline armor", "Craft Netherite armor",
+                        "Craft Dragon armor"});
+        markQuestTierLane(t, "armorsmith", new String[]{
+                "minecraft:leather_chestplate", "minecraft:copper_chestplate", "minecraft:golden_chestplate",
+                "minecraft:golden_chestplate", "minecraft:iron_chestplate", "minecraft:iron_chestplate",
+                "minecraft:diamond_chestplate", "minecraft:diamond_chestplate", "minecraft:netherite_chestplate",
+                "minecraft:netherite_chestplate"});
 
-        // Toolsmith: one node per tool tier.
-        addLaneNodes(t, "toolsmith", "Toolsmith", "minecraft:crafting_table", 10, TIER_SLOTS_5,
-                new int[]{3, 5, 8, 12, 18},
-                flagEffects("craft_tool_hardwood", "craft_tool_rose_gold", "craft_tool_steel",
-                        "craft_tool_crystal", "craft_tool_dragon"),
-                new String[]{"Craft Hardwood tools", "Craft Rose Gold tools", "Craft Steel tools",
-                        "Craft Crystalline tools", "Craft Dragon tools"});
+        // Toolsmith: the same 10-tier Quest-Shard ladder, gating each tool tier.
+        addLaneNodes(t, "toolsmith", "Toolsmith", "minecraft:crafting_table", 10, FIVE_AND_FIVE,
+                TIER_COSTS,
+                flagEffects("craft_tool_hardwood", "craft_tool_copper", "craft_tool_gold",
+                        "craft_tool_rose_gold", "craft_tool_iron", "craft_tool_steel",
+                        "craft_tool_diamond", "craft_tool_crystal", "craft_tool_netherite",
+                        "craft_tool_dragon"),
+                new String[]{"Craft Hardwood tools", "Craft Copper tools", "Craft Gold tools",
+                        "Craft Rose Gold tools", "Craft Iron tools", "Craft Steel tools",
+                        "Craft Diamond tools", "Craft Crystalline tools", "Craft Netherite tools",
+                        "Craft Dragon tools"});
+        markQuestTierLane(t, "toolsmith", new String[]{
+                "minecraft:stone_pickaxe", "minecraft:copper_pickaxe", "minecraft:golden_pickaxe",
+                "minecraft:golden_pickaxe", "minecraft:iron_pickaxe", "minecraft:iron_pickaxe",
+                "minecraft:diamond_pickaxe", "minecraft:diamond_pickaxe", "minecraft:netherite_pickaxe",
+                "minecraft:netherite_pickaxe"});
 
         // Brewmaster: each node extends beneficial potion durations by a further +10% (up to +50%).
         addLaneNodes(t, "brewmaster", "Brewmaster", "minecraft:brewing_stand", 11, TIER_SLOTS_5,
@@ -333,6 +354,19 @@ public class SkillTreeManager {
             while (n >= values[i]) { sb.append(symbols[i]); n -= values[i]; }
         }
         return sb.toString();
+    }
+
+    /** Mark a tier lane's nodes as Quest-Shard currency and give each node its tier's item icon. */
+    private static void markQuestTierLane(SkillTree t, String category, String[] icons) {
+        for (SkillNode n : t.nodes) {
+            if (!category.equals(n.category)) continue;
+            n.currency = "quest";
+            try {
+                int idx = Integer.parseInt(n.id.substring(category.length() + 1)) - 1;
+                if (idx >= 0 && idx < icons.length) n.icon = icons[idx];
+            } catch (NumberFormatException ignored) {
+            }
+        }
     }
 
     private static SkillEffect[][] flagEffects(String... flags) {

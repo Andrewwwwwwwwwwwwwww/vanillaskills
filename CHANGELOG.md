@@ -1,5 +1,24 @@
 # VanillaSkills Changelog
 
+## [0.16.2] - 2026-06-09
+
+### Added (Phase 3 — Quest-Shard crafting ladders)
+- **Armorsmith & Toolsmith are now 10-tier ladders paid in Quest Shards** (not Skill Shards), climbing
+  **Hardwood → Copper → Gold → Rose Gold → Iron → Steel → Diamond → Crystalline → Netherite → Dragon**.
+  Each node shows its tier's item icon and a purple "Cost: X Quest Shards".
+- **Crafting every gear tier is now gated** — including the **vanilla** tiers (copper/gold/iron/diamond/
+  netherite). You can't craft a tier's armor or tools until you've bought its node; **wood & stone stay
+  free**. Found/traded/looted gear of any tier still works — only crafting/smithing is gated.
+  - Table-crafted tiers gate at the result slot; **netherite** (and Dragon) gate at the smithing table.
+- Strict ladder (chain): left-click a tier to buy it + every tier below it. Pricier toward the top
+  (Hardwood 1 → Dragon 100 QS per lane; ~246 per lane). Steel — which opens deepslate mining — lands
+  at ~31 QS (≈ one good bounty session).
+- Per-node **currency** support: skill nodes can now cost Skill Shards or Quest Shards; unlock, bulk-buy,
+  and refund all use the right currency.
+
+### Upgrade notes (ops)
+- Run **`/skill regen`** to rebuild the tree with the new 10-tier Quest-Shard lanes.
+
 ## [0.16.1] - 2026-06-09
 
 ### Changed (skill-tree rebalance — Phase 2)

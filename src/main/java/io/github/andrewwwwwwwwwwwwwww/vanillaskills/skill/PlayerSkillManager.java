@@ -265,13 +265,14 @@ public class PlayerSkillManager {
                     + " Skill Shards (you've earned " + data.pointsEarned + ").").withStyle(ChatFormatting.RED));
             return false;
         }
-        if (data.pointsAvailable < node.cost) {
-            player.sendSystemMessage(Component.literal("Not enough Skill Shards (need " + node.cost + ").")
+        String cur = currencyName(node);
+        if (available(data, node) < node.cost) {
+            player.sendSystemMessage(Component.literal("Not enough " + cur + " (need " + node.cost + ").")
                     .withStyle(ChatFormatting.RED));
             return false;
         }
 
-        data.pointsAvailable -= node.cost;
+        deduct(data, node, node.cost);
         data.unlocked.add(nodeId);
         SkillEffects.applyNode(player, node);
         checkPathAdvancement(player, node, data);
@@ -304,20 +305,21 @@ public class PlayerSkillManager {
             total += n.cost;
             maxGate = Math.max(maxGate, n.minEarned);
         }
+        String cur = currencyName(target);
         if (maxGate > 0 && data.pointsEarned < maxGate) {
             player.sendSystemMessage(Component.literal("Unlocks after earning " + maxGate
                     + " Skill Shards (you've earned " + data.pointsEarned + ").").withStyle(ChatFormatting.RED));
             return false;
         }
-        if (data.pointsAvailable < total) {
-            player.sendSystemMessage(Component.literal("Not enough Skill Shards (need " + total + " for the chain).")
+        if (available(data, target) < total) {
+            player.sendSystemMessage(Component.literal("Not enough " + cur + " (need " + total + " for the chain).")
                     .withStyle(ChatFormatting.RED));
             return false;
         }
         for (String id : chain) {
             SkillNode n = tree.byId(id);
             if (n == null || data.hasUnlocked(id)) continue;
-            data.pointsAvailable -= n.cost;
+            deduct(data, n, n.cost);
             data.unlocked.add(id);
             SkillEffects.applyNode(player, n);
             checkPathAdvancement(player, n, data);
@@ -326,8 +328,30 @@ public class PlayerSkillManager {
         save(player.getUUID());
         int count = chain.size();
         player.sendSystemMessage(Component.literal("Unlocked " + count + " skill" + (count == 1 ? "" : "s")
-                + " for " + total + " Skill Shards.").withStyle(ChatFormatting.GREEN));
+                + " for " + total + " " + cur + ".").withStyle(ChatFormatting.GREEN));
         return true;
+    }
+
+    /** The display name of a node's currency. */
+    private static String currencyName(SkillNode node) {
+        return node.isQuestCurrency() ? "Quest Shards" : "Skill Shards";
+    }
+
+    /** The player's available balance in the node's currency. */
+    private static int available(PlayerSkillData data, SkillNode node) {
+        return node.isQuestCurrency() ? data.questShardsAvailable : data.pointsAvailable;
+    }
+
+    /** Deduct an amount in the node's currency. */
+    private static void deduct(PlayerSkillData data, SkillNode node, int amount) {
+        if (node.isQuestCurrency()) data.questShardsAvailable -= amount;
+        else data.pointsAvailable -= amount;
+    }
+
+    /** Refund an amount in the node's currency. */
+    private static void refund(PlayerSkillData data, SkillNode node, int amount) {
+        if (node.isQuestCurrency()) data.questShardsAvailable += amount;
+        else data.pointsAvailable += amount;
     }
 
     /** Refund a node and every unlocked node that depends on it (cascade), returning all their Shards. */
@@ -352,13 +376,13 @@ public class PlayerSkillManager {
             if (n == null) continue;
             SkillEffects.removeNode(player, n);
             data.unlocked.remove(id);
-            data.pointsAvailable += n.cost;
+            refund(data, n, n.cost);
             refunded += n.cost;
         }
         save(player.getUUID());
         int count = remove.size();
         player.sendSystemMessage(Component.literal("Refunded " + count + " skill" + (count == 1 ? "" : "s")
-                + " for " + refunded + " Skill Shards.").withStyle(ChatFormatting.YELLOW));
+                + " for " + refunded + " " + currencyName(target) + ".").withStyle(ChatFormatting.YELLOW));
         return true;
     }
 
