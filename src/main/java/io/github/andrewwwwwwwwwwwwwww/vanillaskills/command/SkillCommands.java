@@ -57,6 +57,16 @@ public final class SkillCommands {
                                 .then(Commands.argument("amount", IntegerArgumentType.integer(0))
                                         .executes(ctx -> adjustPoints(ctx, false))))));
 
+        root.then(Commands.literal("questshards")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("player", EntityArgument.player())
+                        .then(Commands.literal("add")
+                                .then(Commands.argument("amount", IntegerArgumentType.integer())
+                                        .executes(ctx -> adjustQuestShards(ctx, true))))
+                        .then(Commands.literal("set")
+                                .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                        .executes(ctx -> adjustQuestShards(ctx, false))))));
+
         root.then(Commands.literal("reset")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.argument("player", EntityArgument.player())
@@ -118,6 +128,17 @@ public final class SkillCommands {
         PlayerSkillData data = VanillaSkills.PLAYERS.get(target.getUUID());
         ctx.getSource().sendSuccess(() -> Component.literal(
                 target.getName().getString() + " now has " + data.pointsAvailable + " Skill Shards."), true);
+        return 1;
+    }
+
+    private static int adjustQuestShards(CommandContext<CommandSourceStack> ctx, boolean add) throws CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+        int amount = IntegerArgumentType.getInteger(ctx, "amount");
+        if (add) VanillaSkills.PLAYERS.addQuestShards(target, amount);
+        else VanillaSkills.PLAYERS.setQuestShards(target, amount);
+        PlayerSkillData data = VanillaSkills.PLAYERS.get(target.getUUID());
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                target.getName().getString() + " now has " + data.questShardsAvailable + " Quest Shards."), true);
         return 1;
     }
 
