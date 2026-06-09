@@ -98,11 +98,14 @@ public class SkillTreeManager {
     private static final int[] FIVE_AND_FIVE = {20, 21, 22, 23, 24, 29, 30, 31, 32, 33};
     // Quest-Shard cost ramp for the 10-tier Armorsmith/Toolsmith ladders (cheap early, steep at the top).
     private static final int[] TIER_COSTS = {1, 2, 3, 5, 8, 12, 20, 35, 60, 100};
-    // Lane icons on the lane-select screen, laid out as a tidy 6x2 block:
-    //   row 1 (10..16): Vitality, Fleet Foot, Prospector, Fortune, Warrior, Guardian, Reach
-    //   row 2 (19..25): Mountaineer, Aquatic, Armorsmith, Toolsmith, Brewmaster, Evasion, Cultivator
-    //   row 3 (31):     Night Vision (capstone, centred under the two rows)
-    private static final int[] CATEGORY_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 31};
+    // Lane icons on the lane-select screen. Indexed by laneIndex. Two zones:
+    //   SKILLS (Skill Shards) — row 1 (10-16): Vitality, Fleet, Warrior, Guardian, Reach, Evasion, Mountaineer
+    //                           row 2 (20-24): Prospector, Fortune, Aquatic, Cultivator, Brewmaster
+    //   CRAFTING (Quest Shards) — row 4 (39,41): Armorsmith, Toolsmith (set off by a divider on row 3)
+    //   Night Vision capstone — bottom row (46), beside the Points/Stats buttons.
+    // laneIndex:                  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
+    // lane:                    health spd min luck dmg grd rch mtn aqu arm tool brw eva cul nv
+    private static final int[] CATEGORY_SLOTS = {10, 11, 20, 21, 12, 13, 14, 16, 22, 39, 41, 24, 15, 23, 46};
 
     private static SkillTree defaultTree() {
         SkillTree t = new SkillTree();

@@ -1,5 +1,18 @@
 # VanillaSkills Changelog
 
+## [0.16.4] - 2026-06-09
+
+### Added
+- **`/skill layout`** (op) — opens the lane-select screen in a drag-to-arrange mode: click a lane to
+  pick it up, then click an empty spot to move it or another lane to swap them. Saves automatically.
+  Lets you design the layout in-game instead of editing coordinates by hand.
+
+### Changed
+- **Sectioned lane-select screen.** The home screen is now framed and split into a **Skills (Skill
+  Shards)** zone up top and a divider-lined **Crafting (Quest Shards)** strip below, with the
+  Armorsmith/Toolsmith lane names tinted purple — so the two currencies read at a glance. Each lane
+  tooltip now states which currency it uses.
+
 ## [0.16.3] - 2026-06-09
 
 ### Added

@@ -44,6 +44,10 @@ public final class SkillCommands {
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(SkillCommands::openEditor));
 
+        root.then(Commands.literal("layout")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .executes(SkillCommands::openLayout));
+
         root.then(Commands.literal("guide").executes(SkillCommands::guide));
 
         root.then(Commands.literal("points")
@@ -99,6 +103,11 @@ public final class SkillCommands {
 
     private static int openSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         SkillTreeMenu.open(ctx.getSource().getPlayerOrException());
+        return 1;
+    }
+
+    private static int openLayout(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        SkillTreeMenu.openLayout(ctx.getSource().getPlayerOrException());
         return 1;
     }
 
