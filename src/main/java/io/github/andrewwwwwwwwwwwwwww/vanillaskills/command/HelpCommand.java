@@ -45,8 +45,9 @@ public final class HelpCommand {
         line(source, "/skill questshards <player> add|set|reset <n>", "grant/set/clear Quest Shards");
         line(source, "/skill reset <player>", "refund all of a player's unlocks");
         line(source, "/skill recalc <player>", "recompute earned Shards from advancements");
-        line(source, "/skill reload", "reload the points + tree config");
+        line(source, "/skill reload", "reload the points + tree config from disk");
         line(source, "/skill regen [fresh]", "rebuild tree (keeps your changes; 'fresh' = full reset)");
+        line(source, "/skill regenpoints", "reset points.json (advancement values) to the new defaults");
         line(source, "/skill editor", "node editor (move/delete nodes)");
         line(source, "/skill layout", "drag the lane icons around to rearrange them");
         line(source, "/skill edit ...", "live-edit nodes (cost/slot/effects/requires)");
