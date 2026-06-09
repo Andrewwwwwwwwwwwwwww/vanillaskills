@@ -171,6 +171,31 @@ public class BountyBoards {
                 new Quaternionf().rotateY(angle), new Vector3f(0.55f, 0.55f, 0.55f), new Quaternionf());
     }
 
+    private static ServerLevel levelFor(MinecraftServer server, String dim) {
+        for (ServerLevel level : server.getAllLevels()) {
+            if (dimId(level).equals(dim)) return level;
+        }
+        return null;
+    }
+
+    /** Re-render every placed board in a loaded chunk (despawn its old entities, spawn fresh ones). */
+    public int refreshAll(MinecraftServer server) {
+        int count = 0;
+        for (Entry e : boards) {
+            ServerLevel level = levelFor(server, e.dim);
+            if (level == null) continue;
+            BlockPos base = new BlockPos(e.x, e.y, e.z);
+            if (!level.isLoaded(base)) continue; // chunk not loaded — skip
+            AABB box = new AABB(base).inflate(4.0);
+            for (Entity ent : level.getEntitiesOfClass(Entity.class, box, en -> en.entityTags().contains(TAG))) {
+                ent.discard();
+            }
+            spawnEntities(level, e.x + 0.5, e.y + 1.6, e.z + 0.5);
+            count++;
+        }
+        return count;
+    }
+
     public void removeNear(ServerPlayer op) {
         ServerLevel level = (ServerLevel) op.level();
         String dim = dimId(level);

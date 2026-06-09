@@ -192,7 +192,14 @@ public class VanillaSkills implements ModInitializer {
                             .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
                             .executes(ctx -> { BOARDS.place(ctx.getSource().getPlayerOrException()); return 1; })
                             .then(net.minecraft.commands.Commands.literal("remove")
-                                    .executes(ctx -> { BOARDS.removeNear(ctx.getSource().getPlayerOrException()); return 1; })))
+                                    .executes(ctx -> { BOARDS.removeNear(ctx.getSource().getPlayerOrException()); return 1; }))
+                            .then(net.minecraft.commands.Commands.literal("refresh")
+                                    .executes(ctx -> {
+                                        int n = BOARDS.refreshAll(ctx.getSource().getServer());
+                                        ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                                "Re-rendered " + n + " bounty board" + (n == 1 ? "" : "s") + "."), true);
+                                        return 1;
+                                    })))
                     .then(net.minecraft.commands.Commands.literal("reroll")
                             .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
                             .executes(ctx -> {

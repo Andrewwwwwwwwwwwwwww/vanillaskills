@@ -1,5 +1,12 @@
 # VanillaSkills Changelog
 
+## [0.15.2] - 2026-06-08
+
+### Added
+- **`/quests board refresh`** (op) — re-renders every placed bounty board in a loaded chunk (despawns
+  the old entities and spawns fresh ones), so existing boards pick up visual updates without a manual
+  remove/replace.
+
 ## [0.15.1] - 2026-06-08
 
 ### Changed
