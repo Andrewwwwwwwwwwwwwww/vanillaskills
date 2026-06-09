@@ -91,7 +91,8 @@ public final class SkillCommands {
 
         root.then(Commands.literal("regen")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                .executes(SkillCommands::regen));
+                .executes(ctx -> regen(ctx, true))
+                .then(Commands.literal("fresh").executes(ctx -> regen(ctx, false))));
 
         root.then(editTree());
 
@@ -196,16 +197,19 @@ public final class SkillCommands {
         return 1;
     }
 
-    private static int regen(CommandContext<CommandSourceStack> ctx) {
-        java.nio.file.Path backup = VanillaSkills.TREE.regenerate();
+    private static int regen(CommandContext<CommandSourceStack> ctx, boolean preserve) {
+        java.nio.file.Path backup = VanillaSkills.TREE.regenerate(preserve);
         if (ctx.getSource().getServer() != null) {
             for (ServerPlayer player : ctx.getSource().getServer().getPlayerList().getPlayers()) {
                 VanillaSkills.PLAYERS.applyAll(player);
             }
         }
         String suffix = backup != null ? " Backed up the old tree to " + backup.getFileName() + "." : "";
+        String mode = preserve
+                ? "Updated the tree, keeping your changes (added any new lanes/nodes)"
+                : "Reset the tree to the built-in default";
         ctx.getSource().sendSuccess(() -> Component.literal(
-                "Regenerated the default skill tree (" + VanillaSkills.TREE.tree().size() + " nodes)." + suffix)
+                mode + " (" + VanillaSkills.TREE.tree().size() + " nodes)." + suffix)
                 .withStyle(ChatFormatting.GREEN), true);
         return 1;
     }
