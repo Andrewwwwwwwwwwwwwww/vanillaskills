@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.16.10] - 2026-06-09
+
+### Added
+- **Fishing bounties** to promote fishing: Catch 16 Cod, Catch 16 Salmon, Catch 6 Tropical Fish, and
+  Catch 4 Pufferfish (turned in at the board for Quest Shards).
+
 ## [0.16.9] - 2026-06-09
 
 ### Changed

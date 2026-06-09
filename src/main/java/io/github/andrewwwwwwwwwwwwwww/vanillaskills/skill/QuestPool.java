@@ -24,6 +24,12 @@ public final class QuestPool {
             new Quest(Quest.Type.GATHER, "minecraft:ender_pearl", 8, 8, "Gather 8 Ender Pearls", 10, true),
             new Quest(Quest.Type.GATHER, "minecraft:bone", 32, 4, "Gather 32 Bones"),
 
+            // ---- Fishing (catch & turn in) ----
+            new Quest(Quest.Type.GATHER, "minecraft:cod", 16, 5, "Catch 16 Cod"),
+            new Quest(Quest.Type.GATHER, "minecraft:salmon", 16, 5, "Catch 16 Salmon"),
+            new Quest(Quest.Type.GATHER, "minecraft:tropical_fish", 6, 7, "Catch 6 Tropical Fish"),
+            new Quest(Quest.Type.GATHER, "minecraft:pufferfish", 4, 6, "Catch 4 Pufferfish"),
+
             // ---- Kill ----
             new Quest(Quest.Type.KILL, "minecraft:zombie", 25, 5, "Slay 25 Zombies"),
             new Quest(Quest.Type.KILL, "minecraft:skeleton", 25, 5, "Slay 25 Skeletons"),
