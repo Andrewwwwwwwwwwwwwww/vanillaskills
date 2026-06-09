@@ -41,7 +41,7 @@ public final class GuideBook {
 
             Spend Skill Shards on lanes of perks (health, speed, mining, combat, and more).
 
-            Left-click a node to buy it and everything below it. Right-click to refund.
+            Click a node to buy it and everything below it. Choose wisely - unlocks are permanent.
 
             Bottom-left: your Shards. Bottom-right: your stats.""",
 
