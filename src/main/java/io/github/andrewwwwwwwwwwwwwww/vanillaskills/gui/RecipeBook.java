@@ -29,60 +29,70 @@ public final class RecipeBook {
 
         ItemStack scale = DragonScale.create();
         ItemStack netherite = new ItemStack(Items.NETHERITE_INGOT);
-        r.add(new Display("Dragon Ingot", new ItemStack[]{
-                scale.copy(), scale.copy(), scale.copy(),
-                scale.copy(), netherite.copy(), scale.copy(),
-                scale.copy(), scale.copy(), scale.copy()}, DragonIngot.create()));
-
         ItemStack steel = Alloys.steelIngot();
-        r.add(new Display("Steel Shield", new ItemStack[]{
-                steel.copy(), new ItemStack(Items.SHIELD), steel.copy(),
-                steel.copy(), steel.copy(), steel.copy(),
-                E, steel.copy(), E}, SteelShield.create()));
-
         ItemStack chorus = new ItemStack(Items.CHORUS_FLOWER);
         ItemStack endRod = new ItemStack(Items.END_ROD);
-        r.add(new Display("Dragon Upgrade Template (×2)", new ItemStack[]{
-                chorus.copy(), DragonUpgradeTemplate.create(), chorus.copy(),
-                chorus.copy(), netherite.copy(), chorus.copy(),
-                endRod.copy(), new ItemStack(Items.SHULKER_SHELL), endRod.copy()}, count(DragonUpgradeTemplate.create(), 2)));
-
         ItemStack berry = new ItemStack(Items.GLOW_BERRIES);
         ItemStack sculk = new ItemStack(Items.SCULK);
-        r.add(new Display("Fortune Upgrade Template (×2)", new ItemStack[]{
-                berry.copy(), FortuneTemplate.create(), berry.copy(),
-                sculk.copy(), new ItemStack(Items.DIAMOND_BLOCK), sculk.copy(),
-                berry.copy(), new ItemStack(Items.EMERALD_BLOCK), berry.copy()}, count(FortuneTemplate.create(), 2)));
-
         ItemStack lapis = new ItemStack(Items.LAPIS_BLOCK);
         ItemStack diaBlock = new ItemStack(Items.DIAMOND_BLOCK);
-        r.add(new Display("Fortune IV Book", new ItemStack[]{
-                lapis.copy(), diaBlock.copy(), lapis.copy(),
-                fortuneBook(3), FortuneTemplate.create(), fortuneBook(3),
-                lapis.copy(), diaBlock.copy(), lapis.copy()}, fortuneBook(4)));
-
-        r.add(new Display("Fortune V Book", new ItemStack[]{
-                lapis.copy(), diaBlock.copy(), lapis.copy(),
-                fortuneBook(4), FortuneTemplate.create(), fortuneBook(4),
-                lapis.copy(), diaBlock.copy(), lapis.copy()}, fortuneBook(5)));
-
         ItemStack gold = new ItemStack(Items.GOLD_INGOT);
         ItemStack copper = new ItemStack(Items.COPPER_INGOT);
+        ItemStack diamond = new ItemStack(Items.DIAMOND);
+
+        // 1. Rose Gold Ingot
         r.add(new Display("Rose Gold Ingot (×4)", new ItemStack[]{
                 gold.copy(), copper.copy(), gold.copy(),
                 copper.copy(), E, copper.copy(),
                 gold.copy(), copper.copy(), gold.copy()}, count(Alloys.roseGoldIngot(), 4)));
 
+        // 2. Steel Ingot
         r.add(new Display("Steel Ingot", new ItemStack[]{
                 E, E, E,
                 new ItemStack(Items.IRON_INGOT), new ItemStack(Items.COAL), new ItemStack(Items.IRON_INGOT),
                 E, E, E}, Alloys.steelIngot()));
 
-        ItemStack diamond = new ItemStack(Items.DIAMOND);
+        // 3. Crystallized Diamond
         r.add(new Display("Crystallized Diamond (×4)", new ItemStack[]{
                 diamond.copy(), E, diamond.copy(),
                 E, new ItemStack(Items.AMETHYST_BLOCK), E,
                 diamond.copy(), E, diamond.copy()}, count(Alloys.crystallizedDiamond(), 4)));
+
+        // 4. Steel Shield
+        r.add(new Display("Steel Shield", new ItemStack[]{
+                steel.copy(), new ItemStack(Items.SHIELD), steel.copy(),
+                steel.copy(), steel.copy(), steel.copy(),
+                E, steel.copy(), E}, SteelShield.create()));
+
+        // 5. Fortune Upgrade Template
+        r.add(new Display("Fortune Upgrade Template (×2)", new ItemStack[]{
+                berry.copy(), FortuneTemplate.create(), berry.copy(),
+                sculk.copy(), diaBlock.copy(), sculk.copy(),
+                berry.copy(), new ItemStack(Items.EMERALD_BLOCK), berry.copy()}, count(FortuneTemplate.create(), 2)));
+
+        // 6. Fortune IV Book
+        r.add(new Display("Fortune IV Book", new ItemStack[]{
+                lapis.copy(), diaBlock.copy(), lapis.copy(),
+                fortuneBook(3), FortuneTemplate.create(), fortuneBook(3),
+                lapis.copy(), diaBlock.copy(), lapis.copy()}, fortuneBook(4)));
+
+        // 7. Fortune V Book
+        r.add(new Display("Fortune V Book", new ItemStack[]{
+                lapis.copy(), diaBlock.copy(), lapis.copy(),
+                fortuneBook(4), FortuneTemplate.create(), fortuneBook(4),
+                lapis.copy(), diaBlock.copy(), lapis.copy()}, fortuneBook(5)));
+
+        // 8. Dragon Ingot
+        r.add(new Display("Dragon Ingot", new ItemStack[]{
+                scale.copy(), scale.copy(), scale.copy(),
+                scale.copy(), netherite.copy(), scale.copy(),
+                scale.copy(), scale.copy(), scale.copy()}, DragonIngot.create()));
+
+        // 9. Dragon Upgrade Template
+        r.add(new Display("Dragon Upgrade Template (×2)", new ItemStack[]{
+                chorus.copy(), DragonUpgradeTemplate.create(), chorus.copy(),
+                chorus.copy(), netherite.copy(), chorus.copy(),
+                endRod.copy(), new ItemStack(Items.SHULKER_SHELL), endRod.copy()}, count(DragonUpgradeTemplate.create(), 2)));
 
         return r;
     }

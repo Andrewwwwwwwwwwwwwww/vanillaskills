@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.16.7] - 2026-06-09
+
+### Changed
+- Recipe book order: Rose Gold Ingot → Steel Ingot → Crystallized Diamond → Steel Shield → Fortune
+  Upgrade Template → Fortune IV Book → Fortune V Book → Dragon Ingot → Dragon Upgrade Template.
+
 ## [0.16.6] - 2026-06-09
 
 ### Added
