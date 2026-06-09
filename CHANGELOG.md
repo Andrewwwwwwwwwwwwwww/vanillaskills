@@ -1,5 +1,23 @@
 # VanillaSkills Changelog
 
+## [0.17.1] - 2026-06-09
+
+### Fixed (high-tier gear stats)
+- **Crystalline armor** no longer beats Netherite: its knockback resistance is now **0.05** (was 0.125,
+  which exceeded Netherite/Dragon's 0.1). It now sits correctly between Diamond and Netherite
+  (20 armor / 2.5 toughness / 0.05 kb).
+- **Dragon armor** is now clearly the **top tier**: **+1 armor per piece (24 total vs 20)**, toughness
+  **4** (was 3, identical to Netherite), and knockback **0.15** (was 0.1).
+- **Tool damage ladder** cleaned up so each custom tier sits between the right vanilla tiers (sword
+  damage): Hardwood 4.5 · Rose Gold 5 · Steel 6.5 · Crystalline 7.5 · Dragon 9.5 (vs Iron 6, Diamond 7,
+  Netherite 8). Rose Gold +0.5→+1, Steel/Crystalline +1→+0.5.
+  - Note: stats are stamped at craft time — re-craft existing gear to get the new numbers.
+
+### Changed
+- The **floating bounty board** no longer lists specific quests (those are now per-player) — it shows a
+  generic "Right-click to view your bounties" prompt + the reset countdown, so starter-board players
+  aren't confused by quests they can't see yet.
+
 ## [0.17.0] - 2026-06-09
 
 ### Changed (bounty board redesign)

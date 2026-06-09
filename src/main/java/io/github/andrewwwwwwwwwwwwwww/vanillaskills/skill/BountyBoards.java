@@ -103,18 +103,15 @@ public class BountyBoards {
         e.addTag(TAG);
     }
 
-    /** The board's text: title, the active bounties + rewards, and a live reset countdown. */
+    /** The board's text: title, a generic prompt (bounties are per-player), and a live reset countdown. */
     private static Component boardText() {
         MutableComponent c = Component.literal("✦  BOUNTY BOARD  ✦")
                 .withStyle(s -> s.withColor(0xFFD700).withBold(true).withItalic(false));
-        for (Quest q : VanillaSkills.QUESTS.active()) {
-            c.append(Component.literal("\n"));
-            c.append(Component.literal("• " + q.title()).withStyle(s -> s.withColor(0xFFFFFF).withItalic(false)));
-            c.append(Component.literal("   +" + q.reward()).withStyle(s -> s.withColor(0xD17FFF).withItalic(false)));
-        }
         long rem = VanillaSkills.QUESTS.nextRotationMs() - System.currentTimeMillis();
         String when = rem <= 0 ? "any moment" : (rem / 3_600_000) + "h " + (rem % 3_600_000 / 60_000) + "m";
         c.append(Component.literal("\n\n"));
+        c.append(Component.literal("Right-click to view your bounties").withStyle(s -> s.withColor(0xFFFFFF).withItalic(false)));
+        c.append(Component.literal("\n"));
         c.append(Component.literal("⏳ New bounties in " + when).withStyle(s -> s.withColor(0xFFD54A).withItalic(false)));
         c.append(Component.literal("\n"));
         c.append(Component.literal("▶ Right-click to open ◀").withStyle(s -> s.withColor(0xBBBBBB).withItalic(false)));
