@@ -36,10 +36,10 @@ public final class CraftingGate {
         return hasFlag(player, "craft_armor_dragon");
     }
 
-    /** Beneficial-potion duration multiplier from the Brewmaster lane (1.0 = none, up to 2.0). */
+    /** Beneficial-potion duration multiplier from the Brewmaster lane (1.0 = none, up to 1.5 = +50%). */
     public static float potionDurationMultiplier(Player player) {
         for (int level = 5; level >= 1; level--) {
-            if (hasFlag(player, "long_potions_" + level)) return 1.0f + 0.2f * level;
+            if (hasFlag(player, "long_potions_" + level)) return 1.0f + 0.1f * level;
         }
         return 1.0f;
     }

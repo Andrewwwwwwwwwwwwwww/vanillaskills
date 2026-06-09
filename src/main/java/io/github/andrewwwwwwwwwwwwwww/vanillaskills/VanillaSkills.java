@@ -143,7 +143,9 @@ public class VanillaSkills implements ModInitializer {
         net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) ->
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.DeepslateGate.canBreak(player, state));
 
-        // Cultivator skill: chance for bonus crops when harvesting a mature crop.
+        // Cultivator skill: bonus crops when harvesting a mature crop. Each Cultivator level rolls an
+        // independent ~50% chance for one extra crop, so the bonus scales clearly with level — at max
+        // (5) you average ~2.5 extra per crop, and at level 1 ~0.5.
         net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
             if (!(world instanceof ServerLevel level) || !(player instanceof ServerPlayer sp)) return;
             net.minecraft.world.item.Item product =
@@ -151,9 +153,12 @@ public class VanillaSkills implements ModInitializer {
             if (product == null) return;
             int farmLevel = io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.CraftingGate.farmingLevel(sp);
             if (farmLevel <= 0) return;
-            if (sp.getRandom().nextFloat() < 0.2f * farmLevel) {
-                net.minecraft.world.level.block.Block.popResource(level, pos,
-                        new ItemStack(product, 1 + sp.getRandom().nextInt(2)));
+            int bonus = 0;
+            for (int i = 0; i < farmLevel; i++) {
+                if (sp.getRandom().nextFloat() < 0.5f) bonus++;
+            }
+            if (bonus > 0) {
+                net.minecraft.world.level.block.Block.popResource(level, pos, new ItemStack(product, bonus));
             }
         });
 
