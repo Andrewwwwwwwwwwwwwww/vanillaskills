@@ -107,11 +107,13 @@ public class VanillaSkills implements ModInitializer {
             BOARDS.save();
         });
 
-        // Right-click a physical bounty board (lectern) to open the quest GUI.
-        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+        // Right-click a bounty board's floating-text interaction entity to open the quest GUI.
+        net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (hand == net.minecraft.world.InteractionHand.MAIN_HAND
-                    && world instanceof ServerLevel sl && player instanceof ServerPlayer sp
-                    && BOARDS.isBoard(sl, hitResult.getBlockPos())) {
+                    && player instanceof ServerPlayer sp
+                    && entity instanceof net.minecraft.world.entity.Interaction
+                    && entity.entityTags().contains(
+                            io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards.TAG)) {
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.gui.QuestMenu.open(sp);
                 return net.minecraft.world.InteractionResult.SUCCESS;
             }

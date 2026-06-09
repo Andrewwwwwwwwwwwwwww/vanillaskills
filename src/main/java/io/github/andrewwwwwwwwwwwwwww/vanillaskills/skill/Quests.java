@@ -96,9 +96,9 @@ public final class Quests {
             removeItem(player, q.target(), q.amount());
         }
         data.questClaimed.add(index);
-        VanillaSkills.PLAYERS.addPoints(player, q.reward());
+        VanillaSkills.PLAYERS.addQuestShards(player, q.reward());
         player.sendSystemMessage(Component.literal("Bounty complete: " + q.title() + "  +" + q.reward()
-                + " skill point" + (q.reward() == 1 ? "" : "s")).withStyle(ChatFormatting.GOLD));
+                + " Quest Shard" + (q.reward() == 1 ? "" : "s")).withStyle(ChatFormatting.GOLD));
         VanillaSkills.PLAYERS.save(player.getUUID());
     }
 

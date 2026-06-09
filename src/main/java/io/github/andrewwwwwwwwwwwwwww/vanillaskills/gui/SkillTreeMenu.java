@@ -173,7 +173,7 @@ public class SkillTreeMenu extends ChestMenu {
         } else if (affordable) {
             lore.add(styled("Click to unlock — cost " + node.cost, ChatFormatting.YELLOW));
         } else {
-            lore.add(styled("Cost " + node.cost + " (need more points)", ChatFormatting.RED));
+            lore.add(styled("Cost " + node.cost + " (need more Skill Shards)", ChatFormatting.RED));
         }
         stack.set(DataComponents.LORE, new ItemLore(lore));
         if (unlocked) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
@@ -199,8 +199,8 @@ public class SkillTreeMenu extends ChestMenu {
 
     private ItemStack buildCounter(PlayerSkillData data) {
         ItemStack stack = new ItemStack(Items.EXPERIENCE_BOTTLE);
-        stack.set(DataComponents.CUSTOM_NAME, styled("Points: " + data.pointsAvailable, ChatFormatting.AQUA));
-        stack.set(DataComponents.LORE, new ItemLore(List.of(styled("Click to see how to earn points", ChatFormatting.GRAY))));
+        stack.set(DataComponents.CUSTOM_NAME, styled("Skill Shards: " + data.pointsAvailable, ChatFormatting.AQUA));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(styled("Click to see how to earn Skill Shards", ChatFormatting.GRAY))));
         return stack;
     }
 

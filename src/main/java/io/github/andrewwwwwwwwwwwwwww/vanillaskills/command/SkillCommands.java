@@ -102,7 +102,8 @@ public final class SkillCommands {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
         PlayerSkillData data = VanillaSkills.PLAYERS.get(player.getUUID());
         ctx.getSource().sendSuccess(() -> Component.literal(
-                "Skill points: " + data.pointsAvailable + " (earned " + data.pointsEarned + ")")
+                "Skill Shards: " + data.pointsAvailable + " (earned " + data.pointsEarned + ")"
+                + "   Quest Shards: " + data.questShardsAvailable)
                 .withStyle(ChatFormatting.AQUA), false);
         return 1;
     }
@@ -116,7 +117,7 @@ public final class SkillCommands {
         else VanillaSkills.PLAYERS.setPoints(target, amount);
         PlayerSkillData data = VanillaSkills.PLAYERS.get(target.getUUID());
         ctx.getSource().sendSuccess(() -> Component.literal(
-                target.getName().getString() + " now has " + data.pointsAvailable + " points."), true);
+                target.getName().getString() + " now has " + data.pointsAvailable + " Skill Shards."), true);
         return 1;
     }
 
@@ -132,7 +133,7 @@ public final class SkillCommands {
         ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
         int delta = VanillaSkills.PLAYERS.recalc(target);
         ctx.getSource().sendSuccess(() -> Component.literal(
-                "Recalculated points for " + target.getName().getString() + " (" + (delta >= 0 ? "+" : "") + delta + ")."), true);
+                "Recalculated Skill Shards for " + target.getName().getString() + " (" + (delta >= 0 ? "+" : "") + delta + ")."), true);
         return 1;
     }
 
@@ -146,7 +147,7 @@ public final class SkillCommands {
             }
         }
         ctx.getSource().sendSuccess(() -> Component.literal(
-                "Reloaded skill tree (" + VanillaSkills.TREE.tree().size() + " nodes) and points config.")
+                "Reloaded skill tree (" + VanillaSkills.TREE.tree().size() + " nodes) and Skill Shard config.")
                 .withStyle(ChatFormatting.GREEN), true);
         return 1;
     }

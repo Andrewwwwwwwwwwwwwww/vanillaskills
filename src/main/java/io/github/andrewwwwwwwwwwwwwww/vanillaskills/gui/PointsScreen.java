@@ -22,12 +22,12 @@ public final class PointsScreen {
         int per = cfg.perAdvancement;
         List<ItemStack> items = new ArrayList<>();
 
-        items.add(item(Items.KNOWLEDGE_BOOK, "Earning Skill Points", ChatFormatting.GOLD, List.of(
-                "Points come from completing advancements.",
+        items.add(item(Items.KNOWLEDGE_BOOK, "Earning Skill Shards", ChatFormatting.GOLD, List.of(
+                "Skill Shards come from completing advancements.",
                 "Each advancement counts once — they can't be farmed.")));
 
         items.add(item(Items.PAPER, "Every Advancement", ChatFormatting.YELLOW, List.of(
-                "+" + per + " point" + (per == 1 ? "" : "s") + " each")));
+                "+" + per + " Skill Shard" + (per == 1 ? "" : "s") + " each")));
 
         items.add(item(Items.NETHER_STAR, "Major Milestones", ChatFormatting.LIGHT_PURPLE, List.of(
                 "Big goals — Nether, the End, bosses,",
@@ -37,19 +37,19 @@ public final class PointsScreen {
         items.add(item(Items.DIAMOND_CHESTPLATE, "VanillaSkills Goals", ChatFormatting.AQUA, List.of(
                 "Craft full armor sets, discover the",
                 "upgrade templates, forge a Dragon Ingot,",
-                "and finish skill paths for bonus points.")));
+                "and finish skill paths for bonus Skill Shards.")));
 
         if (cfg.startingPoints > 0) {
             items.add(item(Items.EXPERIENCE_BOTTLE, "Starting Bonus", ChatFormatting.GREEN, List.of(
-                    "+" + cfg.startingPoints + " points when you first join")));
+                    "+" + cfg.startingPoints + " Skill Shards when you first join")));
         }
 
         if (cfg.ignoreRecipeAdvancements) {
             items.add(item(Items.CRAFTING_TABLE, "Recipe Unlocks", ChatFormatting.GRAY, List.of(
-                    "Give no points.")));
+                    "Give no Skill Shards.")));
         }
 
-        InfoMenu.open(player, styled("Earning Points", ChatFormatting.AQUA), 6, items);
+        InfoMenu.open(player, styled("Earning Skill Shards", ChatFormatting.AQUA), 6, items);
     }
 
     private static ItemStack item(net.minecraft.world.item.Item icon, String name, ChatFormatting color, List<String> lore) {

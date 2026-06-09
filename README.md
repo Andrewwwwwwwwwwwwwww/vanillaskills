@@ -49,18 +49,24 @@ Per-player skill tree with a chest-based GUI (no client mod needed):
   - `/skill edit ...` — op, live-edit the server's tree (add/remove nodes, set
     cost/slot/icon/title/desc, requirements, attribute effects) writing back to JSON
 
-### Bounty board (quests)
-A shared quest system for earning extra skill points:
+### Bounty board (quests) & Quest Shop
+A shared quest system with its own currency and shop:
 
+- **Two currencies:** the skill tree spends **Skill Shards** (earned from advancements); bounties
+  award **Quest Shards** (spent in the shop). Conversion is one-way: **3 Quest Shards → 1 Skill Shard**.
 - **`/quests`** (alias **`/bounty`**) — open the quest GUI. Three bounties are active at a time and
   **re-roll every 5 hours**. Each is a *gather-items* (turn in at the board) or *kill-mobs* bounty
-  worth a couple of skill points. Anyone can do each once per rotation; progress is tracked per
+  worth a couple of Quest Shards. Anyone can do each once per rotation; progress is tracked per
   player and resets each rotation. Kill progress counts automatically; gather quests consume the
   items on claim (your own custom marked items don't count toward gather quests).
-- **Physical board:** **`/quests board`** (op) places a real, interactable **lectern** where you're
-  looking, with a floating gold "✦ Bounty Board ✦" label above it — anyone can right-click it to open
-  the quest GUI, no command needed. **`/quests board remove`** (op) removes the nearest board.
-  Board positions and quest state persist across restarts.
+- **Quest Shop:** a Shop button in the quest GUI opens a **daily-rotating catalog** (~105 boost items,
+  weighted so cheap commons show most). Pay with **Quest Shards (left-click)** or **Skill Shards
+  (right-click, auto-converted 3:1)**. A permanent converter slot turns Quest Shards into Skill
+  Shards. Stock rotates at UTC midnight.
+- **Floating board:** **`/quests board`** (op) spawns a holograms-style floating "✦ Bounty Board ✦"
+  text with an invisible interaction entity — anyone can right-click it to open the quest GUI, no
+  command needed. **`/quests board remove`** (op) removes the nearest board. Board positions and quest
+  state persist across restarts.
 
 ### Advancements
 Custom mod advancements reward progression milestones — crafting each full armor set, discovering the

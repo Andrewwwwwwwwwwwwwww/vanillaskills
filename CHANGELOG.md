@@ -1,5 +1,29 @@
 # VanillaSkills Changelog
 
+## [0.14.0] - 2026-06-08
+
+### Added
+- **Two currencies, renamed for clarity.** Skill-tree points are now **Skill Shards**; quest bounties
+  award a separate **Quest Shard** currency. Every "point(s)" label across the GUIs, commands, and
+  guide book is updated. Existing balances carry over as Skill Shards; everyone starts with 0 Quest
+  Shards.
+- **Quest Shop** — a Shop button in the quest GUI opens a daily-rotating catalog (~105 entries,
+  weighted so cheap commons appear most). Pay with **Quest Shards (left-click)** or **Skill Shards
+  (right-click, auto-converted 3:1)**. A permanent **converter** slot turns 3 Quest Shards → 1 Skill
+  Shard (one-way), so early-game Quest Shards buy boosts and late-game they help finish the skill tree.
+- The shop selection rotates daily at UTC midnight, derived deterministically from the day (no extra
+  save file).
+
+### Changed
+- **Bounty board is now holograms-style floating text** instead of a lectern. `/quests board` (op)
+  spawns a native text-display ("✦ Bounty Board ✦") plus an invisible interaction entity that anyone
+  can right-click to open the quest GUI. `/quests board remove` cleans up both entities.
+- Quest GUI and Shop GUI use a clean framed layout (bordered, centered content, header with balances
+  + timer, footer with navigation/converter) rather than loose corner icons.
+
+### Internal
+- Removed the now-unused `ArmorStandAccessor` mixin (the board no longer uses an armor stand).
+
 ## [0.13.0] - 2026-06-07
 
 ### Added
