@@ -28,108 +28,115 @@ public final class GuideBook {
 
             A server-side progression overhaul.
 
-            Use /skill to open your skill tree. Earn Skill Shards by completing advancements.
+            Two currencies drive everything:
 
-            Turn the page for features & crafting.""",
+            Skill Shards - from advancements.
+            Quest Shards - from bounties.
+
+            Type /help for commands.""",
 
             """
             Skill Tree
+            (/skill)
 
-            /skill - open the tree
-            /skill points - your Skill & Quest Shards
+            Spend Skill Shards on lanes of perks (health, speed, mining, combat, and more).
 
-            Click a node to unlock it if you can afford it and meet its requirements.
+            Left-click a node to buy it and everything below it. Right-click to refund.
 
-            Ops: /skill editor, /skill edit""",
-
-            """
-            Mending
-
-            Mending is removed from the game entirely - villager trades, chest loot, and the enchanting table will never give it.""",
+            Bottom-left: your Shards. Bottom-right: your stats.""",
 
             """
-            Fortune IV & V
+            Earning Skill Shards
 
-            Find a Fortune Upgrade Template in Ancient City and mineshaft chests.
+            Every advancement gives Skill Shards, once each. Harder ones pay much more:
 
-            Duplicate it with glow berries, sculk, a diamond block and an emerald block.""",
+            tasks - a little
+            goals - more
+            challenges (purple) - a lot
+
+            Doing them all can buy the whole tree.""",
 
             """
-            Fortune IV & V (cont.)
+            Bounty Board
+            (/quests or /bounty)
 
-            Upgrade books in this shape:
-            lapis | diamond | lapis
-            book | template | book
-            lapis | diamond | lapis
+            Three bounties at a time, refreshing every 5 hours. Gather items or slay mobs for Quest Shards.
 
-            Two Fortune III books make a Fortune IV book. Anvil it onto a tool.""",
+            New servers hide the hardest quests for the first 150 hours.""",
+
+            """
+            Quest Shop
+
+            Open the Shop from the bounty board. A daily set of boost items, bought with Quest Shards (or Skill Shards).
+
+            A converter trades 3 Quest Shards for 1 Skill Shard.""",
+
+            """
+            Crafting Ladders
+
+            Armorsmith & Toolsmith are paid in Quest Shards and gate crafting EVERY gear tier - copper, iron, diamond, and the custom tiers.
+
+            Wood & stone stay free. Found/traded gear always works.""",
+
+            """
+            Deepslate
+
+            Deepslate and its ores need a Steel-tier or better pickaxe (Steel, Diamond, Crystalline, Netherite, Dragon).
+
+            Unlock Steel in the Toolsmith lane to mine the deep layer.""",
 
             """
             Armor Tiers
 
-            Hardwood: craft from Wood blocks. Light and fast.
+            Hardwood: from Wood blocks. Light and fast.
 
-            Rose Gold: 4 gold + 4 copper = ingots. Full set = status immunity, piglins neutral.
+            Rose Gold: 4 gold + 4 copper. Full set: immune to bad effects, piglins neutral.
 
-            Steel: 2 iron + 1 coal = ingot. Tanky.
-
-            Repair each at an anvil with its own material.""",
+            Steel: 2 iron + 1 coal. Tanky.""",
 
             """
             Crystalline (Diamond II)
 
-            Craft Crystallized Diamonds: 4 diamonds + 1 amethyst block = 4.
+            Crystallized Diamonds: 4 diamonds + 1 amethyst block = 4.
 
-            Armor and tools sit between diamond and netherite. Full armor set reflects 25% of melee damage.""",
+            Between diamond and netherite. Full set reflects 25% of melee damage.""",
 
             """
             Dragon (Netherite II)
 
-            Slay the Ender Dragon for Dragon Scales (8 drop).
+            Slay the Ender Dragon for 8 Dragon Scales. Surround a Netherite Ingot with them to forge a Dragon Ingot.
 
-            Full set: immune to fire, lava and dragon's breath.
-
-            Hold sneak in midair to dive-dash.""",
-
-            """
-            Dragon Ingot
-
-            Surround a Netherite Ingot with 8 Dragon Scales in a crafting table to forge a Dragon Ingot.""",
+            Full set: immune to fire/lava/breath. Sneak midair to dive-dash.""",
 
             """
             Dragon Upgrade
 
             Find a Dragon Upgrade template in End City treasure (~4%).
 
-            Smithing table: template + netherite armor + Dragon Ingot = Dragon armor (keeps enchants).""",
-
-            """
-            Dragon (cont.)
-
-            Dragon tools are crafted from Dragon Ingots.
-
-            Duplicate the template: chorus flowers around it, a netherite ingot below, end rods + a shulker shell on the bottom row.""",
+            Smithing: template + netherite armor + Dragon Ingot = Dragon armor (keeps enchants). Dragon tools use Dragon Ingots.""",
 
             """
             Dragon Elytra
 
             Drop a Dragon chestplate and an Elytra on top of an anvil to fuse them into a gliding chestplate.
 
-            Drop it on a grindstone to split them again.""",
+            Drop it on a grindstone to split them.""",
 
             """
-            Crafting Unlocks
+            Fortune IV & V
 
-            Armorsmith & Toolsmith have a node per tier - unlock a tier to craft its armor/tools.
+            Find a Fortune Upgrade Template in Ancient City / mineshaft chests.
 
-            Ingots and materials are never locked.""",
+            Combine two Fortune III books + the template (lapis & diamond blocks) for a Fortune IV book. IV+IV = V.""",
 
             """
-            Potions
+            Potions & Mending
 
-            Brewmaster (5 nodes): beneficial potions last up to +100% longer.
+            Brewmaster (5 nodes): beneficial potions last up to +50% longer. Potions stack to 16.
 
-            Potions stack to 16."""
+            Mending is removed - it never appears anywhere.
+
+            See all recipes via the Recipes icon on the skill screen."""
     };
 
     public static ItemStack create() {
