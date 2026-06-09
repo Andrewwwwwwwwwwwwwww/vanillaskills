@@ -170,18 +170,18 @@ public class SkillTreeManager {
                 gridSlots(9), new int[]{3, 5, 7, 9, 11, 13, 16, 19, 24},
                 new SkillEffect[][]{
                         {SkillEffect.attribute("minecraft:oxygen_bonus", "add_value", 1.0)},
+                        {SkillEffect.attribute("minecraft:oxygen_bonus", "add_value", 1.0)},
+                        {SkillEffect.attribute("minecraft:oxygen_bonus", "add_value", 1.0)},
                         {SkillEffect.attribute("minecraft:water_movement_efficiency", "add_value", 0.34)},
-                        {SkillEffect.attribute("minecraft:submerged_mining_speed", "add_value", 0.27)},
-                        {SkillEffect.attribute("minecraft:oxygen_bonus", "add_value", 1.0)},
+                        {SkillEffect.attribute("minecraft:water_movement_efficiency", "add_value", 0.33)},
                         {SkillEffect.attribute("minecraft:water_movement_efficiency", "add_value", 0.33)},
                         {SkillEffect.attribute("minecraft:submerged_mining_speed", "add_value", 0.27)},
-                        {SkillEffect.attribute("minecraft:oxygen_bonus", "add_value", 1.0)},
-                        {SkillEffect.attribute("minecraft:water_movement_efficiency", "add_value", 0.33)},
+                        {SkillEffect.attribute("minecraft:submerged_mining_speed", "add_value", 0.27)},
                         {SkillEffect.attribute("minecraft:submerged_mining_speed", "add_value", 0.26)}
                 },
-                new String[]{"+1 breath", "+34% swim speed", "+27% underwater mining",
-                        "+1 breath (+2)", "+67% swim speed", "+54% underwater mining",
-                        "+1 breath (+3)", "Full surface swim speed", "Full underwater mining"});
+                new String[]{"+1 breath", "+1 breath (+2)", "+1 breath (+3)",
+                        "+34% swim speed", "+67% swim speed", "Full surface swim speed",
+                        "+27% underwater mining", "+54% underwater mining", "Full underwater mining"});
 
         // Armorsmith: one node per armor tier, unlocking the right to craft that tier's armor.
         addLaneNodes(t, "armorsmith", "Armorsmith", "minecraft:smithing_table", 9, TIER_SLOTS_5, COSTS_5,

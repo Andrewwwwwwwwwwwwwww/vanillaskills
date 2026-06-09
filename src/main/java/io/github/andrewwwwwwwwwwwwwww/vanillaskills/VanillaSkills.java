@@ -232,7 +232,7 @@ public class VanillaSkills implements ModInitializer {
         if (tickCounter % QUEST_ROTATION_INTERVAL == 0) {
             QUESTS.tick(srv);
         }
-        if (tickCounter % io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards.SPIN_INTERVAL == 0) {
+        if (tickCounter % io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards.REFRESH_INTERVAL == 0) {
             BOARDS.tick(srv, tickCounter);
         }
     }
