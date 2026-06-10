@@ -1,5 +1,18 @@
 # VanillaSkills Changelog
 
+## [0.17.2] - 2026-06-09
+
+### Fixed (full gear ladder)
+- Audited every custom tier against the real vanilla stats so each sits between its neighbours in the
+  order Leather < Chain < Hardwood < Copper < Gold < Rose Gold < Iron < Steel < Diamond < Crystalline <
+  Netherite < Dragon:
+  - **Steel armor toughness 2 → 1** (was identical to Diamond's 2; now between Iron 0 and Diamond 2).
+  - **Hardwood** armor durability ×11 → ×12, **Rose Gold** ×15 → ×13 (no longer iron-level), so durability
+    climbs through the ladder.
+  - **Tool damage:** Hardwood is stone-based (sword 5) and was out-damaging gold-based Rose Gold —
+    Hardwood bonus 0.5→0, Rose Gold 1.0→1.5, giving an ascending sword ladder
+    5.0 → 5.5 → 6.5 → 7.5 → 9.5 (Hardwood/Rose Gold/Steel/Crystalline/Dragon) between the vanilla tiers.
+
 ## [0.17.1] - 2026-06-09
 
 ### Fixed (high-tier gear stats)
