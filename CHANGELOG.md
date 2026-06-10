@@ -1,5 +1,13 @@
 # VanillaSkills Changelog
 
+## [0.17.5] - 2026-06-09
+
+### Changed
+- **Tool durability made consistent with vanilla's order** (like the armor pass): Hardwood **200 → 160**
+  (now between Stone 131 and Copper 190, no longer beating Copper), Rose Gold **250 → 220** (between
+  Copper 190 and Iron 250, no longer tying Iron). Steel/Crystalline/Dragon already interpolated.
+  Damage ladder unchanged (sword 5 / 5.5 / 6.5 / 7.5 / 9.5). Rose Gold keeps gold's top mining speed.
+
 ## [0.17.4] - 2026-06-09
 
 ### Changed
