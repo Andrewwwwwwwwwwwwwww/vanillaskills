@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [0.17.4] - 2026-06-09
+
+### Changed
+- **Hardwood armor weakened to sit below Copper** (following vanilla's actual power order rather than a
+  strict tier list): **9 armor / ×9 durability** (was 11 / ×12), between Leather and Copper. Keeps its
+  +10% movement set bonus.
+- Rose Gold left as-is (gold-speed, higher durability, negative-effect-immunity set bonus — no extra
+  buffs needed).
+
 ## [0.17.3] - 2026-06-09
 
 ### Changed
