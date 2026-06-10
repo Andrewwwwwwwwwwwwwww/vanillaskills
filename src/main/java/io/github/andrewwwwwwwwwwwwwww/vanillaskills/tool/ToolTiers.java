@@ -29,15 +29,15 @@ public final class ToolTiers {
     private static final Item[] DIAMOND_TOOLS = {DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SHOVEL, DIAMOND_HOE, DIAMOND_SWORD, DIAMOND_SPEAR};
     private static final Item[] NETHERITE_TOOLS = {NETHERITE_PICKAXE, NETHERITE_AXE, NETHERITE_SHOVEL, NETHERITE_HOE, NETHERITE_SWORD, NETHERITE_SPEAR};
 
-    // Hardwood = stone tier (better than stone, can't mine diamond), crafted from Wood blocks.
+    // Hardwood = stone tier (stone sword 5), crafted from Wood blocks; more durable than stone.
     public static final ToolTier HARDWOOD = new ToolTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_tool_hardwood",
-            STONE_TOOLS, 200, 0.5, 0.1, 0.0, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
+            STONE_TOOLS, 200, 0.0, 0.1, 0.0, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
 
-    // Rose Gold = gold tier, between gold and iron in damage (gold sword 4 -> 5), quick strikes.
+    // Rose Gold = gold tier, just above Hardwood and below iron (gold sword 4 -> 5.5), quick strikes.
     public static final ToolTier ROSE_GOLD = new ToolTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_tool_rose_gold",
-            GOLD_TOOLS, 250, 1.0, 0.2, 0.0, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
+            GOLD_TOOLS, 250, 1.5, 0.2, 0.0, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
 
     // Steel = iron tier, between iron and diamond in damage (iron sword 6 -> 6.5), more durable than iron.
     public static final ToolTier STEEL = new ToolTier(
