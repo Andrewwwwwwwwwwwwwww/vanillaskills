@@ -29,22 +29,25 @@ public final class ToolTiers {
     private static final Item[] DIAMOND_TOOLS = {DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SHOVEL, DIAMOND_HOE, DIAMOND_SWORD, DIAMOND_SPEAR};
     private static final Item[] NETHERITE_TOOLS = {NETHERITE_PICKAXE, NETHERITE_AXE, NETHERITE_SHOVEL, NETHERITE_HOE, NETHERITE_SWORD, NETHERITE_SPEAR};
 
-    // Hardwood = stone tier (stone sword 5), crafted from Wood blocks; more durable than stone.
+    // Hardwood = stone tier (stone speed 4, sword 5). Durability 160 sits between Stone (131) and
+    // Copper (190) — must not beat Copper.
     public static final ToolTier HARDWOOD = new ToolTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_tool_hardwood",
-            STONE_TOOLS, 200, 0.0, 0.1, 0.0, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
+            STONE_TOOLS, 160, 0.0, 0.1, 0.0, itemSet(ArmorTiers.WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()));
 
-    // Rose Gold = gold tier, just above Hardwood and below iron (gold sword 4 -> 5.5), quick strikes.
+    // Rose Gold = gold tier (gold speed 12 — fastest miner, sword 4 -> 5.5). Durability 220 between
+    // Copper (190) and Iron (250): the "fast like gold, far sturdier" tier.
     public static final ToolTier ROSE_GOLD = new ToolTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_tool_rose_gold",
-            GOLD_TOOLS, 250, 1.5, 0.2, 0.0, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
+            GOLD_TOOLS, 220, 1.5, 0.2, 0.0, itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot);
 
-    // Steel = iron tier, between iron and diamond in damage (iron sword 6 -> 6.5), more durable than iron.
+    // Steel = iron tier (iron speed 6, sword 6 -> 6.5). Durability 800 between Iron (250) and Diamond (1561).
     public static final ToolTier STEEL = new ToolTier(
             "steel", "Steel", 0xB8C0C8, "vs_tool_steel",
             IRON_TOOLS, 800, 0.5, 0.1, 0.0, itemSet(IRON_INGOT), Alloys::isSteelIngot);
 
-    // Crystalline = diamond tier, between diamond and netherite in damage (diamond sword 7 -> 7.5).
+    // Crystalline = diamond tier (diamond speed 8, sword 7 -> 7.5). Durability 1800 between Diamond (1561)
+    // and Netherite (2031).
     public static final ToolTier CRYSTAL = new ToolTier(
             "crystal", "Crystalline", 0xB389E8, "vs_tool_crystal",
             DIAMOND_TOOLS, 1800, 0.5, 0.1, 0.0, itemSet(DIAMOND), Alloys::isCrystallizedDiamond);
