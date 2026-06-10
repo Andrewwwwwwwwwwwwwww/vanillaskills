@@ -44,11 +44,11 @@ public final class ArmorTiers {
             new int[]{2, 5, 4, 2}, 0.0, 0.0, 0.0, new int[]{143, 208, 195, 169}, // 13 armour, dur x13
             itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot, RoseGoldSet::baseLore);
 
-    // Steel: between Iron (15 armour, 0 tough) and Diamond (20, 2 tough) — toughness 1 (was 2 = diamond).
+    // Steel: between Iron and Diamond by armour (18) but no toughness — toughness starts at Crystalline.
     public static final ArmorTier STEEL = new ArmorTier(
             "steel", "Steel", 0xB8C0C8, "vs_armor_steel",
             new Item[]{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS},
-            new int[]{3, 7, 5, 3}, 1.0, 0.0, -0.01, new int[]{330, 481, 451, 390}, // 18 armour, dur x30
+            new int[]{3, 7, 5, 3}, 0.0, 0.0, -0.01, new int[]{330, 481, 451, 390}, // 18 armour, dur x30
             itemSet(IRON_INGOT), Alloys::isSteelIngot, null);
 
     // Crystalline sits BETWEEN diamond (20 armor / 2 tough / 0 kb) and netherite (20 / 3 / 0.1):

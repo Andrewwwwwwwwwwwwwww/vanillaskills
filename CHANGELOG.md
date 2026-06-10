@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.17.3] - 2026-06-09
+
+### Changed
+- **Steel armor toughness removed** (1 → 0). Toughness is now a premium stat reserved for **Crystalline
+  and above** — Hardwood/Rose Gold/Steel have none.
+
 ## [0.17.2] - 2026-06-09
 
 ### Fixed (full gear ladder)
