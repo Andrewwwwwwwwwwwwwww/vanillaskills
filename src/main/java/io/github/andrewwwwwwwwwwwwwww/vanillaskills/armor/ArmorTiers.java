@@ -30,11 +30,12 @@ public final class ArmorTiers {
 
     // Per-piece arrays are ordered: helmet, chestplate, leggings, boots.
 
-    // Hardwood: between Chainmail (12 armour, dur x15) and Copper (10, dur x11). +10% movement at full set.
+    // Hardwood: between Leather (7 armour, dur x5) and Copper (10, dur x11) — must not beat Copper.
+    // +10% movement at full set keeps it the "light & fast" early tier.
     public static final ArmorTier HARDWOOD = new ArmorTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_armor_hardwood",
             new Item[]{LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS},
-            new int[]{2, 4, 3, 2}, 0.0, 0.0, 0.025, new int[]{132, 192, 180, 156}, // 11 armour, dur x12
+            new int[]{2, 3, 3, 1}, 0.0, 0.0, 0.025, new int[]{99, 144, 135, 117}, // 9 armour, dur x9
             itemSet(WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()), null);
 
     // Rose Gold: between Gold (11 armour, dur x7) and Iron (15, dur x15) — a sturdier, quicker gold.
