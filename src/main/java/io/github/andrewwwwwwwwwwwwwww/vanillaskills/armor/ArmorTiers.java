@@ -30,22 +30,25 @@ public final class ArmorTiers {
 
     // Per-piece arrays are ordered: helmet, chestplate, leggings, boots.
 
+    // Hardwood: between Chainmail (12 armour, dur x15) and Copper (10, dur x11). +10% movement at full set.
     public static final ArmorTier HARDWOOD = new ArmorTier(
             "hardwood", "Hardwood", 0x9A6B3F, "vs_armor_hardwood",
             new Item[]{LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS},
-            new int[]{2, 4, 3, 2}, 0.0, 0.0, 0.025, new int[]{120, 176, 165, 143}, // +10% movement at full set
+            new int[]{2, 4, 3, 2}, 0.0, 0.0, 0.025, new int[]{132, 192, 180, 156}, // 11 armour, dur x12
             itemSet(WOOD_ITEMS), stack -> WOOD_SET.contains(stack.getItem()), null);
 
+    // Rose Gold: between Gold (11 armour, dur x7) and Iron (15, dur x15) — a sturdier, quicker gold.
     public static final ArmorTier ROSE_GOLD = new ArmorTier(
             "rose_gold", "Rose Gold", 0xE8B7A6, "vs_armor_rose_gold",
             new Item[]{GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS},
-            new int[]{2, 5, 4, 2}, 0.0, 0.0, 0.0, new int[]{165, 240, 225, 195}, // iron durability
+            new int[]{2, 5, 4, 2}, 0.0, 0.0, 0.0, new int[]{143, 208, 195, 169}, // 13 armour, dur x13
             itemSet(GOLD_INGOT), Alloys::isRoseGoldIngot, RoseGoldSet::baseLore);
 
+    // Steel: between Iron (15 armour, 0 tough) and Diamond (20, 2 tough) — toughness 1 (was 2 = diamond).
     public static final ArmorTier STEEL = new ArmorTier(
             "steel", "Steel", 0xB8C0C8, "vs_armor_steel",
             new Item[]{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS},
-            new int[]{3, 7, 5, 3}, 2.0, 0.0, -0.01, new int[]{330, 481, 451, 390},
+            new int[]{3, 7, 5, 3}, 1.0, 0.0, -0.01, new int[]{330, 481, 451, 390}, // 18 armour, dur x30
             itemSet(IRON_INGOT), Alloys::isSteelIngot, null);
 
     // Crystalline sits BETWEEN diamond (20 armor / 2 tough / 0 kb) and netherite (20 / 3 / 0.1):
