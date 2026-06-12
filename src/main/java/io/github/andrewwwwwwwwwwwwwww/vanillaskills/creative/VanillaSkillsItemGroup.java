@@ -24,7 +24,7 @@ public final class VanillaSkillsItemGroup {
     public static void register() {
         CreativeModeTab tab = FabricCreativeModeTab.builder()
                 .title(Component.literal("VanillaSkills"))
-                .icon(Alloys::roseGoldIngot)
+                .icon(io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.DragonUpgradeTemplate::create)
                 .displayItems((params, output) -> {
                     output.accept(Alloys.roseGoldIngot());
                     output.accept(Alloys.steelIngot());

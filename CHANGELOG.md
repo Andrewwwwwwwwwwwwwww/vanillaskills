@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.17.6] - 2026-06-11
+
+### Changed
+- **Creative tab icon** is now the **Dragon Upgrade template** (was the Rose Gold Ingot). With the
+  resource pack installed it shows the custom dragon_template art.
+
 ## [0.17.5] - 2026-06-09
 
 ### Changed
