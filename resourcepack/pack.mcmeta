@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "VanillaSkills custom item textures (template)",
+    "description": "VanillaSkills custom item textures",
     "min_format": [84, 0],
     "max_format": 84
   }
