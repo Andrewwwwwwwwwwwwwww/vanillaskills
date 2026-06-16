@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -30,7 +30,7 @@ public final class DragonElytraForge {
 
     public static void tick(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
-            List<? extends ItemEntity> items = level.getEntities(EntityType.ITEM, ItemEntity::isAlive);
+            List<? extends ItemEntity> items = level.getEntities(EntityTypes.ITEM, ItemEntity::isAlive);
             if (items.isEmpty()) continue;
             mergeOnAnvils(level, items);
             splitOnGrindstones(level, items);

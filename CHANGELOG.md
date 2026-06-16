@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.18.0] - 2026-06-16
+
+### Changed
+- **Updated to Minecraft 26.2.** Fabric loader 0.19.2 → 0.19.3, Fabric API 0.148.2+26.1.2 →
+  0.152.1+26.2, `minecraft` dependency `~26.1` → `~26.2`. (Built against the new 26.2 mappings.)
+
 ## [0.17.6] - 2026-06-11
 
 ### Changed

@@ -50,13 +50,13 @@ public class RecipeBookMenu extends ChestMenu {
     }
 
     private void populate() {
-        ItemStack gray = pane(Items.LIGHT_GRAY_STAINED_GLASS_PANE);
+        ItemStack gray = pane(Items.STAINED_GLASS_PANE.lightGray());
         for (int i = 0; i < 54; i++) container.setItem(i, gray.copy());
 
         RecipeBook.Display rec = recipes.get(page);
         container.setItem(TITLE_SLOT, button(Items.KNOWLEDGE_BOOK, rec.title(), ChatFormatting.GOLD, null));
 
-        ItemStack slotBg = pane(Items.BLACK_STAINED_GLASS_PANE);
+        ItemStack slotBg = pane(Items.STAINED_GLASS_PANE.black());
         for (int i = 0; i < 9; i++) {
             ItemStack g = rec.grid()[i];
             container.setItem(GRID_SLOTS[i], (g == null || g.isEmpty()) ? slotBg.copy() : g.copy());
