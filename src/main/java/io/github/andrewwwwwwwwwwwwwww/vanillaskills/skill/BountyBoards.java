@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.storage.LevelResource;
@@ -78,7 +78,7 @@ public class BountyBoards {
     }
 
     private static void spawnEntities(ServerLevel level, double ax, double ay, double az) {
-        Display.TextDisplay text = new Display.TextDisplay(EntityType.TEXT_DISPLAY, level);
+        Display.TextDisplay text = new Display.TextDisplay(EntityTypes.TEXT_DISPLAY, level);
         text.setText(boardText());
         text.setBillboardConstraints(Display.BillboardConstraints.CENTER);
         text.setBackgroundColor(0); // transparent — no panel, just text
@@ -88,7 +88,7 @@ public class BountyBoards {
         text.snapTo(ax, ay, az, 0.0f, 0.0f);
         level.addFreshEntity(text);
 
-        Interaction interaction = new Interaction(EntityType.INTERACTION, level);
+        Interaction interaction = new Interaction(EntityTypes.INTERACTION, level);
         interaction.setWidth(2.4f);
         interaction.setHeight(1.8f);
         interaction.setResponse(true);

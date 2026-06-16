@@ -61,7 +61,7 @@ public class InfoMenu extends ChestMenu {
     }
 
     private static ItemStack filler() {
-        ItemStack pane = new ItemStack(Items.LIGHT_GRAY_STAINED_GLASS_PANE);
+        ItemStack pane = new ItemStack(Items.STAINED_GLASS_PANE.lightGray());
         pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
         return pane;
     }
