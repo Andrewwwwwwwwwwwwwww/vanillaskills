@@ -22,20 +22,20 @@ crystal omitted until its worn texture exists — mod jar falls back to base-mat
 
 ## Item icons (58 total)
 
-### Dragon — 7 of 13
+### Dragon — 12 of 13
 - [x] dragon_helmet
 - [x] dragon_chestplate
 - [x] dragon_leggings
 - [x] dragon_boots
 - [x] dragon_scale
 - [x] dragon_template  *(zip's `dragon_upgrade.png`)*
-- [ ] dragon_ingot
-- [ ] dragon_sword
-- [ ] dragon_pickaxe
-- [ ] dragon_axe
-- [ ] dragon_shovel
-- [ ] dragon_hoe
-- [ ] dragon_spear
+- [x] dragon_ingot
+- [x] dragon_sword
+- [x] dragon_pickaxe
+- [x] dragon_axe
+- [x] dragon_shovel
+- [x] dragon_hoe
+- [ ] dragon_spear  *(not yet supplied)*
 
 ### Hardwood — 4 of 10
 - [x] hardwood_helmet
@@ -93,6 +93,6 @@ crystal omitted until its worn texture exists — mod jar falls back to base-mat
 - [ ] fortune_template  *(echo_shard base)*
 
 ---
-**Totals:** item icons 10/58 · worn armor 8/10. Worn armor done for hardwood/rose_gold/steel/dragon
-(crystal worn pending). Item icons: full sets for Dragon + Hardwood-armor; tools, ingots, and the
-Rose Gold/Steel/Crystalline icon sets remain.
+**Totals:** item icons 16/58 · worn armor 8/10. Worn armor done for hardwood/rose_gold/steel/dragon
+(crystal worn pending). Dragon items COMPLETE except dragon_spear. Still need: dragon_spear, crystal
+worn, Hardwood/Rose Gold/Steel/Crystalline tools+ingots+materials, Rose Gold/Steel/Crystalline armor icons.
