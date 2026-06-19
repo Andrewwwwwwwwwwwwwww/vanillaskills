@@ -11,11 +11,14 @@ Working pack (populated copy of `../texturepack-template/`). Drop PNGs into
 Legend: [x] done · [ ] needed
 
 ## Worn armor (10 textures = 5 tiers × 2 layers)
-- [ ] hardwood (humanoid + humanoid_leggings)
-- [ ] rose_gold (humanoid + humanoid_leggings)
-- [ ] steel (humanoid + humanoid_leggings)
+- [x] hardwood (humanoid + humanoid_leggings)
+- [x] rose_gold (humanoid + humanoid_leggings)
+- [x] steel (humanoid + humanoid_leggings)
 - [ ] crystal (humanoid + humanoid_leggings)
 - [x] dragon (humanoid + humanoid_leggings)
+
+(Pack equipment JSONs present for the 4 tiers with worn art: dragon, hardwood, rose_gold, steel.
+crystal omitted until its worn texture exists — mod jar falls back to base-material look.)
 
 ## Item icons (58 total)
 
@@ -34,11 +37,11 @@ Legend: [x] done · [ ] needed
 - [ ] dragon_hoe
 - [ ] dragon_spear
 
-### Hardwood — 0 of 10
-- [ ] hardwood_helmet
-- [ ] hardwood_chestplate
-- [ ] hardwood_leggings
-- [ ] hardwood_boots
+### Hardwood — 4 of 10
+- [x] hardwood_helmet
+- [x] hardwood_chestplate
+- [x] hardwood_leggings
+- [x] hardwood_boots
 - [ ] hardwood_sword
 - [ ] hardwood_pickaxe
 - [ ] hardwood_axe
@@ -90,4 +93,6 @@ Legend: [x] done · [ ] needed
 - [ ] fortune_template  *(echo_shard base)*
 
 ---
-**Totals:** item icons 6/58 · worn armor 2/10. Dragon tier is the furthest along (armor + worn done; tools + ingot remain).
+**Totals:** item icons 10/58 · worn armor 8/10. Worn armor done for hardwood/rose_gold/steel/dragon
+(crystal worn pending). Item icons: full sets for Dragon + Hardwood-armor; tools, ingots, and the
+Rose Gold/Steel/Crystalline icon sets remain.
