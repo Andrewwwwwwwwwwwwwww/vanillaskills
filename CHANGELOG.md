@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.18.1] - 2026-06-19
+
+### Changed
+- **New mod icon** — a pixel-art sword ringed with sparkles (replaces the old skill-tree icon).
+  Resource pack `pack.png` updated to match.
+
 ## [0.18.0] - 2026-06-16
 
 ### Changed
