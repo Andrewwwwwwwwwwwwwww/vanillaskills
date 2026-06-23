@@ -31,9 +31,18 @@ All armor (4×5), all tools incl. spears (6×5), all ingots/materials, dragon sc
   `<tier>_spear_in_hand.png`.
 - Spear base items: hardwood→stone, rose_gold→golden, steel→iron, crystal→diamond, dragon→netherite.
 
-## steel_shield — custom 3D model (done)
-- `models/item/steel_shield.json` is a custom 3D box model replicating the vanilla shield geometry
-  (plate 12×22×1 @ texOffs 0,0; handle 2×6×6 @ texOffs 26,0; 64×64) so the artist's shield-UV texture
-  maps correctly. Wired per-item via `minecraft/items/shield.json` (custom_model_data steel_shield →
-  this model; fallback preserves the full vanilla `minecraft:special` shield renderer so normal
-  shields still work). First-person display tuned to match vanilla footprint (scale 0.42).
+## steel_shield — vanilla 3D held + flat steel icon (FINAL, user decision 2026-06-23)
+- A resource pack CANNOT match vanilla's hardcoded `minecraft:shield` special renderer via a custom
+  model (endless display-transform tuning, never converged). User chose: **held = real vanilla shield,
+  inventory = steel icon.**
+- `minecraft/items/shield.json`: select on custom_model_data; for `vanillaskills:steel_shield`, a nested
+  select on `display_context` → the four hand contexts (first/third person L/R) render the FULL vanilla
+  shield (condition→`minecraft:special` shield, with blocking animation, wooden); all other contexts
+  (gui/ground/fixed/...) → `vanillaskills:item/steel_shield` (flat `generated` model). Normal-shield
+  fallback = full vanilla shield (so all other shields render correctly — this also fixed the earlier
+  blank-shield regression).
+- `textures/item/steel_shield_icon.png` (24×24) = the shield front face cropped from the 64×64 UV
+  texture `steel_shield.png` (front face was at px 1,1 size 12×22), centered for a clean flat icon.
+- The old custom 3D box model is gone; `steel_shield.json` is now just the flat generated icon.
+- NET: steel shield shows a steel icon in inventory; when held it's a perfect 3D shield but wood-colored.
+  Achieving a steel-colored 3D held shield would need a client-side mod (breaks vanilla-client support).
