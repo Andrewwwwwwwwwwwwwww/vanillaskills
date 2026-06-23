@@ -10,19 +10,17 @@ Working pack (populated copy of `../texturepack-template/`). Item icons **16×16
   `<tier>_spear_in_hand.png`. Item override on the base spear selects by `display_context`.
 - Tiers: `hardwood`, `rose_gold`, `steel`, `crystal`, `dragon`
 
-## STATUS: essentially COMPLETE (57/58 icons · 10/10 worn)
+## STATUS: COMPLETE (58/58 icons · 10/10 worn)
 
 ### Worn armor — 10/10 ✅
 - [x] hardwood · [x] rose_gold · [x] steel · [x] crystal · [x] dragon  (humanoid + leggings each)
 - Pack ships `equipment/<tier>.json` for all 5 tiers (override the mod jar's base-material fallback).
 
-### Item icons — 57/58
+### Item icons — 58/58 ✅ COMPLETE
 All armor (4×5), all tools incl. spears (6×5), all ingots/materials, dragon scale+template, steel_shield.
 - [x] Dragon (13) · [x] Hardwood (10) · [x] Rose Gold (11) · [x] Steel (12) · [x] Crystalline (11)
-- [ ] **fortune_template** — NOT yet supplied. Wiring removed for now so the Fortune Upgrade template
-  shows as a plain echo_shard (not magenta). Drop `fortune_template.png` (16×16) in `textures/item/`
-  and restore `minecraft/items/echo_shard.json` + `models/item/fortune_template.json` from
-  `../texturepack-template/` to finish.
+- [x] **fortune_template** — supplied 2026-06-23 (from Downloads `fortune_upgrade.png`, 16×16);
+  wiring restored (`minecraft/items/echo_shard.json` + `models/item/fortune_template.json`).
 
 ## Naming notes (for future batches)
 - `rosegold` → tier id `rose_gold`; `crystalline` → tier id `crystal`; `crystalline_ingot` →
