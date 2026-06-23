@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Two anvil behaviours for VanillaSkills:
@@ -40,7 +41,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AnvilMenu.class)
 public class AnvilMenuMixin {
 
-    private static final int STEEL_FORGE_COST = 1; // anvil requires a non-zero level cost to take a result
+    private static final int STEEL_FORGE_COST = 0; // free — mayPickup is overridden so a 0-cost result can still be taken
 
     @Shadow private int repairItemCountCost;
     @Shadow @org.spongepowered.asm.mixin.Final private DataSlot cost;
@@ -61,6 +62,17 @@ public class AnvilMenuMixin {
             this.repairItemCountCost = 1;
             this.cost.set(STEEL_FORGE_COST);
             ci.cancel();
+        }
+    }
+
+    /** Let the steel result be taken even though it costs 0 levels (vanilla blocks zero-cost results). */
+    @Inject(method = "mayPickup", at = @At("HEAD"), cancellable = true)
+    private void vanillaskills$allowFreeSteel(Player player, boolean hasStack, CallbackInfoReturnable<Boolean> cir) {
+        AbstractContainerMenu self = (AbstractContainerMenu) (Object) this;
+        ItemStack left = self.getSlot(AnvilMenu.INPUT_SLOT).getItem();
+        ItemStack right = self.getSlot(AnvilMenu.ADDITIONAL_SLOT).getItem();
+        if (vanillaskills$isPlainIron(left) && vanillaskills$isPlainIron(right)) {
+            cir.setReturnValue(true);
         }
     }
 
