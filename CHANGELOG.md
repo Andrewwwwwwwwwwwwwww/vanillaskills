@@ -1,5 +1,13 @@
 # VanillaSkills Changelog
 
+## [0.19.1] - 2026-06-23
+
+### Changed
+- **Steel is now forged in an anvil**, not crafted. Put a plain iron ingot in each of the anvil's two
+  input slots to forge a Steel Ingot (1-level cost; consumes one iron from each slot per take, so a
+  stack can be forged one at a time). The old crafting-table recipe (2 iron + 1 coal) is **removed**.
+  The in-game Recipes book now shows the anvil method for steel.
+
 ## [0.19.0] - 2026-06-23
 
 ### Changed

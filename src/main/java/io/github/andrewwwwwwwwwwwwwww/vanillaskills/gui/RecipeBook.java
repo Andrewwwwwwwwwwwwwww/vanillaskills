@@ -46,10 +46,10 @@ public final class RecipeBook {
                 copper.copy(), E, copper.copy(),
                 gold.copy(), copper.copy(), gold.copy()}, count(Alloys.roseGoldIngot(), 4)));
 
-        // 2. Steel Ingot
-        r.add(new Display("Steel Ingot", new ItemStack[]{
+        // 2. Steel Ingot — forged in an ANVIL (one iron in each input slot), not a crafting recipe.
+        r.add(new Display("Steel Ingot (Anvil: iron + iron)", new ItemStack[]{
                 E, E, E,
-                new ItemStack(Items.IRON_INGOT), new ItemStack(Items.COAL), new ItemStack(Items.IRON_INGOT),
+                new ItemStack(Items.IRON_INGOT), new ItemStack(Items.ANVIL), new ItemStack(Items.IRON_INGOT),
                 E, E, E}, Alloys.steelIngot()));
 
         // 3. Crystallized Diamond
