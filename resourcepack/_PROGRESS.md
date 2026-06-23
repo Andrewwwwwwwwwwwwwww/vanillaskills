@@ -31,7 +31,9 @@ All armor (4×5), all tools incl. spears (6×5), all ingots/materials, dragon sc
   `<tier>_spear_in_hand.png`.
 - Spear base items: hardwood→stone, rose_gold→golden, steel→iron, crystal→diamond, dragon→netherite.
 
-## Known visual caveat
-- **steel_shield** is wired as a flat `generated` icon (the mod treats the Steel shield as "icon only").
-  When held/blocking it renders flat, not as a 3D shield — a true 3D reskin would need a custom shield
-  equipment asset (separate task). Verify the inventory icon looks right in testing.
+## steel_shield — custom 3D model (done)
+- `models/item/steel_shield.json` is a custom 3D box model replicating the vanilla shield geometry
+  (plate 12×22×1 @ texOffs 0,0; handle 2×6×6 @ texOffs 26,0; 64×64) so the artist's shield-UV texture
+  maps correctly. Wired per-item via `minecraft/items/shield.json` (custom_model_data steel_shield →
+  this model; fallback preserves the full vanilla `minecraft:special` shield renderer so normal
+  shields still work). First-person display tuned to match vanilla footprint (scale 0.42).
