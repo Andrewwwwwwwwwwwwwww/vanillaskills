@@ -1,5 +1,13 @@
 # VanillaSkills Changelog
 
+## [0.19.5] - 2026-06-23
+
+### Fixed
+- **Armorsmith/Toolsmith lane icons now show the custom tier textures.** The VanillaSkills tiers
+  (Hardwood, Rose Gold, Steel, Crystalline, Dragon) in those Quest-Shard ladders were showing the
+  vanilla base armor/tool textures; their skill-tree nodes now use the real marked tier item so the
+  resource pack retextures them. Vanilla tiers (Copper/Gold/Iron/Diamond/Netherite) stay vanilla.
+
 ## [0.19.4] - 2026-06-23
 
 ### Fixed
