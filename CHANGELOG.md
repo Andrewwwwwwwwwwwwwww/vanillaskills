@@ -1,5 +1,12 @@
 # VanillaSkills Changelog
 
+## [0.19.3] - 2026-06-23
+
+### Fixed
+- **Anvil steel forging now consumes exactly one iron from each slot.** It was consuming the entire
+  left stack (vanilla's onTake clears the left input slot) because the consume-override bailed on an
+  unreliable check of the taken result; it now keys off the iron-in-both-inputs state.
+
 ## [0.19.2] - 2026-06-23
 
 ### Changed
