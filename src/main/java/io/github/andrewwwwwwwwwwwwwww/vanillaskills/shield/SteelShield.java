@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.core.HolderGetter;
@@ -51,6 +52,11 @@ public final class SteelShield {
             stack.set(DataComponents.BASE_COLOR, DyeColor.LIGHT_GRAY);
             stack.set(DataComponents.BANNER_PATTERNS,
                     new BannerPatternLayers.Builder().addIfRegistered(patterns, steel, DyeColor.WHITE).build());
+            // The banner pattern only exists to render the shield as steel — hide its tooltip line
+            // (otherwise the tooltip shows the raw "block.vanillaskills.banner.steel.white" key).
+            stack.set(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT
+                    .withHidden(DataComponents.BANNER_PATTERNS, true)
+                    .withHidden(DataComponents.BASE_COLOR, true));
         }
         stack.set(DataComponents.MAX_DAMAGE, DURABILITY);
         stack.set(DataComponents.REPAIRABLE, new Repairable(repairItems()));
