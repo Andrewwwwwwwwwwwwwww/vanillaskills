@@ -1,5 +1,12 @@
 # VanillaSkills Changelog
 
+## [0.19.4] - 2026-06-23
+
+### Fixed
+- **Steel-Infused Shield tooltip** no longer shows the raw `block.vanillaskills.banner.steel.white`
+  line. The banner pattern (used only to render the shield as steel) is now hidden from the tooltip
+  via the `tooltip_display` component; the shield still renders steel.
+
 ## [0.19.3] - 2026-06-23
 
 ### Fixed
