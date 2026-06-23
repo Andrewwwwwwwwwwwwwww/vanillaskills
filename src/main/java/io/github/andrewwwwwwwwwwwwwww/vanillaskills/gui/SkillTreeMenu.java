@@ -1,6 +1,12 @@
 package io.github.andrewwwwwwwwwwwwwww.vanillaskills.gui;
 
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorPiece;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorTier;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorTiers;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolKind;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTier;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTiers;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.PlayerSkillData;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillCategory;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillNode;
@@ -211,7 +217,7 @@ public class SkillTreeMenu extends ChestMenu {
         int chain = VanillaSkills.PLAYERS.chainCost(player, node.id); // total a left-click would charge
         boolean affordableChain = balance >= chain;
 
-        ItemStack stack = new ItemStack(resolveItem(node.icon));
+        ItemStack stack = iconStackFor(node);
         Guis.hideStats(stack);
         ChatFormatting nameColor = unlocked ? ChatFormatting.GREEN
                 : gated ? ChatFormatting.DARK_GRAY
@@ -239,7 +245,7 @@ public class SkillTreeMenu extends ChestMenu {
 
     private ItemStack buildEditItem(SkillNode node) {
         boolean isSelected = node.id.equals(selected);
-        ItemStack stack = new ItemStack(resolveItem(node.icon));
+        ItemStack stack = iconStackFor(node);
         Guis.hideStats(stack);
         stack.set(DataComponents.CUSTOM_NAME,
                 styled(node.title + (isSelected ? " (moving)" : ""), isSelected ? ChatFormatting.GOLD : ChatFormatting.AQUA));
@@ -359,6 +365,42 @@ public class SkillTreeMenu extends ChestMenu {
         Identifier id = Identifier.tryParse(iconId);
         if (id == null) return Items.STONE;
         return BuiltInRegistries.ITEM.get(id).map(Holder::value).orElse(Items.STONE);
+    }
+
+    /**
+     * Icon for a node. Armorsmith/Toolsmith ladder nodes on a VanillaSkills tier (Hardwood, Rose Gold,
+     * Steel, Crystalline, Dragon) use the real marked tier item so the resource pack retextures it —
+     * otherwise they'd show the vanilla base texture. Vanilla-tier and all other nodes use their icon id.
+     */
+    private static ItemStack iconStackFor(SkillNode node) {
+        ItemStack custom = customTierIcon(node);
+        return custom != null ? custom : new ItemStack(resolveItem(node.icon));
+    }
+
+    private static ItemStack customTierIcon(SkillNode node) {
+        boolean armor = "armorsmith".equals(node.category);
+        boolean tool = "toolsmith".equals(node.category);
+        if (!armor && !tool) return null;
+        int idx;
+        try {
+            idx = Integer.parseInt(node.id.substring(node.category.length() + 1)) - 1;
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            return null;
+        }
+        // Ladder order: Hardwood Copper Gold RoseGold Iron Steel Diamond Crystalline Netherite Dragon.
+        // Only the VanillaSkills tiers (0,3,5,7,9) have custom textures; the rest stay vanilla.
+        if (armor) {
+            ArmorTier t = switch (idx) {
+                case 0 -> ArmorTiers.HARDWOOD; case 3 -> ArmorTiers.ROSE_GOLD; case 5 -> ArmorTiers.STEEL;
+                case 7 -> ArmorTiers.CRYSTAL; case 9 -> ArmorTiers.DRAGON; default -> null;
+            };
+            return t == null ? null : t.create(ArmorPiece.CHESTPLATE);
+        }
+        ToolTier t = switch (idx) {
+            case 0 -> ToolTiers.HARDWOOD; case 3 -> ToolTiers.ROSE_GOLD; case 5 -> ToolTiers.STEEL;
+            case 7 -> ToolTiers.CRYSTAL; case 9 -> ToolTiers.DRAGON; default -> null;
+        };
+        return t == null ? null : t.create(ToolKind.PICKAXE);
     }
 
     @Override
