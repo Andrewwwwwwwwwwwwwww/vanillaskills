@@ -79,7 +79,8 @@ public class AnvilMenuMixin {
     /** Forging steel consumes exactly one iron from each input (vanilla would clear the whole left slot). */
     @Inject(method = "onTake", at = @At("HEAD"), cancellable = true)
     private void vanillaskills$takeSteel(Player player, ItemStack stack, CallbackInfo ci) {
-        if (!Alloys.isSteelIngot(stack)) return;
+        // Iron + iron in the inputs means the result being taken is our forged steel (the only result
+        // that combination produces). Keyed off the inputs, not the taken stack, which proved unreliable.
         AbstractContainerMenu self = (AbstractContainerMenu) (Object) this;
         ItemStack left = self.getSlot(AnvilMenu.INPUT_SLOT).getItem();
         ItemStack right = self.getSlot(AnvilMenu.ADDITIONAL_SLOT).getItem();
