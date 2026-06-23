@@ -31,18 +31,23 @@ All armor (4×5), all tools incl. spears (6×5), all ingots/materials, dragon sc
   `<tier>_spear_in_hand.png`.
 - Spear base items: hardwood→stone, rose_gold→golden, steel→iron, crystal→diamond, dragon→netherite.
 
-## steel_shield — vanilla 3D held + flat steel icon (FINAL, user decision 2026-06-23)
-- A resource pack CANNOT match vanilla's hardcoded `minecraft:shield` special renderer via a custom
-  model (endless display-transform tuning, never converged). User chose: **held = real vanilla shield,
-  inventory = steel icon.**
-- `minecraft/items/shield.json`: select on custom_model_data; for `vanillaskills:steel_shield`, a nested
-  select on `display_context` → the four hand contexts (first/third person L/R) render the FULL vanilla
-  shield (condition→`minecraft:special` shield, with blocking animation, wooden); all other contexts
-  (gui/ground/fixed/...) → `vanillaskills:item/steel_shield` (flat `generated` model). Normal-shield
-  fallback = full vanilla shield (so all other shields render correctly — this also fixed the earlier
-  blank-shield regression).
-- `textures/item/steel_shield_icon.png` (24×24) = the shield front face cropped from the 64×64 UV
-  texture `steel_shield.png` (front face was at px 1,1 size 12×22), centered for a clean flat icon.
-- The old custom 3D box model is gone; `steel_shield.json` is now just the flat generated icon.
-- NET: steel shield shows a steel icon in inventory; when held it's a perfect 3D shield but wood-colored.
-  Achieving a steel-colored 3D held shield would need a client-side mod (breaks vanilla-client support).
+## steel_shield — custom BANNER PATTERN (FINAL & CONFIRMED WORKING, 0.18.2, 2026-06-23)
+- A resource pack CANNOT give a shield a per-item custom texture via custom_model_data: the shield is
+  drawn by the hardcoded `minecraft:shield` special renderer, which ignores custom_model_data and only
+  reads `BANNER_PATTERNS` + `BASE_COLOR`. (No SHIELD equipment-layer either, so the armor-asset trick
+  doesn't apply.) A custom 3D model "fakes" it but never matches vanilla's renderer — dead end.
+- **SOLUTION:** make the steel shield a *bannered* shield with a custom banner pattern, so the REAL
+  vanilla renderer draws it (perfect 3D in inventory/held/blocking). Plain (un-bannered) shields stay
+  wooden — both look right. Pieces:
+  - Mod (`SteelShield.create`): set `DataComponents.BASE_COLOR` (LIGHT_GRAY) + `BANNER_PATTERNS`
+    (`BannerPatternLayers.Builder().addIfRegistered(patterns, vanillaskills:steel, WHITE)`), using
+    `VanillaSkills.server.registryAccess().lookupOrThrow(Registries.BANNER_PATTERN)`. Removed the old
+    custom_model_data.
+  - Datapack (mod jar): `data/vanillaskills/banner_pattern/steel.json` = `{asset_id, translation_key}`.
+  - Resource pack: `assets/vanillaskills/textures/entity/shield/steel.png` (the 64×64 shield-UV steel
+    texture — the shield atlas `shield_patterns.json` sources `entity/shield/` across ALL namespaces) +
+    lang `block.vanillaskills.banner.steel`=Steel.
+  - Removed the pack's `minecraft/items/shield.json` override + `steel_shield` model + icon.
+- **Server/vanilla-client OK** (same model as the armor): server stamps the component; banner_pattern is
+  a synced registry (vanilla clients get it); client renders from the resource-pack texture. Needs the
+  pack (already required). White tint preserves the texture's own colors.
