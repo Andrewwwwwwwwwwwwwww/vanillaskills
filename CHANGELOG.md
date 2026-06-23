@@ -1,5 +1,15 @@
 # VanillaSkills Changelog
 
+## [0.18.2] - 2026-06-23
+
+### Changed
+- **Steel-Infused Shield now renders steel via a custom banner pattern** instead of a custom item
+  model. The vanilla shield renderer draws bannered shields in full 3D (inventory, held, blocking),
+  so the steel shield looks like a real shield everywhere while plain (un-bannered) shields stay
+  wooden — both look correct. Adds `vanillaskills:steel` banner pattern (data) + its shield-atlas
+  texture (resource pack `entity/shield/steel.png`). Dropped the custom_model_data + the pack's
+  custom shield model/icon/override.
+
 ## [0.18.1] - 2026-06-19
 
 ### Changed
