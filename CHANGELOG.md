@@ -1,5 +1,12 @@
 # VanillaSkills Changelog
 
+## [0.19.6] - 2026-06-23
+
+### Changed
+- **Finalized the default skill-tree layout** for release: Night Vision moved to the bottom-centre
+  (slot 49) and the Recipes lane to slot 40 (between Armorsmith and Toolsmith). New worlds/servers get
+  this arrangement; existing trees keep theirs (run `/skill regen fresh` to adopt it).
+
 ## [0.19.5] - 2026-06-23
 
 ### Fixed
