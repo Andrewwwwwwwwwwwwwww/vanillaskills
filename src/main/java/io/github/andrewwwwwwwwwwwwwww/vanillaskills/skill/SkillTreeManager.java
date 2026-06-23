@@ -119,11 +119,11 @@ public class SkillTreeManager {
     // Lane icons on the lane-select screen. Indexed by laneIndex. Two zones:
     //   SKILLS (Skill Shards) — row 1 (10-16): Vitality, Fleet, Warrior, Guardian, Reach, Evasion, Mountaineer
     //                           row 2 (20-24): Prospector, Fortune, Aquatic, Cultivator, Brewmaster
-    //   CRAFTING (Quest Shards) — row 4 (39,41): Armorsmith, Toolsmith (set off by a divider on row 3)
-    //   Night Vision capstone — bottom row (46), beside the Points/Stats buttons.
+    //   CRAFTING (Quest Shards) — row 4: Armorsmith (39), Recipes (40), Toolsmith (41)
+    //   Night Vision capstone — bottom-centre (49), between the Points/Stats buttons.
     // laneIndex:                  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
     // lane:                    health spd min luck dmg grd rch mtn aqu arm tool brw eva cul nv
-    private static final int[] CATEGORY_SLOTS = {10, 11, 20, 21, 12, 13, 14, 16, 22, 39, 41, 24, 15, 23, 46};
+    private static final int[] CATEGORY_SLOTS = {10, 11, 20, 21, 12, 13, 14, 16, 22, 39, 41, 24, 15, 23, 49};
 
     private static SkillTree defaultTree() {
         SkillTree t = new SkillTree();
@@ -278,7 +278,7 @@ public class SkillTreeManager {
                 new String[]{"Permanent Night Vision"});
 
         // Recipes: a movable pseudo-lane (no nodes) that opens the custom-recipe book when clicked.
-        t.categories.add(new SkillCategory("recipes", "Recipes", "minecraft:crafting_table", 28));
+        t.categories.add(new SkillCategory("recipes", "Recipes", "minecraft:crafting_table", 40));
 
         applyEconomy(t, economyP);
         return t;
