@@ -9,8 +9,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomModelData;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
 import net.minecraft.world.item.enchantment.Repairable;
 
 import java.util.List;
@@ -32,8 +40,18 @@ public final class SteelShield {
         ItemStack stack = new ItemStack(Items.SHIELD);
         stack.set(DataComponents.CUSTOM_NAME, Markers.name("Steel-Infused Shield", COLOR));
         Markers.applyMarker(stack, MARKER);
-        stack.set(DataComponents.CUSTOM_MODEL_DATA,
-                new CustomModelData(List.of(), List.of(), List.of("vanillaskills:steel_shield"), List.of()));
+        // Render as a steel shield via a custom banner pattern: the vanilla shield renderer draws
+        // bannered shields in full 3D everywhere (inventory/held/blocking), and plain shields with
+        // no banner stay wooden — so both shields look right. Texture = vanillaskills:steel pattern.
+        RegistryAccess ra = VanillaSkills.server != null ? VanillaSkills.server.registryAccess() : null;
+        if (ra != null) {
+            HolderGetter<BannerPattern> patterns = ra.lookupOrThrow(Registries.BANNER_PATTERN);
+            ResourceKey<BannerPattern> steel = ResourceKey.create(Registries.BANNER_PATTERN,
+                    Identifier.fromNamespaceAndPath("vanillaskills", "steel"));
+            stack.set(DataComponents.BASE_COLOR, DyeColor.LIGHT_GRAY);
+            stack.set(DataComponents.BANNER_PATTERNS,
+                    new BannerPatternLayers.Builder().addIfRegistered(patterns, steel, DyeColor.WHITE).build());
+        }
         stack.set(DataComponents.MAX_DAMAGE, DURABILITY);
         stack.set(DataComponents.REPAIRABLE, new Repairable(repairItems()));
         stack.set(DataComponents.LORE, new ItemLore(List.of(
