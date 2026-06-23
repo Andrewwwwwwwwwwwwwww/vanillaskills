@@ -1,6 +1,6 @@
 {
   "layers": {
-    "humanoid": [ { "texture": "minecraft:iron" } ],
-    "humanoid_leggings": [ { "texture": "minecraft:iron" } ]
+    "humanoid": [ { "texture": "vanillaskills:steel" } ],
+    "humanoid_leggings": [ { "texture": "vanillaskills:steel" } ]
   }
 }

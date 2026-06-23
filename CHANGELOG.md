@@ -1,5 +1,16 @@
 # VanillaSkills Changelog
 
+## [0.19.0] - 2026-06-23
+
+### Changed
+- **Textures are now bundled in the mod jar.** The full custom texture set (all tier armor/tool/spear
+  icons, worn-armor layers, ingots/materials, the steel shield banner texture, and the fortune
+  template) ships inside the jar, so players who install the mod see the custom look automatically —
+  no separate resource pack needed. The mod's bundled equipment JSONs now point at the custom
+  `vanillaskills:<tier>` worn-armor textures instead of the base-material fallback.
+- The standalone resource pack is still published separately for **vanilla clients on a server**
+  (server-side install), where the pack is delivered to clients that don't have the mod.
+
 ## [0.18.2] - 2026-06-23
 
 ### Changed
