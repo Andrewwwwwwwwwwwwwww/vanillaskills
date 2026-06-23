@@ -54,7 +54,7 @@ public class VanillaSkills implements ModInitializer {
 
     // Data-driven recipes granted on join so they appear in the vanilla recipe book.
     private static final java.util.List<net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> BOOK_RECIPES =
-            java.util.List.of(recipeKey("rose_gold_ingot"), recipeKey("steel_ingot"), recipeKey("crystallized_diamond"));
+            java.util.List.of(recipeKey("rose_gold_ingot"), recipeKey("crystallized_diamond"));
 
     private static net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> recipeKey(String path) {
         return net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
