@@ -33,7 +33,7 @@ public final class VanillaSkillsItemGroup {
                     output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot.create());
                     output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.DragonUpgradeTemplate.create());
                     output.accept(FortuneTemplate.create());
-                    output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.SteelShield.create());
+                    output.accept(io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.SteelShield.create(params.holders()));
                     for (ArmorTier tier : ArmorTiers.TIERS) {
                         for (ArmorPiece piece : ArmorPiece.values()) {
                             output.accept(tier.create(piece));

@@ -3,6 +3,7 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.Markers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -37,16 +38,26 @@ public final class SteelShield {
     public static final float THORNS_DAMAGE = 2.0f;
     private static final int COLOR = 0xB8C0C8;
 
+    /** Server-side convenience: uses the running server's registries (e.g. the crafting recipe). */
     public static ItemStack create() {
+        return create(VanillaSkills.server != null ? VanillaSkills.server.registryAccess() : null);
+    }
+
+    /**
+     * Builds a Steel-Infused Shield, pulling the {@code vanillaskills:steel} banner pattern from the
+     * given registries. Callers must pass a valid provider — on a client connected to a remote server
+     * (e.g. the creative-menu builder) {@code VanillaSkills.server} is null, so the creative tab passes
+     * {@code params.holders()} instead, otherwise the shield would be created with no pattern (plain wood).
+     */
+    public static ItemStack create(HolderLookup.Provider registries) {
         ItemStack stack = new ItemStack(Items.SHIELD);
         stack.set(DataComponents.CUSTOM_NAME, Markers.name("Steel-Infused Shield", COLOR));
         Markers.applyMarker(stack, MARKER);
         // Render as a steel shield via a custom banner pattern: the vanilla shield renderer draws
         // bannered shields in full 3D everywhere (inventory/held/blocking), and plain shields with
         // no banner stay wooden — so both shields look right. Texture = vanillaskills:steel pattern.
-        RegistryAccess ra = VanillaSkills.server != null ? VanillaSkills.server.registryAccess() : null;
-        if (ra != null) {
-            HolderGetter<BannerPattern> patterns = ra.lookupOrThrow(Registries.BANNER_PATTERN);
+        if (registries != null) {
+            HolderGetter<BannerPattern> patterns = registries.lookupOrThrow(Registries.BANNER_PATTERN);
             ResourceKey<BannerPattern> steel = ResourceKey.create(Registries.BANNER_PATTERN,
                     Identifier.fromNamespaceAndPath("vanillaskills", "steel"));
             stack.set(DataComponents.BASE_COLOR, DyeColor.LIGHT_GRAY);

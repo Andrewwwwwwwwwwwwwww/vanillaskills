@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [0.19.7] - 2026-06-23
+
+### Fixed
+- **Steel-Infused Shield from the creative menu now renders steel** on multiplayer servers. The shield's
+  banner pattern was pulled from `VanillaSkills.server`, which is null on a client connected to a remote
+  server, so a creative-grabbed shield was built with no pattern (plain wooden). `SteelShield.create`
+  now takes the registry access from the caller, and the creative tab passes the connection's registries.
+  (Crafted shields were already fine — they're built server-side.)
+
 ## [0.19.6] - 2026-06-23
 
 ### Changed
