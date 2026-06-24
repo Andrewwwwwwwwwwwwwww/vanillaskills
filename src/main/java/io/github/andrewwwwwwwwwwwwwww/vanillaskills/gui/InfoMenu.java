@@ -35,9 +35,7 @@ public class InfoMenu extends ChestMenu {
         this.player = player;
         this.container = (SimpleContainer) getContainer();
 
-        // Framed background.
-        ItemStack filler = filler();
-        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, filler.copy());
+        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, ItemStack.EMPTY);
 
         // Lay the content items in centered rows of up to 7, starting below the top border.
         int perRow = 7;
@@ -58,12 +56,6 @@ public class InfoMenu extends ChestMenu {
         back.set(DataComponents.CUSTOM_NAME, Component.literal("Back")
                 .withStyle(ChatFormatting.YELLOW).withStyle(s -> s.withItalic(false)));
         container.setItem(container.getContainerSize() - 1, back);
-    }
-
-    private static ItemStack filler() {
-        ItemStack pane = new ItemStack(Items.STAINED_GLASS_PANE.lightGray());
-        pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
-        return pane;
     }
 
     private static MenuType<ChestMenu> menuTypeFor(int rows) {
