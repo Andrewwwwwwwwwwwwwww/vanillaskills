@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [0.19.11] - 2026-06-23
+
+### Changed
+- **Recipe book pages now show the crafting station at the top instead of a green book.** Normal
+  recipes display a **crafting table**; the Steel Ingot page displays an **anvil** (since it's
+  anvil-forged). Hover text is unchanged — the top icon still just names the recipe.
+- **Steel Ingot recipe page no longer shows an anvil in the middle of the grid** — the anvil moved to
+  the station icon at the top, so the grid reads simply as iron + iron.
+
 ## [0.19.10] - 2026-06-23
 
 ### Changed

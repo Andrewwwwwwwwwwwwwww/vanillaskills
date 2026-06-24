@@ -53,7 +53,7 @@ public class RecipeBookMenu extends ChestMenu {
         for (int i = 0; i < 54; i++) container.setItem(i, ItemStack.EMPTY);
 
         RecipeBook.Display rec = recipes.get(page);
-        container.setItem(TITLE_SLOT, button(Items.KNOWLEDGE_BOOK, rec.title(), ChatFormatting.GOLD, null));
+        container.setItem(TITLE_SLOT, button(rec.station(), rec.title(), ChatFormatting.GOLD, null));
 
         for (int i = 0; i < 9; i++) {
             ItemStack g = rec.grid()[i];

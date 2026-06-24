@@ -19,8 +19,17 @@ import java.util.List;
 public final class RecipeBook {
     private RecipeBook() {}
 
-    /** One displayable recipe: a 3x3 grid of inputs (length 9; nulls allowed) and a result. */
-    public record Display(String title, ItemStack[] grid, ItemStack result) {}
+    /**
+     * One displayable recipe: a 3x3 grid of inputs (length 9; nulls allowed), a result, and the
+     * crafting "station" icon shown at the top of the page — a crafting table for normal recipes,
+     * an anvil for anvil-forged recipes. The 3-arg form defaults the station to a crafting table.
+     */
+    public record Display(String title, ItemStack[] grid, ItemStack result,
+                          net.minecraft.world.item.Item station) {
+        public Display(String title, ItemStack[] grid, ItemStack result) {
+            this(title, grid, result, Items.CRAFTING_TABLE);
+        }
+    }
 
     private static final ItemStack E = ItemStack.EMPTY;
 
@@ -47,10 +56,11 @@ public final class RecipeBook {
                 gold.copy(), copper.copy(), gold.copy()}, count(Alloys.roseGoldIngot(), 4)));
 
         // 2. Steel Ingot — forged in an ANVIL (one iron in each input slot), not a crafting recipe.
+        //    The anvil is shown as the station icon at the top, so the grid is just iron + iron.
         r.add(new Display("Steel Ingot (Anvil: iron + iron)", new ItemStack[]{
                 E, E, E,
-                new ItemStack(Items.IRON_INGOT), new ItemStack(Items.ANVIL), new ItemStack(Items.IRON_INGOT),
-                E, E, E}, Alloys.steelIngot()));
+                new ItemStack(Items.IRON_INGOT), E, new ItemStack(Items.IRON_INGOT),
+                E, E, E}, Alloys.steelIngot(), Items.ANVIL));
 
         // 3. Crystallized Diamond
         ItemStack shard = new ItemStack(Items.AMETHYST_SHARD);
