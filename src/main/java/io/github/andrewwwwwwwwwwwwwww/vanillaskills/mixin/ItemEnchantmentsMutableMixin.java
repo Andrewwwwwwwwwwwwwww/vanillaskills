@@ -1,5 +1,6 @@
 package io.github.andrewwwwwwwwwwwwwww.vanillaskills.mixin;
 
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -29,14 +30,14 @@ public class ItemEnchantmentsMutableMixin {
 
     @Inject(method = "set", at = @At("HEAD"), cancellable = true)
     private void vanillaskills$blockMendingSet(Holder<Enchantment> enchantment, int level, CallbackInfo ci) {
-        if (enchantment.is(Enchantments.MENDING)) {
+        if (!GameplayConfig.MENDING_ENABLED && enchantment.is(Enchantments.MENDING)) {
             ci.cancel();
         }
     }
 
     @Inject(method = "upgrade", at = @At("HEAD"), cancellable = true)
     private void vanillaskills$blockMendingUpgrade(Holder<Enchantment> enchantment, int level, CallbackInfo ci) {
-        if (enchantment.is(Enchantments.MENDING)) {
+        if (!GameplayConfig.MENDING_ENABLED && enchantment.is(Enchantments.MENDING)) {
             ci.cancel();
         }
     }

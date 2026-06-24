@@ -189,6 +189,7 @@ public final class SkillCommands {
     private static int reload(CommandContext<CommandSourceStack> ctx) {
         PointsConfig points = PointsConfig.load();
         VanillaSkills.PLAYERS.setPointsConfig(points);
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.load();
         VanillaSkills.TREE.load();
         if (ctx.getSource().getServer() != null) {
             for (ServerPlayer player : ctx.getSource().getServer().getPlayerList().getPlayers()) {

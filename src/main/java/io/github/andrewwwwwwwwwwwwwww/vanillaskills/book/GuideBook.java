@@ -1,5 +1,6 @@
 package io.github.andrewwwwwwwwwwwwwww.vanillaskills.book;
 
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -142,7 +143,12 @@ public final class GuideBook {
     public static ItemStack create() {
         List<Filterable<Component>> pages = new ArrayList<>();
         for (String page : PAGES) {
-            pages.add(Filterable.passThrough(Component.literal(page)));
+            // Keep the Mending line accurate to the current server setting.
+            String text = page.replace("Mending is removed - it never appears anywhere.",
+                    GameplayConfig.MENDING_ENABLED
+                            ? "Mending is enabled on this server and works normally."
+                            : "Mending is removed - it never appears anywhere.");
+            pages.add(Filterable.passThrough(Component.literal(text)));
         }
         WrittenBookContent content = new WrittenBookContent(
                 Filterable.passThrough("VanillaSkills Guide"), "VanillaSkills", 0, pages, false);

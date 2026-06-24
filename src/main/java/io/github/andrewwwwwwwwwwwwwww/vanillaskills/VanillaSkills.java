@@ -96,6 +96,7 @@ public class VanillaSkills implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(srv -> {
             server = srv;
             PLAYERS.setPointsConfig(PointsConfig.load());
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.load();
             // Compute total earnable points (P) before building the tree so the default tree can be
             // priced against it (whole tree = P, Night Vision gated at P/3).
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.SkillTreeManager.economyP = PLAYERS.computeTotalEarnable();
