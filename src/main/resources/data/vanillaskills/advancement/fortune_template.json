@@ -1,7 +1,7 @@
 {
   "parent": "vanillaskills:root",
   "display": {
-    "icon": { "id": "minecraft:echo_shard" },
+    "icon": { "id": "minecraft:echo_shard", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:fortune_template"] } } },
     "title": "Ancient Knowledge",
     "description": "Discover a Fortune Upgrade template",
     "show_toast": true, "announce_to_chat": true

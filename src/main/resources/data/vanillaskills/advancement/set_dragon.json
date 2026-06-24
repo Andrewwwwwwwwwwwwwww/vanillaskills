@@ -1,7 +1,7 @@
 {
   "parent": "vanillaskills:dragon_ingot",
   "display": {
-    "icon": { "id": "minecraft:netherite_chestplate" },
+    "icon": { "id": "minecraft:netherite_chestplate", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:dragon_chestplate"] } } },
     "title": "Ascended",
     "description": "Craft a full set of Dragon armor",
     "show_toast": true, "announce_to_chat": true
