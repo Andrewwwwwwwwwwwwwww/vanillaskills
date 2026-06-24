@@ -1,5 +1,13 @@
 # VanillaSkills Changelog
 
+## [0.19.14] - 2026-06-23
+
+### Added
+- **Mending removal is now configurable.** New `config/vanillaskills/gameplay.json` with a
+  `mendingEnabled` flag (default `false` = Mending removed, as before). Set it to `true` to leave
+  Mending in the game. Applies live on `/skill reload` (no restart needed); the guide book's Mending
+  line reflects the current setting.
+
 ## [0.19.13] - 2026-06-23
 
 ### Changed
