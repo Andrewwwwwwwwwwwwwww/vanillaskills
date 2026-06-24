@@ -1,10 +1,16 @@
 {
-  "type": "minecraft:crafting_shapeless",
+  "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "ingredients": [
-    "minecraft:diamond", "minecraft:diamond", "minecraft:diamond", "minecraft:diamond",
-    "minecraft:amethyst_block"
+  "pattern": [
+    "DAD",
+    "ABA",
+    "DAD"
   ],
+  "key": {
+    "D": "minecraft:diamond",
+    "A": "minecraft:amethyst_shard",
+    "B": "minecraft:amethyst_block"
+  },
   "result": {
     "id": "minecraft:diamond",
     "count": 2,
