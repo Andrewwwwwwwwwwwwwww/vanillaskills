@@ -50,16 +50,14 @@ public class RecipeBookMenu extends ChestMenu {
     }
 
     private void populate() {
-        ItemStack gray = pane(Items.STAINED_GLASS_PANE.lightGray());
-        for (int i = 0; i < 54; i++) container.setItem(i, gray.copy());
+        for (int i = 0; i < 54; i++) container.setItem(i, ItemStack.EMPTY);
 
         RecipeBook.Display rec = recipes.get(page);
         container.setItem(TITLE_SLOT, button(Items.KNOWLEDGE_BOOK, rec.title(), ChatFormatting.GOLD, null));
 
-        ItemStack slotBg = pane(Items.STAINED_GLASS_PANE.black());
         for (int i = 0; i < 9; i++) {
             ItemStack g = rec.grid()[i];
-            container.setItem(GRID_SLOTS[i], (g == null || g.isEmpty()) ? slotBg.copy() : g.copy());
+            if (g != null && !g.isEmpty()) container.setItem(GRID_SLOTS[i], g.copy());
         }
         container.setItem(ARROW_SLOT, button(Items.SPECTRAL_ARROW, "→", ChatFormatting.WHITE, null));
         container.setItem(RESULT_SLOT, rec.result().copy());
@@ -70,12 +68,6 @@ public class RecipeBookMenu extends ChestMenu {
         if (page > 0) container.setItem(PREV_SLOT, button(Items.ARROW, "◀ Previous", ChatFormatting.YELLOW, null));
         if (page < recipes.size() - 1) container.setItem(NEXT_SLOT, button(Items.ARROW, "Next ▶", ChatFormatting.YELLOW, null));
         container.setItem(CLOSE_SLOT, button(Items.BARRIER, "Close", ChatFormatting.RED, null));
-    }
-
-    private ItemStack pane(net.minecraft.world.item.Item item) {
-        ItemStack p = new ItemStack(item);
-        p.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
-        return p;
     }
 
     private ItemStack button(net.minecraft.world.item.Item item, String name, ChatFormatting color, String desc) {
