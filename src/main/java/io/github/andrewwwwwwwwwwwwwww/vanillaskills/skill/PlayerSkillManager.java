@@ -428,7 +428,7 @@ public class PlayerSkillManager {
         }
     }
 
-    /** When every node in the tree is unlocked, grant the completion advancement + 5 Dragon Ingots (once). */
+    /** When every node in the tree is unlocked, grant the completion advancement + 4 Dragon Ingots (once). */
     private void checkCompletionist(ServerPlayer player, PlayerSkillData data) {
         if (data.completionRewarded) return; // tracked in our own data, not the advancement state
         SkillTree tree = VanillaSkills.TREE.tree();
@@ -441,9 +441,9 @@ public class PlayerSkillManager {
         awardAdvancement(player, "vanillaskills:completionist", "complete");
         net.minecraft.world.item.ItemStack reward =
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonIngot.create();
-        reward.setCount(5);
+        reward.setCount(4);
         if (!player.getInventory().add(reward)) player.drop(reward, false);
-        player.sendSystemMessage(Component.literal("Skill tree mastered! +5 Dragon Ingots")
+        player.sendSystemMessage(Component.literal("Skill tree mastered! +4 Dragon Ingots")
                 .withStyle(ChatFormatting.GOLD));
         save(player.getUUID());
     }

@@ -3,7 +3,7 @@
   "display": {
     "icon": { "id": "minecraft:netherite_ingot", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:dragon_ingot"] } } },
     "title": "Skill Master",
-    "description": "Unlock every node in the skill tree — rewarded with 5 Dragon Ingots",
+    "description": "Unlock every node in the skill tree — rewarded with 4 Dragon Ingots",
     "frame": "challenge",
     "show_toast": true, "announce_to_chat": true
   },

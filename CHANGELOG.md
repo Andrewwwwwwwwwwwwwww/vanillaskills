@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.19.13] - 2026-06-23
+
+### Changed
+- **"Skill Master" completion reward is now 4 Dragon Ingots (was 5).** Both the granted amount and all
+  the wording (advancement description, the in-game "Skill tree mastered!" message) now say 4.
+
 ## [0.19.12] - 2026-06-23
 
 ### Fixed
