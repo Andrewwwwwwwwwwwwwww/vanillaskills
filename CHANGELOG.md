@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [0.19.10] - 2026-06-23
+
+### Changed
+- **GUI blank spots are now truly empty instead of glass panes.** The bounty board, Quest Shop,
+  skill-info / player-info screens, and the recipe book previously filled their empty slots with
+  light-gray (and black) stained-glass panes. Resource packs that reskin glass panes ruined that
+  effect, so those slots are now left empty — exactly like the skill tree. Clicks are still fully
+  intercepted, so items can never be placed into the blank slots.
+
 ## [0.19.9] - 2026-06-23
 
 ### Changed

@@ -49,8 +49,7 @@ public class ShopMenu extends ChestMenu {
     }
 
     private void populate() {
-        ItemStack filler = filler();
-        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, filler.copy());
+        for (int i = 0; i < container.getContainerSize(); i++) container.setItem(i, ItemStack.EMPTY);
 
         container.setItem(INFO_SLOT, infoItem());
         for (int i = 0; i < ITEM_SLOTS.length; i++) {
@@ -116,12 +115,6 @@ public class ShopMenu extends ChestMenu {
                         can ? ChatFormatting.GREEN : ChatFormatting.RED))));
         if (can) stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         return stack;
-    }
-
-    private ItemStack filler() {
-        ItemStack pane = new ItemStack(Items.STAINED_GLASS_PANE.lightGray());
-        pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
-        return pane;
     }
 
     private ItemStack button(net.minecraft.world.item.Item item, String name, ChatFormatting color, String desc) {
