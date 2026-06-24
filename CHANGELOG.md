@@ -1,5 +1,10 @@
 # VanillaSkills Changelog
 
+## [0.19.8] - 2026-06-23
+
+### Changed
+- **Crystallized Diamond recipe now yields 2** (was 4) per craft (4 diamonds + 1 amethyst block).
+
 ## [0.19.7] - 2026-06-23
 
 ### Fixed
