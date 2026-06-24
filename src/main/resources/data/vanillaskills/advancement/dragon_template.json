@@ -1,7 +1,7 @@
 {
   "parent": "vanillaskills:root",
   "display": {
-    "icon": { "id": "minecraft:netherite_upgrade_smithing_template" },
+    "icon": { "id": "minecraft:netherite_upgrade_smithing_template", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:dragon_template"] } } },
     "title": "Dragon's Legacy",
     "description": "Discover a Dragon Upgrade template",
     "show_toast": true, "announce_to_chat": true

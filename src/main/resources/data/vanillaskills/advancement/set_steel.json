@@ -1,7 +1,7 @@
 {
   "parent": "vanillaskills:metallurgist",
   "display": {
-    "icon": { "id": "minecraft:iron_chestplate" },
+    "icon": { "id": "minecraft:iron_chestplate", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:steel_chestplate"] } } },
     "title": "Steel Suit",
     "description": "Craft a full set of Steel armor",
     "show_toast": true, "announce_to_chat": true

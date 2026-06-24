@@ -1,7 +1,7 @@
 {
   "parent": "vanillaskills:metallurgist",
   "display": {
-    "icon": { "id": "minecraft:golden_chestplate" },
+    "icon": { "id": "minecraft:golden_chestplate", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:rose_gold_chestplate"] } } },
     "title": "Rose Gold Suit",
     "description": "Craft a full set of Rose Gold armor",
     "show_toast": true, "announce_to_chat": true
