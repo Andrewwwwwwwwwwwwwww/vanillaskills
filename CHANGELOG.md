@@ -1,5 +1,11 @@
 # VanillaSkills Changelog
 
+## [0.19.9] - 2026-06-23
+
+### Changed
+- **Crystallized Diamond is now a shaped recipe** — 4 diamonds (corners), 4 amethyst shards (edges),
+  1 amethyst block (center) → 2 Crystallized Diamonds.
+
 ## [0.19.8] - 2026-06-23
 
 ### Changed
