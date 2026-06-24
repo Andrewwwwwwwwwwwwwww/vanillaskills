@@ -1,9 +1,9 @@
-# VanillaSkills — CurseForge Upload (0.19.11)
+# VanillaSkills — CurseForge Upload (0.19.12)
 
 Two separate uploads, two separate CurseForge projects.
 
 ## 1. Mod jar  →  the VanillaSkills **mod** project
-**File:** `vanillaskills-0.19.11.jar`
+**File:** `vanillaskills-0.19.12.jar`
 - Minecraft **26.2**, **Fabric** loader (>= 0.19.3)
 - **Required dependency:** Fabric API (>= 0.152.1+26.2)
 - Environment: server-side, vanilla clients OK

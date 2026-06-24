@@ -1,7 +1,7 @@
 {
   "parent": "vanillaskills:dragon_template",
   "display": {
-    "icon": { "id": "minecraft:netherite_ingot" },
+    "icon": { "id": "minecraft:netherite_ingot", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:dragon_ingot"] } } },
     "title": "Dragon Forged",
     "description": "Forge a Dragon Ingot",
     "show_toast": true, "announce_to_chat": true

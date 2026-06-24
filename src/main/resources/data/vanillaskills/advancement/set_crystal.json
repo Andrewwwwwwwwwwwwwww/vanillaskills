@@ -1,7 +1,7 @@
 {
   "parent": "vanillaskills:set_steel",
   "display": {
-    "icon": { "id": "minecraft:diamond_chestplate" },
+    "icon": { "id": "minecraft:diamond_chestplate", "components": { "minecraft:custom_model_data": { "strings": ["vanillaskills:crystal_chestplate"] } } },
     "title": "Crystalline Suit",
     "description": "Craft a full set of Crystalline armor",
     "show_toast": true, "announce_to_chat": true
