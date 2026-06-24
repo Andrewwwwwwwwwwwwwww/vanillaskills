@@ -1,5 +1,16 @@
 # VanillaSkills Changelog
 
+## [0.19.12] - 2026-06-23
+
+### Fixed
+- **Advancement-tree icons now show the custom gear textures instead of vanilla ones.** Each custom
+  advancement icon was a plain base item (`iron_chestplate`, `netherite_chestplate`, `gold_ingot`, …),
+  so it rendered with the vanilla texture. The armor-set, alloy, dragon-ingot/template, fortune-template,
+  and steel-shield advancements now carry the matching `custom_model_data` hook (and the steel shield its
+  banner-pattern components), so they display the real custom art. Generic icons (root book, Specialist
+  XP bottle, armored elytra) are unchanged. Requires the textures to be present client-side (bundled in
+  the mod jar, or via the standalone texture pack for vanilla clients).
+
 ## [0.19.11] - 2026-06-23
 
 ### Changed
