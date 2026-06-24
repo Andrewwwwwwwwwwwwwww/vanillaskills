@@ -7,7 +7,7 @@
   ],
   "result": {
     "id": "minecraft:diamond",
-    "count": 4,
+    "count": 2,
     "components": {
       "minecraft:custom_data": { "vs_crystallized_diamond": true },
       "minecraft:custom_name": { "text": "Crystallized Diamond", "color": "#B389E8", "italic": false },
