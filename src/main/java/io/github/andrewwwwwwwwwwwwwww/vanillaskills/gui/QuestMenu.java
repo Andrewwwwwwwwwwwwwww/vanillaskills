@@ -26,7 +26,7 @@ public class QuestMenu extends ChestMenu {
     private static final int[] SLOTS = {11, 13, 15};
     private static final int INFO_SLOT = 4;
     private static final int SHOP_SLOT = 22;
-    private static final int BACK_SLOT = 18;   // bottom-left: return to the skill tree
+    private static final int BACK_SLOT = 18;   // bottom-left: open the skill tree
     private static final int CLOSE_SLOT = 26;
 
     private final ServerPlayer player;
@@ -54,8 +54,8 @@ public class QuestMenu extends ChestMenu {
             container.setItem(SLOTS[i], questItem(i, active.get(i)));
         }
         container.setItem(SHOP_SLOT, shopButton());
-        container.setItem(BACK_SLOT, button(Items.NETHER_STAR, "Back to Skills", ChatFormatting.AQUA,
-                "Return to the skill tree."));
+        container.setItem(BACK_SLOT, button(Items.NETHER_STAR, "Skill Tree", ChatFormatting.AQUA,
+                "Open the skill tree."));
         container.setItem(CLOSE_SLOT, button(Items.BARRIER, "Close", ChatFormatting.RED, null));
     }
 
