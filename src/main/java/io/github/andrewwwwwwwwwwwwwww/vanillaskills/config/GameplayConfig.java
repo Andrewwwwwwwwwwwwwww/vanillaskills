@@ -5,16 +5,15 @@ import com.google.gson.GsonBuilder;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestShop;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Quests;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Optional gameplay/pacing config. Stored at config/vanillaskills/gameplay.json. These are server-side
- * settings (the bounty board, shop, and economy are shared) — edit the file (or use the Mod Menu screen
- * in singleplayer) and they apply on load / {@code /skill reload}, no cheats required.
+ * Optional gameplay/pacing config, stored PER-WORLD at &lt;world&gt;/vanillaskills/gameplay.json so each
+ * world (and each server) can have its own settings. Edit the file (or use the Mod Menu screen in a
+ * loaded singleplayer world) and it applies on load / {@code /skill reload}, no cheats required.
  */
 public class GameplayConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -43,25 +42,26 @@ public class GameplayConfig {
     public int graduateAt = 15;
 
     private static Path path() {
-        return FabricLoader.getInstance().getConfigDir().resolve("vanillaskills").resolve("gameplay.json");
+        Path dir = VanillaSkills.worldDir();
+        return dir == null ? null : dir.resolve("gameplay.json");
     }
 
-    /** Load gameplay.json (writing a default file if absent) and publish its values across the mod. */
+    /** Load gameplay.json from the current world (writing a default file if absent) and publish its values. */
     public static GameplayConfig load() {
         Path path = path();
-        GameplayConfig cfg;
-        try {
-            if (Files.exists(path)) {
-                String json = Files.readString(path);
-                cfg = GSON.fromJson(json, GameplayConfig.class);
-                if (cfg == null) cfg = new GameplayConfig();
-            } else {
+        GameplayConfig cfg = new GameplayConfig();
+        if (path != null) {
+            try {
+                if (Files.exists(path)) {
+                    GameplayConfig loaded = GSON.fromJson(Files.readString(path), GameplayConfig.class);
+                    if (loaded != null) cfg = loaded;
+                } else {
+                    cfg.save();
+                }
+            } catch (Exception e) {
+                VanillaSkills.LOGGER.error("Failed to load gameplay.json, using defaults", e);
                 cfg = new GameplayConfig();
-                cfg.save();
             }
-        } catch (Exception e) {
-            VanillaSkills.LOGGER.error("Failed to load gameplay.json, using defaults", e);
-            cfg = new GameplayConfig();
         }
         cfg.apply();
         return cfg;
@@ -78,6 +78,7 @@ public class GameplayConfig {
 
     public void save() {
         Path path = path();
+        if (path == null) return; // no world loaded
         try {
             Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(this));
