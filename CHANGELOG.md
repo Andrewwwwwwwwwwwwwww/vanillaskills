@@ -1,5 +1,12 @@
 # VanillaSkills Changelog
 
+## [0.19.19] - 2026-06-26
+
+### Changed
+- **Default keybinds changed to the bracket keys** (both unbound in vanilla, unlike the commonly-used
+  B/V): **Open Skill Tree → `]`**, **Open Bounty Board → `[`**. Still rebindable under Options →
+  Controls → VanillaSkills.
+
 ## [0.19.18] - 2026-06-26
 
 ### Changed

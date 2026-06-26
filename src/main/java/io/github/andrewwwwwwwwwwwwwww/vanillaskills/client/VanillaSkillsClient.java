@@ -28,10 +28,12 @@ public class VanillaSkillsClient implements ClientModInitializer {
         KeyMapping.Category category = KeyMapping.Category.register(
                 Identifier.fromNamespaceAndPath("vanillaskills", "keybinds"));
 
+        // Defaults: ] for the skill tree, [ for the bounty board — both unbound in vanilla, unlike the
+        // commonly-used B/V. Players can rebind under Options -> Controls -> VanillaSkills.
         openSkills = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.vanillaskills.open_skills", GLFW.GLFW_KEY_K, category));
+                "key.vanillaskills.open_skills", GLFW.GLFW_KEY_RIGHT_BRACKET, category));
         openQuests = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.vanillaskills.open_quests", GLFW.GLFW_KEY_B, category));
+                "key.vanillaskills.open_quests", GLFW.GLFW_KEY_LEFT_BRACKET, category));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openSkills.consumeClick()) runServerCommand(client, "skill");
