@@ -1,5 +1,12 @@
 # VanillaSkills Changelog
 
+## [0.19.17] - 2026-06-25
+
+### Changed
+- **The shard counter on the skill screen now shows both currencies.** Hovering the counter (bottom-left)
+  now lists your **Skill Shards** and **Quest Shards** together (titled "Your Shards"), instead of only
+  Skill Shards.
+
 ## [0.19.16] - 2026-06-25
 
 ### Added

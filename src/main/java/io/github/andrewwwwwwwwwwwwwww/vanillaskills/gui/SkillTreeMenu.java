@@ -263,8 +263,12 @@ public class SkillTreeMenu extends ChestMenu {
 
     private ItemStack buildCounter(PlayerSkillData data) {
         ItemStack stack = new ItemStack(Items.EXPERIENCE_BOTTLE);
-        stack.set(DataComponents.CUSTOM_NAME, styled("Skill Shards: " + data.pointsAvailable, ChatFormatting.AQUA));
-        stack.set(DataComponents.LORE, new ItemLore(List.of(styled("Click to see how to earn Skill Shards", ChatFormatting.GRAY))));
+        stack.set(DataComponents.CUSTOM_NAME, styled("Your Shards", ChatFormatting.GOLD));
+        stack.set(DataComponents.LORE, new ItemLore(List.of(
+                styled("Skill Shards: " + data.pointsAvailable, ChatFormatting.AQUA),
+                styled("Quest Shards: " + data.questShardsAvailable, ChatFormatting.LIGHT_PURPLE),
+                Component.literal(""),
+                styled("Click to see how to earn Skill Shards", ChatFormatting.GRAY))));
         return stack;
     }
 
