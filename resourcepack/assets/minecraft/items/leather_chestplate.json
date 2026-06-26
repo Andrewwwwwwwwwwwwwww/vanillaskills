@@ -6,6 +6,6 @@
     "cases": [
       { "when": "vanillaskills:hardwood_chestplate", "model": { "type": "minecraft:model", "model": "vanillaskills:item/hardwood_chestplate" } }
     ],
-    "fallback": { "type": "minecraft:model", "model": "minecraft:item/leather_chestplate" }
+    "fallback": { "type": "minecraft:model", "model": "minecraft:item/leather_chestplate", "tints": [ { "type": "minecraft:dye", "default": -6265536 } ] }
   }
 }
