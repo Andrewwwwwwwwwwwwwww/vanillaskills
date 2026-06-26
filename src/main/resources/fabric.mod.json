@@ -8,7 +8,8 @@
   "license": "All Rights Reserved",
   "environment": "*",
   "entrypoints": {
-    "main": ["io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills"]
+    "main": ["io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills"],
+    "client": ["io.github.andrewwwwwwwwwwwwwww.vanillaskills.client.VanillaSkillsClient"]
   },
   "mixins": ["vanillaskills.mixins.json"],
   "contact": {

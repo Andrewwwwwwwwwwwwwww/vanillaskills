@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [0.19.16] - 2026-06-25
+
+### Added
+- **Client keybinds for the Skill Tree and Bounty Board** (for players who install the mod on their
+  client). Two rebindable keys under Options → Controls → "VanillaSkills": **Open Skill Tree** (default
+  **K**) and **Open Bounty Board** (default **B**). They run the server's `/skill` and `/quests`, and only
+  fire when the connected server is actually running VanillaSkills, so on a vanilla server they do nothing
+  (no "Unknown command"). Vanilla clients are unaffected — they just use the commands as before.
+
 ## [0.19.15] - 2026-06-25
 
 ### Fixed
