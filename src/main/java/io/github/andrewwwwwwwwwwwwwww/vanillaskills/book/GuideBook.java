@@ -1,6 +1,8 @@
 package io.github.andrewwwwwwwwwwwwwww.vanillaskills.book;
 
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestShop;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Quests;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -19,6 +21,10 @@ import java.util.List;
  * Builds the mod's guide as a written book and opens it on the player's screen without changing
  * their inventory: the book is sent to the client's view of the held slot, the open-book packet
  * is sent, then the real held item is re-sent to correct the client.
+ *
+ * <p>Pages are kept short so none overflow a written-book page (~14 lines). {@code {MENDING}},
+ * {@code {GRAD}} and {@code {CONVERT}} are filled from the live config at build time so the guide
+ * never contradicts the current settings.
  */
 public final class GuideBook {
     private GuideBook() {}
@@ -29,125 +35,149 @@ public final class GuideBook {
 
             A server-side progression overhaul.
 
-            Two currencies drive everything:
-
-            Skill Shards - from advancements.
-            Quest Shards - from bounties.
+            Skill Shards: from advancements.
+            Quest Shards: from bounties.
 
             Type /help for commands.""",
 
             """
+            Skill Tree (/skill)
+
+            Spend Skill Shards on lanes of perks: health, speed, mining, combat, and more.
+
+            Unlocks are permanent - choose wisely.""",
+
+            """
             Skill Tree
-            (/skill)
 
-            Spend Skill Shards on lanes of perks (health, speed, mining, combat, and more).
+            Click a node to buy it and everything below it on that path.
 
-            Click a node to buy it and everything below it. Choose wisely - unlocks are permanent.
-
-            Bottom-left: your Shards. Bottom-right: your stats.""",
+            Bottom-left shows your Shards; bottom-right, your stats.""",
 
             """
             Earning Skill Shards
 
-            Every advancement gives Skill Shards, once each. Harder ones pay much more:
+            Each advancement grants Skill Shards once:
 
             tasks - a little
             goals - more
-            challenges (purple) - a lot
+            challenges - a lot
 
-            Doing them all can buy the whole tree.""",
+            Earn them all to afford the whole tree.""",
 
             """
             Bounty Board
             (/quests or /bounty)
 
-            Three bounties at a time, refreshing on a timer. Gather items or slay mobs for Quest Shards.
+            Three bounties at a time, refreshing on a timer.
 
-            New players start on a personal starter board - complete 15 quests to join the main board.""",
+            Gather items or slay mobs to earn Quest Shards.""",
+
+            """
+            Bounty Board
+
+            New players begin on a personal starter board.
+
+            Finish {GRAD} quests to graduate to the shared main board.""",
 
             """
             Quest Shop
 
-            Open the Shop from the bounty board. A rotating set of boost items, bought with Quest Shards (or Skill Shards).
+            Open it from the bounty board - a rotating set of boost items, bought with Quest or Skill Shards.
 
-            A converter trades 3 Quest Shards for 1 Skill Shard.""",
+            A converter trades {CONVERT} Quest Shards for 1 Skill Shard.""",
 
             """
             Crafting Ladders
 
-            Armorsmith & Toolsmith are paid in Quest Shards and gate crafting EVERY gear tier - copper, iron, diamond, and the custom tiers.
+            Armorsmith & Toolsmith (paid in Quest Shards) gate crafting EVERY gear tier - vanilla and custom.
 
-            Wood & stone stay free. Found/traded gear always works.""",
+            Wood & stone stay free. Found or traded gear always works.""",
 
             """
             Deepslate
 
             Deepslate and its ores need a Steel-tier or better pickaxe (Steel, Diamond, Crystalline, Netherite, Dragon).
 
-            Unlock Steel in the Toolsmith lane to mine the deep layer.""",
+            Unlock Steel in the Toolsmith lane to dig the deep layer.""",
 
             """
-            Armor Tiers
+            Gear Materials
 
-            Hardwood: from Wood blocks. Light and fast.
+            Hardwood armor: from Wood blocks (all-bark, like Oak Wood) - not logs or planks.
 
-            Rose Gold: 4 gold + 4 copper. Full set: immune to bad effects, piglins neutral.
-
-            Steel: 2 iron + 1 coal. Tanky.""",
+            Rose Gold ingot: 4 gold + 4 copper.""",
 
             """
-            Crystalline (Diamond II)
+            Gear Materials
 
-            Crystallized Diamonds: 4 diamonds + 1 amethyst block = 4.
+            Steel ingot: forge iron + iron in an anvil.
 
-            Between diamond and netherite. Full set reflects 25% of melee damage.""",
+            Crystallized Diamond: 4 diamonds + 4 amethyst shards + 1 amethyst block = 2.""",
 
             """
-            Dragon (Netherite II)
+            Set Bonuses
 
-            Slay the Ender Dragon for 8 Dragon Scales. Surround a Netherite Ingot with them to forge a Dragon Ingot.
+            Rose Gold: immune to bad effects; piglins stay neutral.
 
-            Full set: immune to fire/lava/breath. Sneak midair to dive-dash.""",
+            Crystalline: reflects 25% of melee damage.
+
+            Dragon: immune to fire, lava & breath.""",
+
+            """
+            Dragon Gear
+
+            Slay the Ender Dragon for 8 Dragon Scales. Ring a Netherite Ingot with them for a Dragon Ingot.
+
+            Sneak in midair to dive-dash.""",
 
             """
             Dragon Upgrade
 
             Find a Dragon Upgrade template in End City treasure (~4%).
 
-            Smithing: template + netherite armor + Dragon Ingot = Dragon armor (keeps enchants). Dragon tools use Dragon Ingots.""",
+            Smithing: template + netherite armor + Dragon Ingot = Dragon armor (keeps enchants).""",
 
             """
             Dragon Elytra
 
-            Drop a Dragon chestplate and an Elytra on top of an anvil to fuse them into a gliding chestplate.
+            Drop a Dragon chestplate and an Elytra onto an anvil to fuse them into a gliding chestplate.
 
-            Drop it on a grindstone to split them.""",
+            A grindstone splits them again.""",
 
             """
             Fortune IV & V
 
-            Find a Fortune Upgrade Template in Ancient City / mineshaft chests.
+            Find a Fortune Upgrade template in Ancient City or mineshaft chests.
 
-            Combine two Fortune III books + the template (lapis & diamond blocks) for a Fortune IV book. IV+IV = V.""",
+            Two Fortune III books + the template (lapis & diamond blocks) = Fortune IV. IV + IV = V.""",
 
             """
-            Potions & Mending
+            Potions
 
-            Brewmaster (5 nodes): beneficial potions last up to +50% longer. Potions stack to 16.
+            Brewmaster (5 nodes): beneficial potions last up to +50% longer.
 
-            Mending is removed - it never appears anywhere.
+            Potions stack to 16.""",
 
-            See all recipes via the Recipes icon on the skill screen."""
+            """
+            Mending & Recipes
+
+            {MENDING}
+
+            Open the Recipes icon on the skill screen to see every custom recipe."""
     };
 
     public static ItemStack create() {
+        String mending = GameplayConfig.MENDING_ENABLED
+                ? "Mending works normally on this server."
+                : "Mending is removed - it never appears anywhere.";
         List<Filterable<Component>> pages = new ArrayList<>();
         for (String page : PAGES) {
-            // Keep the Mending line accurate to the current server setting.
-            String text = page.replace("Mending is removed - it never appears anywhere.",
-                    GameplayConfig.MENDING_ENABLED
-                            ? "Mending is enabled on this server and works normally."
-                            : "Mending is removed - it never appears anywhere.");
+            // Fill the live-config tokens so the guide always matches the current settings.
+            String text = page
+                    .replace("{MENDING}", mending)
+                    .replace("{GRAD}", String.valueOf(Quests.GRADUATE_AT))
+                    .replace("{CONVERT}", String.valueOf(QuestShop.CONVERT_RATIO));
             pages.add(Filterable.passThrough(Component.literal(text)));
         }
         WrittenBookContent content = new WrittenBookContent(
