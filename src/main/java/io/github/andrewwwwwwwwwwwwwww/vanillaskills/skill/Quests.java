@@ -27,8 +27,9 @@ import java.util.Random;
 public final class Quests {
     private Quests() {}
 
-    /** Quests a new player must complete on the starter board before joining the universal board. */
-    public static final int GRADUATE_AT = 15;
+    /** Quests a new player must complete on the starter board before joining the universal board.
+     *  Default 15 — set live from gameplay.json by GameplayConfig. */
+    public static int GRADUATE_AT = 15;
 
     private static final Random RANDOM = new Random();
 

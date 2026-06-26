@@ -6,14 +6,19 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
- * The Mod Menu config screen. Currently just the gameplay toggles (Mending). Edits the local
- * {@code config/vanillaskills/gameplay.json} and applies it; in singleplayer that takes effect
- * immediately, since the client and integrated server share the live flag. On a multiplayer server
- * the server's own config is authoritative — this only changes your local copy.
+ * The Mod Menu config screen: the gameplay/pacing settings from gameplay.json, as click-to-cycle buttons
+ * (widget-only — 26.2 reworked GUI rendering, so no manual draw calls). Saves on close and applies the
+ * values; in singleplayer that's live since the client and integrated server share the JVM. On a
+ * multiplayer server the server's own gameplay.json is authoritative — this edits your local copy only.
  */
 public class VanillaSkillsConfigScreen extends Screen {
+    private static final int[] BOUNTY_HOURS = {1, 2, 3, 5, 8, 12, 24};
+    private static final int[] SHOP_HOURS = {6, 12, 24, 48, 72};
+    private static final int[] RATIOS = {1, 2, 3, 4, 5};
+    private static final int[] GRADUATE = {5, 10, 15, 20, 25};
+
     private final Screen parent;
-    private boolean mending;
+    private GameplayConfig cfg;
 
     public VanillaSkillsConfigScreen(Screen parent) {
         super(Component.literal("VanillaSkills"));
@@ -22,30 +27,56 @@ public class VanillaSkillsConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        this.mending = GameplayConfig.MENDING_ENABLED;
-        int cx = this.width / 2;
-        int y = this.height / 4 + 24;
+        if (cfg == null) cfg = GameplayConfig.load();
+        int w = 280, x = this.width / 2 - w / 2, y = this.height / 4, gap = 24;
 
         addRenderableWidget(Button.builder(mendingLabel(), b -> {
-            mending = !mending;
+            cfg.mendingEnabled = !cfg.mendingEnabled;
             b.setMessage(mendingLabel());
-        }).bounds(cx - 120, y, 240, 20).build());
+        }).bounds(x, y, w, 20).build());
+
+        addRenderableWidget(Button.builder(bountyLabel(), b -> {
+            cfg.bountyRefreshHours = cycle(BOUNTY_HOURS, cfg.bountyRefreshHours);
+            b.setMessage(bountyLabel());
+        }).bounds(x, y + gap, w, 20).build());
+
+        addRenderableWidget(Button.builder(shopLabel(), b -> {
+            cfg.shopRefreshHours = cycle(SHOP_HOURS, cfg.shopRefreshHours);
+            b.setMessage(shopLabel());
+        }).bounds(x, y + gap * 2, w, 20).build());
+
+        addRenderableWidget(Button.builder(ratioLabel(), b -> {
+            cfg.convertRatio = cycle(RATIOS, cfg.convertRatio);
+            b.setMessage(ratioLabel());
+        }).bounds(x, y + gap * 3, w, 20).build());
+
+        addRenderableWidget(Button.builder(graduateLabel(), b -> {
+            cfg.graduateAt = cycle(GRADUATE, cfg.graduateAt);
+            b.setMessage(graduateLabel());
+        }).bounds(x, y + gap * 4, w, 20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-                .bounds(cx - 120, y + 28, 240, 20).build());
+                .bounds(x, y + gap * 5 + 10, w, 20).build());
     }
 
-    private Component mendingLabel() {
-        return Component.literal("Mending: " + (mending ? "Enabled" : "Removed (default)"));
+    /** Advance to the next preset after {@code current}; if current isn't a preset, snap to the first. */
+    private static int cycle(int[] presets, int current) {
+        for (int i = 0; i < presets.length; i++) {
+            if (presets[i] == current) return presets[(i + 1) % presets.length];
+        }
+        return presets[0];
     }
+
+    private Component mendingLabel() { return Component.literal("Mending: " + (cfg.mendingEnabled ? "Enabled" : "Removed (default)")); }
+    private Component bountyLabel() { return Component.literal("Bounty board refresh: " + cfg.bountyRefreshHours + "h"); }
+    private Component shopLabel() { return Component.literal("Quest Shop refresh: " + cfg.shopRefreshHours + "h"); }
+    private Component ratioLabel() { return Component.literal("Convert: " + cfg.convertRatio + " Quest → 1 Skill Shard"); }
+    private Component graduateLabel() { return Component.literal("Graduate after: " + cfg.graduateAt + " quests"); }
 
     @Override
     public void onClose() {
-        // Persist to gameplay.json and publish the live flag (shared with the integrated server in SP).
-        GameplayConfig cfg = GameplayConfig.load();
-        cfg.mendingEnabled = mending;
         cfg.save();
-        GameplayConfig.MENDING_ENABLED = mending;
+        GameplayConfig.load(); // re-read + apply all live values
         this.minecraft.setScreenAndShow(parent);
     }
 }

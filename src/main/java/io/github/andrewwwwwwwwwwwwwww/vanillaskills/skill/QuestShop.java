@@ -1,6 +1,7 @@
 package io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill;
 
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,8 +20,9 @@ import java.util.Random;
 public final class QuestShop {
     private QuestShop() {}
 
-    /** 3 Quest Shards buy 1 Skill Shard (one-way). Also the rate when paying for items in Skill Shards. */
-    public static final int CONVERT_RATIO = 3;
+    /** Quest Shards per 1 Skill Shard (one-way); also the rate when paying for items in Skill Shards.
+     *  Default 3 — set live from gameplay.json by {@link GameplayConfig}. */
+    public static int CONVERT_RATIO = 3;
     /** How many rotating offers are shown each day. */
     public static final int DAILY_COUNT = 8;
 
@@ -186,13 +188,13 @@ public final class QuestShop {
 
     /** The UTC day number used as the rotation seed. */
     public static long currentDay() {
-        return System.currentTimeMillis() / 86_400_000L; // ms per day
+        return System.currentTimeMillis() / GameplayConfig.SHOP_REFRESH_MS; // rotation period
     }
 
     /** Milliseconds until the next daily rotation (UTC midnight). */
     public static long msUntilRotation() {
-        long dayMs = 86_400_000L;
-        return dayMs - (System.currentTimeMillis() % dayMs);
+        long period = GameplayConfig.SHOP_REFRESH_MS;
+        return period - (System.currentTimeMillis() % period);
     }
 
     /** Today's rotating offers (weighted, distinct, stable for the whole UTC day). */
