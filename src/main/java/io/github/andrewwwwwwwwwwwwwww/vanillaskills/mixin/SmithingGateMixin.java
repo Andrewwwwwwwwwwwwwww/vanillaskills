@@ -23,6 +23,10 @@ public abstract class SmithingGateMixin {
         AbstractContainerMenu self = (AbstractContainerMenu) (Object) this;
         ItemStack result = self.getSlot(SmithingMenu.RESULT_SLOT).getItem();
         if (result.isEmpty()) return;
+        // Trims (and any in-place smithing edit) keep the same base item — they aren't crafting a new
+        // tier, so they must NOT be gated. Only true tier upgrades change the item (diamond -> netherite).
+        ItemStack base = self.getSlot(SmithingMenu.BASE_SLOT).getItem();
+        if (base.is(result.getItem())) return;
         var player = ((ItemCombinerMenuAccessor) self).vanillaskills$getPlayer();
         if (CraftingGate.isLocked(player, result)) {
             self.getSlot(SmithingMenu.RESULT_SLOT).set(ItemStack.EMPTY);
