@@ -3,7 +3,6 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,21 +40,24 @@ public class PointsConfig {
     }
 
     private static Path path() {
-        return FabricLoader.getInstance().getConfigDir().resolve("vanillaskills").resolve("points.json");
+        Path dir = VanillaSkills.worldDir();
+        return dir == null ? null : dir.resolve("points.json");
     }
 
     public static PointsConfig load() {
         Path path = path();
-        try {
-            if (Files.exists(path)) {
-                String json = Files.readString(path);
-                PointsConfig cfg = GSON.fromJson(json, PointsConfig.class);
-                if (cfg == null) cfg = new PointsConfig();
-                if (cfg.advancementOverrides == null) cfg.advancementOverrides = new HashMap<>();
-                return cfg;
+        if (path != null) {
+            try {
+                if (Files.exists(path)) {
+                    String json = Files.readString(path);
+                    PointsConfig cfg = GSON.fromJson(json, PointsConfig.class);
+                    if (cfg == null) cfg = new PointsConfig();
+                    if (cfg.advancementOverrides == null) cfg.advancementOverrides = new HashMap<>();
+                    return cfg;
+                }
+            } catch (Exception e) {
+                VanillaSkills.LOGGER.error("Failed to load points.json, using defaults", e);
             }
-        } catch (Exception e) {
-            VanillaSkills.LOGGER.error("Failed to load points.json, using defaults", e);
         }
         PointsConfig cfg = defaults();
         cfg.save();
@@ -66,7 +68,7 @@ public class PointsConfig {
     public static PointsConfig regenerate() {
         Path path = path();
         try {
-            if (Files.exists(path)) {
+            if (path != null && Files.exists(path)) {
                 Path backup = path.resolveSibling("points.backup-" + System.currentTimeMillis() + ".json");
                 Files.copy(path, backup, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             }
@@ -80,6 +82,7 @@ public class PointsConfig {
 
     public void save() {
         Path path = path();
+        if (path == null) return; // no world loaded
         try {
             Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(this));

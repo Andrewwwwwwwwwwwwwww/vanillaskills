@@ -27,8 +27,18 @@ public class VanillaSkillsConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        if (cfg == null) cfg = GameplayConfig.load();
         int w = 280, x = this.width / 2 - w / 2, y = this.height / 4, gap = 24;
+        if (this.minecraft.getSingleplayerServer() == null) {
+            // Settings are per-world; with no single-player world loaded there's nothing to edit here.
+            // (On a multiplayer server the server's own config is authoritative.)
+            Button notice = Button.builder(Component.literal("Open a single-player world to edit its settings"),
+                    b -> {}).bounds(x, y, w, 20).build();
+            notice.active = false;
+            addRenderableWidget(notice);
+            addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose()).bounds(x, y + gap, w, 20).build());
+            return;
+        }
+        if (cfg == null) cfg = GameplayConfig.load();
 
         addRenderableWidget(Button.builder(mendingLabel(), b -> {
             cfg.mendingEnabled = !cfg.mendingEnabled;
@@ -75,8 +85,10 @@ public class VanillaSkillsConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        cfg.save();
-        GameplayConfig.load(); // re-read + apply all live values
+        if (cfg != null) {
+            cfg.save();
+            GameplayConfig.load(); // re-read + apply all live values
+        }
         this.minecraft.setScreenAndShow(parent);
     }
 }
