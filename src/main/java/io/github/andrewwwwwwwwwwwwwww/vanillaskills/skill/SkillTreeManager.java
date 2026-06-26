@@ -3,15 +3,14 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Loads, saves and edits the server's skill tree (config/vanillaskills/skilltree.json).
- * If no file exists, the built-in 5-lane starter tree is written out.
+ * Loads, saves and edits the skill tree, stored PER-WORLD at &lt;world&gt;/vanillaskills/skilltree.json.
+ * If no file exists, the built-in default tree is written out (so each world starts from the default).
  */
 public class SkillTreeManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -23,19 +22,20 @@ public class SkillTreeManager {
     }
 
     private static Path path() {
-        return FabricLoader.getInstance().getConfigDir().resolve("vanillaskills").resolve("skilltree.json");
+        Path dir = VanillaSkills.worldDir();
+        return dir == null ? null : dir.resolve("skilltree.json");
     }
 
     public void load() {
         Path path = path();
         try {
-            if (Files.exists(path)) {
+            if (path != null && Files.exists(path)) {
                 String json = Files.readString(path);
                 SkillTree loaded = GSON.fromJson(json, SkillTree.class);
                 tree = loaded != null ? loaded : defaultTree();
             } else {
                 tree = defaultTree();
-                save();
+                if (path != null) save();
             }
         } catch (Exception e) {
             VanillaSkills.LOGGER.error("Failed to load skilltree.json, using default tree", e);
@@ -47,6 +47,7 @@ public class SkillTreeManager {
 
     public void save() {
         Path path = path();
+        if (path == null) return; // no world loaded
         try {
             Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(tree));
@@ -74,7 +75,7 @@ public class SkillTreeManager {
         Path path = path();
         Path backup = null;
         try {
-            if (Files.exists(path)) {
+            if (path != null && Files.exists(path)) {
                 backup = path.resolveSibling("skilltree.backup-" + System.currentTimeMillis() + ".json");
                 Files.copy(path, backup, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             }

@@ -1,5 +1,18 @@
 # VanillaSkills Changelog
 
+## [0.19.23] - 2026-06-26
+
+### Changed
+- **Settings and the skill tree are now stored PER-WORLD** instead of in the shared instance config
+  folder. `gameplay.json`, `points.json`, and `skilltree.json` now live in the world save
+  (`<world>/vanillaskills/`), alongside the already-per-world player progress and quest data. So every
+  single-player world — and every server world — can have its own settings, economy, and tree layout.
+- The Mod Menu config screen now edits the **currently loaded** world's settings; with no world open it
+  shows a notice (settings are per-world, so there's nothing global to edit there).
+
+Note: existing worlds generate fresh per-world config/tree files from the defaults on first load with this
+version (player progress and quests are unaffected — those were already per-world).
+
 ## [0.19.22] - 2026-06-26
 
 ### Added

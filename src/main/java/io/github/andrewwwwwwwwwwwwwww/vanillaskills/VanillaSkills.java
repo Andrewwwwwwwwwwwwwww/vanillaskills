@@ -39,6 +39,12 @@ public class VanillaSkills implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("VanillaSkills");
 
     public static MinecraftServer server;
+
+    /** Per-world vanillaskills data/config directory (inside the world save), or null if no world is loaded. */
+    public static java.nio.file.Path worldDir() {
+        return server == null ? null
+                : server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("vanillaskills");
+    }
     public static final SkillTreeManager TREE = new SkillTreeManager();
     public static final PlayerSkillManager PLAYERS = new PlayerSkillManager();
     public static final io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestBoard QUESTS =
