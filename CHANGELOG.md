@@ -1,5 +1,17 @@
 # VanillaSkills Changelog
 
+## [0.19.18] - 2026-06-26
+
+### Changed
+- **Skill-tree home screen reorganized.** Night Vision and the Recipes (crafting) button swapped places,
+  and Recipes now sits under Armorsmith. Two new movable buttons join that row: a **Guide** book under
+  Toolsmith (opens the `/skill guide` book) and a **Bounty Board** clock under Night Vision (opens the
+  quest screen). Like Recipes, both are pseudo-lanes — ops can reposition them in `/skill layout`.
+- **The Bounty Board now has a nether star in the bottom-left to return to the skill tree.**
+
+Note: the new arrangement is the default layout — existing worlds keep their saved tree until
+`/skill regen fresh` is run.
+
 ## [0.19.17] - 2026-06-25
 
 ### Changed
