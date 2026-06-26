@@ -3,7 +3,7 @@
   "id": "vanillaskills",
   "version": "${version}",
   "name": "VanillaSkills",
-  "description": "A server-side skill-tree and progression overhaul for vanilla clients. Adds a per-player skill tree with a chest-GUI editor, removes Mending, and introduces five tool/weapon/armor tiers (Hardwood, Rose Gold, Steel, Crystalline, Dragon) with set bonuses, an Ender Dragon material chain (scales to Dragon Ingot to Dragon gear), an Elytra-into-chestplate combine, stacking/longer potions, and craftable Fortune IV/V.",
+  "description": "A server-side skill-tree and progression overhaul for vanilla clients. Adds a per-player skill tree with a chest-GUI editor, optional Mending removal, and five tool/weapon/armor tiers (Hardwood, Rose Gold, Steel, Crystalline, Dragon) with set bonuses, an Ender Dragon material chain (scales to Dragon Ingot to Dragon gear), an Elytra-into-chestplate combine, stacking/longer potions, and craftable Fortune IV/V.",
   "authors": ["Andrewwwwwwwwwwwwwww"],
   "license": "All Rights Reserved",
   "environment": "*",
