@@ -1,5 +1,17 @@
 # VanillaSkills Changelog
 
+## [1.0.0] - 2026-06-26
+
+First stable release.
+
+- **Jars are now named with the Minecraft version** — e.g. `vanillaskills-1.0.0+mc26.2.jar`.
+- Headline additions since the 0.19 series: **per-world** config + skill tree, an in-game **Mod Menu
+  config screen**, **client keybinds** (`]` skill tree / `[` bounty board), configurable pacing/economy
+  (refresh intervals, convert ratio, graduation count, Mending toggle), the reorganized skill-tree home
+  with Guide/Bounty shortcuts, and a fully revised guide book.
+
+See the 0.19.x entries below for the detailed history leading here.
+
 ## [0.19.24] - 2026-06-26
 
 ### Fixed
