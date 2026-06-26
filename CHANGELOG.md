@@ -1,5 +1,17 @@
 # VanillaSkills Changelog
 
+## [0.19.24] - 2026-06-26
+
+### Fixed
+- **Guide book overhaul.** Long pages were overflowing the written-book page limit and getting cut off —
+  split them so every page fits. Also fixed stale/incorrect recipe info:
+  - **Steel** ingot is forged **iron + iron in an anvil** (was wrongly listed as "2 iron + 1 coal").
+  - **Crystallized Diamond** is **4 diamonds + 4 amethyst shards + 1 amethyst block = 2** (was "+ 1
+    amethyst block = 4").
+  - **Hardwood** armor is crafted from **Wood blocks** (the all-bark kind, like Oak Wood) — clarified it's
+    not logs or planks.
+  - The graduation quest count and the converter ratio now reflect the live config values.
+
 ## [0.19.23] - 2026-06-26
 
 ### Changed
