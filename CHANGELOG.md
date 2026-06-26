@@ -1,5 +1,17 @@
 # VanillaSkills Changelog
 
+## [1.0.2] - 2026-06-26
+
+### Fixed
+- **Armor trims actually work now** (1.0.1's attempt didn't take effect). Two real causes:
+  - The smithing craft-gate kept clearing trim results — the 1.0.1 guard bound to the wrong
+    `ItemStack.is` overload and never fired. It now compares the base and result item directly, so trims
+    apply to any armor (vanilla or custom) while genuine tier upgrades (diamond → netherite) stay gated.
+  - Our armor item-model overrides had replaced vanilla's trim-icon handling, so trimmed armor showed no
+    trim in the inventory — including plain vanilla armor (a regression we'd introduced). The overrides now
+    nest vanilla's `trim_material` model as the fallback, restoring inventory trim icons for all vanilla
+    armor. (Custom-tier pieces still show their tier art on the icon; trims render when worn.)
+
 ## [1.0.1] - 2026-06-26
 
 ### Fixed
