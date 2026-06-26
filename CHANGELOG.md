@@ -1,5 +1,15 @@
 # VanillaSkills Changelog
 
+## [0.19.15] - 2026-06-25
+
+### Fixed
+- **Vanilla (undyed) leather armor showed white in the inventory.** Overriding the leather item models
+  to add the Hardwood custom-model-data `select` dropped vanilla's dye `tints`, so the dyeable base layer
+  rendered untinted (white). The fallback models for all four leather pieces now carry the leather dye
+  tint (`minecraft:dye`, default `-6265536`), so undyed and dyed leather render correctly again. Worn
+  armor was always fine (it uses the separate equipment texture). Fix applied to both the bundled jar
+  assets and the standalone texture pack.
+
 ## [0.19.14] - 2026-06-23
 
 ### Added
