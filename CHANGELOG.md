@@ -1,5 +1,17 @@
 # VanillaSkills Changelog
 
+## [0.19.22] - 2026-06-26
+
+### Added
+- **Four new pacing/economy settings in `gameplay.json`** (server-side, no cheats needed):
+  - `bountyRefreshHours` — hours between bounty-board rotations (default 5).
+  - `shopRefreshHours` — hours between Quest Shop rotations (default 24).
+  - `convertRatio` — Quest Shards per 1 Skill Shard at the converter (default 3).
+  - `graduateAt` — quests to finish on the starter board before joining the main board (default 15).
+- **The Mod Menu config screen now exposes all of these** as click-to-cycle buttons, alongside the
+  Mending toggle. In singleplayer changes apply on close; on a server the server's config governs and
+  applies on load / `/skill reload`.
+
 ## [0.19.21] - 2026-06-26
 
 ### Added

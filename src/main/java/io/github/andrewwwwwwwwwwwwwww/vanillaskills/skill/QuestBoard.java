@@ -3,6 +3,7 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.VanillaSkills;
+import io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -20,7 +21,6 @@ import java.util.Random;
  */
 public class QuestBoard {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final long INTERVAL_MS = 5L * 60 * 60 * 1000; // 5 hours
     private static final int ACTIVE_COUNT = 3;
     private final Random random = new Random();
 
@@ -86,7 +86,7 @@ public class QuestBoard {
 
     private void reroll(long now) {
         state.rotationId++;
-        state.nextRotationMs = now + INTERVAL_MS;
+        state.nextRotationMs = now + GameplayConfig.BOUNTY_REFRESH_MS;
         state.activeIndices = pickDistinct(ACTIVE_COUNT);
         save();
     }

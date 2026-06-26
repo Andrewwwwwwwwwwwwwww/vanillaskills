@@ -61,14 +61,14 @@ public final class GuideBook {
             Bounty Board
             (/quests or /bounty)
 
-            Three bounties at a time, refreshing every 5 hours. Gather items or slay mobs for Quest Shards.
+            Three bounties at a time, refreshing on a timer. Gather items or slay mobs for Quest Shards.
 
             New players start on a personal starter board - complete 15 quests to join the main board.""",
 
             """
             Quest Shop
 
-            Open the Shop from the bounty board. A daily set of boost items, bought with Quest Shards (or Skill Shards).
+            Open the Shop from the bounty board. A rotating set of boost items, bought with Quest Shards (or Skill Shards).
 
             A converter trades 3 Quest Shards for 1 Skill Shard.""",
 
