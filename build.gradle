@@ -3,7 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
+// Jar/file name includes the Minecraft version, e.g. vanillaskills-1.0.0+mc26.2.jar
+version = "${project.mod_version}+mc${project.minecraft_version}"
 group = project.maven_group
 
 repositories {
