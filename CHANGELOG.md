@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [0.19.21] - 2026-06-26
+
+### Added
+- **Mod Menu config screen.** With Mod Menu installed client-side, the VanillaSkills entry now has a
+  Config button that opens a settings screen — currently a Mending toggle. It edits the local
+  `config/vanillaskills/gameplay.json`; in singleplayer the change applies immediately. (On a multiplayer
+  server the server's config is authoritative, so this only changes your own copy.) Mod Menu is optional —
+  the integration is a no-op if it isn't installed.
+
 ## [0.19.20] - 2026-06-26
 
 ### Changed
