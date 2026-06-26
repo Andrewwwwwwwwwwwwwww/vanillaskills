@@ -1,5 +1,13 @@
 # VanillaSkills Changelog
 
+## [1.0.1] - 2026-06-26
+
+### Fixed
+- **Armor trims wouldn't apply to gated-tier armor** (custom tiers like Crystalline, and vanilla
+  iron/diamond/etc.). The smithing-table craft gate was clearing the result because a trimmed piece is
+  still a gated tier. The gate now only blocks true tier *upgrades* (where the item type changes, e.g.
+  diamond → netherite), so trimming any armor works and keeps the piece's tier, stats, and worn texture.
+
 ## [1.0.0] - 2026-06-26
 
 First stable release.
