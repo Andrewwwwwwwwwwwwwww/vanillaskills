@@ -1,5 +1,12 @@
 # VanillaSkills Changelog
 
+## [0.19.20] - 2026-06-26
+
+### Changed
+- **Bounty Board's skill-tree button is no longer worded as a "return".** Since the bounty board can be
+  opened directly (via `/quests` or its keybind), the nether-star button now reads "Skill Tree" / "Open
+  the skill tree" instead of "Back to Skills" / "Return to the skill tree".
+
 ## [0.19.19] - 2026-06-26
 
 ### Changed
