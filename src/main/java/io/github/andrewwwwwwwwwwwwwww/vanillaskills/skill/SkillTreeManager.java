@@ -123,7 +123,7 @@ public class SkillTreeManager {
     //   Night Vision capstone — bottom-centre (49), between the Points/Stats buttons.
     // laneIndex:                  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
     // lane:                    health spd min luck dmg grd rch mtn aqu arm tool brw eva cul nv
-    private static final int[] CATEGORY_SLOTS = {10, 11, 20, 21, 12, 13, 14, 16, 22, 39, 41, 24, 15, 23, 49};
+    private static final int[] CATEGORY_SLOTS = {10, 11, 20, 21, 12, 13, 14, 16, 22, 39, 41, 24, 15, 23, 40};
 
     private static SkillTree defaultTree() {
         SkillTree t = new SkillTree();
@@ -277,8 +277,11 @@ public class SkillTreeManager {
                 new SkillEffect[][]{ { SkillEffect.status("minecraft:night_vision", 0) } },
                 new String[]{"Permanent Night Vision"});
 
-        // Recipes: a movable pseudo-lane (no nodes) that opens the custom-recipe book when clicked.
-        t.categories.add(new SkillCategory("recipes", "Recipes", "minecraft:crafting_table", 40));
+        // Movable pseudo-lanes (no nodes): Recipes opens the recipe book (under Armorsmith), Guide opens
+        // the /skill guide book (under Toolsmith), Bounty Board opens the quest screen (under Night Vision).
+        t.categories.add(new SkillCategory("recipes", "Recipes", "minecraft:crafting_table", 48));
+        t.categories.add(new SkillCategory("guide", "Guide", "minecraft:written_book", 50));
+        t.categories.add(new SkillCategory("quests", "Bounty Board", "minecraft:clock", 49));
 
         applyEconomy(t, economyP);
         return t;

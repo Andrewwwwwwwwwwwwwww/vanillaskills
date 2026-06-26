@@ -156,6 +156,24 @@ public class SkillTreeMenu extends ChestMenu {
                     styled(layoutMode ? "Click to pick up & move" : "Click to view", ChatFormatting.YELLOW))));
             return r;
         }
+        if ("guide".equals(cat.id)) {
+            ItemStack r = new ItemStack(resolveItem(cat.icon));
+            Guis.hideStats(r);
+            r.set(DataComponents.CUSTOM_NAME, styled("Guide", ChatFormatting.GOLD));
+            r.set(DataComponents.LORE, new ItemLore(List.of(
+                    styled("How VanillaSkills works", ChatFormatting.GRAY),
+                    styled(layoutMode ? "Click to pick up & move" : "Click to open", ChatFormatting.YELLOW))));
+            return r;
+        }
+        if ("quests".equals(cat.id)) {
+            ItemStack r = new ItemStack(resolveItem(cat.icon));
+            Guis.hideStats(r);
+            r.set(DataComponents.CUSTOM_NAME, styled("Bounty Board", ChatFormatting.GOLD));
+            r.set(DataComponents.LORE, new ItemLore(List.of(
+                    styled("Quests & the Quest Shop", ChatFormatting.GRAY),
+                    styled(layoutMode ? "Click to pick up & move" : "Click to open", ChatFormatting.YELLOW))));
+            return r;
+        }
         int total = 0, unlocked = 0;
         boolean quest = false;
         for (SkillNode node : tree.nodesIn(cat.id)) {
@@ -480,6 +498,14 @@ public class SkillTreeMenu extends ChestMenu {
         if (cat != null) {
             if (!editMode && "recipes".equals(cat.id)) {
                 RecipeBookMenu.open(sp, 0);
+                return true;
+            }
+            if (!editMode && "guide".equals(cat.id)) {
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.book.GuideBook.open(sp);
+                return true;
+            }
+            if (!editMode && "quests".equals(cat.id)) {
+                QuestMenu.open(sp);
                 return true;
             }
             if (!editMode && isLaneLocked(cat, VanillaSkills.PLAYERS.get(sp.getUUID()))) {
