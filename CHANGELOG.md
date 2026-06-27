@@ -1,5 +1,18 @@
 # VanillaSkills Changelog
 
+## [1.0.3] - 2026-06-26
+
+### Fixed
+- **Custom-tier armor (Crystalline, Rose Gold, Dragon) can now be trimmed in the smithing table.**
+  1.0.2 restored trims for *vanilla* armor, but our custom tiers still produced a red X. The cause was
+  upstream of the trim code: our armor is a marked vanilla item, and the mod deliberately hides every
+  marked item from vanilla recipe ingredients (so e.g. a Steel ingot can't satisfy the vanilla iron-block
+  recipe). That same block made the trim recipe's base-ingredient check reject our armor, so no recipe
+  matched and the result cleared. Trims now apply to custom armor through a dedicated handler that matches
+  on the template + material and trims the marked base directly — without unblocking the marker globally
+  (which would have allowed broken Netherite "upgrades" of custom armor). Custom pieces keep their tier
+  art on the inventory icon; the trim renders when worn.
+
 ## [1.0.2] - 2026-06-26
 
 ### Fixed
