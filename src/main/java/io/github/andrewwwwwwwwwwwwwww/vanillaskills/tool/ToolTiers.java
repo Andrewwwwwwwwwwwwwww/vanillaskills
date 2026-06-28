@@ -14,8 +14,9 @@ import java.util.Set;
 import static net.minecraft.world.item.Items.*;
 
 /**
- * The three tool tiers, sharing materials and repair rules with the armor tiers. Hardwood is
- * wooden-based (light), Rose Gold and Steel are iron-based (so they harvest the iron tier).
+ * The five tool tiers, sharing materials and repair rules with the armor tiers. Each tier is a vanilla
+ * tool base, so its harvest tier matches that base: Hardwood = stone, Rose Gold = gold (lowest harvest
+ * tier but the fastest mining speed), Steel = iron, Crystalline = diamond, Dragon = netherite.
  */
 public final class ToolTiers {
     private ToolTiers() {}
