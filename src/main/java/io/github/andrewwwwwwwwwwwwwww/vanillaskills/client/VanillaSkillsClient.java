@@ -25,6 +25,9 @@ public class VanillaSkillsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // Load global client preferences (e.g. the opt-in narrator disable).
+        ClientConfig.load();
+
         KeyMapping.Category category = KeyMapping.Category.register(
                 Identifier.fromNamespaceAndPath("vanillaskills", "keybinds"));
 

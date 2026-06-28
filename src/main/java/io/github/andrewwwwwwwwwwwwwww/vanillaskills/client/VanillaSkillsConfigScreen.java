@@ -19,6 +19,7 @@ public class VanillaSkillsConfigScreen extends Screen {
 
     private final Screen parent;
     private GameplayConfig cfg;
+    private ClientConfig clientCfg;
 
     public VanillaSkillsConfigScreen(Screen parent) {
         super(Component.literal("VanillaSkills"));
@@ -27,46 +28,55 @@ public class VanillaSkillsConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        int w = 280, x = this.width / 2 - w / 2, y = this.height / 4, gap = 24;
+        int w = 280, x = this.width / 2 - w / 2, top = this.height / 4, gap = 24;
+        if (clientCfg == null) clientCfg = ClientConfig.load();
+        int row = 0;
+
+        // Client-global setting — available everywhere (no world loaded / multiplayer included).
+        addRenderableWidget(Button.builder(narratorLabel(), b -> {
+            clientCfg.disableNarrator = !clientCfg.disableNarrator;
+            b.setMessage(narratorLabel());
+        }).bounds(x, top + gap * row++, w, 20).build());
+
         if (this.minecraft.getSingleplayerServer() == null) {
-            // Settings are per-world; with no single-player world loaded there's nothing to edit here.
+            // Gameplay settings are per-world; nothing to edit with no single-player world loaded.
             // (On a multiplayer server the server's own config is authoritative.)
-            Button notice = Button.builder(Component.literal("Open a single-player world to edit its settings"),
-                    b -> {}).bounds(x, y, w, 20).build();
+            Button notice = Button.builder(
+                    Component.literal("Open a single-player world to edit gameplay settings"), b -> {})
+                    .bounds(x, top + gap * row++, w, 20).build();
             notice.active = false;
             addRenderableWidget(notice);
-            addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose()).bounds(x, y + gap, w, 20).build());
-            return;
+        } else {
+            if (cfg == null) cfg = GameplayConfig.load();
+
+            addRenderableWidget(Button.builder(mendingLabel(), b -> {
+                cfg.mendingEnabled = !cfg.mendingEnabled;
+                b.setMessage(mendingLabel());
+            }).bounds(x, top + gap * row++, w, 20).build());
+
+            addRenderableWidget(Button.builder(bountyLabel(), b -> {
+                cfg.bountyRefreshHours = cycle(BOUNTY_HOURS, cfg.bountyRefreshHours);
+                b.setMessage(bountyLabel());
+            }).bounds(x, top + gap * row++, w, 20).build());
+
+            addRenderableWidget(Button.builder(shopLabel(), b -> {
+                cfg.shopRefreshHours = cycle(SHOP_HOURS, cfg.shopRefreshHours);
+                b.setMessage(shopLabel());
+            }).bounds(x, top + gap * row++, w, 20).build());
+
+            addRenderableWidget(Button.builder(ratioLabel(), b -> {
+                cfg.convertRatio = cycle(RATIOS, cfg.convertRatio);
+                b.setMessage(ratioLabel());
+            }).bounds(x, top + gap * row++, w, 20).build());
+
+            addRenderableWidget(Button.builder(graduateLabel(), b -> {
+                cfg.graduateAt = cycle(GRADUATE, cfg.graduateAt);
+                b.setMessage(graduateLabel());
+            }).bounds(x, top + gap * row++, w, 20).build());
         }
-        if (cfg == null) cfg = GameplayConfig.load();
-
-        addRenderableWidget(Button.builder(mendingLabel(), b -> {
-            cfg.mendingEnabled = !cfg.mendingEnabled;
-            b.setMessage(mendingLabel());
-        }).bounds(x, y, w, 20).build());
-
-        addRenderableWidget(Button.builder(bountyLabel(), b -> {
-            cfg.bountyRefreshHours = cycle(BOUNTY_HOURS, cfg.bountyRefreshHours);
-            b.setMessage(bountyLabel());
-        }).bounds(x, y + gap, w, 20).build());
-
-        addRenderableWidget(Button.builder(shopLabel(), b -> {
-            cfg.shopRefreshHours = cycle(SHOP_HOURS, cfg.shopRefreshHours);
-            b.setMessage(shopLabel());
-        }).bounds(x, y + gap * 2, w, 20).build());
-
-        addRenderableWidget(Button.builder(ratioLabel(), b -> {
-            cfg.convertRatio = cycle(RATIOS, cfg.convertRatio);
-            b.setMessage(ratioLabel());
-        }).bounds(x, y + gap * 3, w, 20).build());
-
-        addRenderableWidget(Button.builder(graduateLabel(), b -> {
-            cfg.graduateAt = cycle(GRADUATE, cfg.graduateAt);
-            b.setMessage(graduateLabel());
-        }).bounds(x, y + gap * 4, w, 20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-                .bounds(x, y + gap * 5 + 10, w, 20).build());
+                .bounds(x, top + gap * row + 10, w, 20).build());
     }
 
     /** Advance to the next preset after {@code current}; if current isn't a preset, snap to the first. */
@@ -82,9 +92,14 @@ public class VanillaSkillsConfigScreen extends Screen {
     private Component shopLabel() { return Component.literal("Quest Shop refresh: " + cfg.shopRefreshHours + "h"); }
     private Component ratioLabel() { return Component.literal("Convert: " + cfg.convertRatio + " Quest → 1 Skill Shard"); }
     private Component graduateLabel() { return Component.literal("Graduate after: " + cfg.graduateAt + " quests"); }
+    private Component narratorLabel() {
+        return Component.literal("Narrator: " + (clientCfg.disableNarrator
+                ? "Disabled — smoother GUI opening" : "Default (vanilla)"));
+    }
 
     @Override
     public void onClose() {
+        if (clientCfg != null) clientCfg.save();
         if (cfg != null) {
             cfg.save();
             GameplayConfig.load(); // re-read + apply all live values
