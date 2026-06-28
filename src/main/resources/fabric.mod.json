@@ -12,7 +12,13 @@
     "client": ["io.github.andrewwwwwwwwwwwwwww.vanillaskills.client.VanillaSkillsClient"],
     "modmenu": ["io.github.andrewwwwwwwwwwwwwww.vanillaskills.client.VanillaSkillsModMenu"]
   },
-  "mixins": ["vanillaskills.mixins.json"],
+  "mixins": [
+    "vanillaskills.mixins.json",
+    {
+      "config": "vanillaskills.client.mixins.json",
+      "environment": "client"
+    }
+  ],
   "contact": {
     "homepage": "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills",
     "sources": "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills",
