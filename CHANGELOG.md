@@ -1,5 +1,16 @@
 # VanillaSkills Changelog
 
+## [1.0.4] - 2026-06-28
+
+### Added
+- **Optional "Disable Narrator" toggle** (Mod Menu config → "Narrator"; **off by default**). On Windows,
+  Minecraft's narrator backend makes a slow native text-to-speech call **on the render thread every time a
+  screen opens** (chest, crafting, furnace, even the options menu) — stalling it for tens of milliseconds.
+  The vanilla "Off" narrator setting only silences speech; it doesn't stop that call. Enabling this stubs
+  the narrator entirely for noticeably smoother screen-opening. **Off by default** so accessibility users
+  and vanilla behaviour are completely unaffected unless a player opts in. Client-side only; stored in
+  `config/vanillaskills-client.json`. No gameplay changes.
+
 ## [1.0.3] - 2026-06-26
 
 ### Fixed
