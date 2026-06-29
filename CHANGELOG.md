@@ -1,5 +1,14 @@
 # VanillaSkills Changelog
 
+## [1.0.5] - 2026-06-28
+
+### Added
+- **`/skill mending on|off`** (ops, permission level 2) — toggle Mending for the current world without
+  hand-editing files. Saves to the world's `gameplay.json` and prompts to **restart the world/server**
+  for it to take effect (existing villager trades don't change — reroll librarians for new offers). Fixes
+  the gap where server admins had no in-game way to enable Mending (the Mod Menu screen is
+  client/singleplayer-only) and the config lives inside the world save.
+
 ## [1.0.4] - 2026-06-28
 
 ### Added
