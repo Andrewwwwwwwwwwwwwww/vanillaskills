@@ -28,6 +28,7 @@ import net.minecraft.server.level.ServerPlayer;
  * /skill points  show own points; (op) /skill points &lt;player&gt; add|set &lt;n&gt;
  * /skill reset|recalc &lt;player&gt;   (op)
  * /skill reload                    (op) reload tree + points config from disk
+ * /skill mending on|off            (op) enable/remove Mending for this world (restart to apply)
  * /skill regen                     (op) overwrite skilltree.json with the built-in default (backs up the old one)
  * /skill edit ...                  (op) live-edit the server's skill tree
  */
@@ -88,6 +89,11 @@ public final class SkillCommands {
         root.then(Commands.literal("reload")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(SkillCommands::reload));
+
+        root.then(Commands.literal("mending")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("on").executes(ctx -> setMending(ctx, true)))
+                .then(Commands.literal("off").executes(ctx -> setMending(ctx, false))));
 
         root.then(Commands.literal("regen")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -199,6 +205,22 @@ public final class SkillCommands {
         ctx.getSource().sendSuccess(() -> Component.literal(
                 "Reloaded skill tree (" + VanillaSkills.TREE.tree().size() + " nodes) and Skill Shard config.")
                 .withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    private static int setMending(CommandContext<CommandSourceStack> ctx, boolean enabled) {
+        // Load the current per-world config (keeps all other settings), flip Mending, and save it.
+        // We intentionally do NOT apply it live — it takes effect on the next world load, which the
+        // message tells the op to do, so the toggle is predictable and matches the on-disk state.
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig cfg =
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.load();
+        cfg.mendingEnabled = enabled;
+        cfg.save();
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                "Mending set to " + (enabled ? "ENABLED" : "REMOVED")
+                + " for this world. Restart the world/server for it to take effect."
+                + (enabled ? " (Existing villager trades won't change — reroll librarians for new mending offers.)" : ""))
+                .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.YELLOW), true);
         return 1;
     }
 
