@@ -1,5 +1,15 @@
 # VanillaSkills Changelog
 
+## [1.0.6] - 2026-06-28
+
+### Added
+- **Server auto-pushes the texture pack to joining clients** (on by default). The server now sends the
+  VanillaSkills texture pack to every player on join (required), so **vanilla clients see the custom gear
+  with no `server.properties` setup**. Configurable per-world in `gameplay.json` (`serverResourcePack`,
+  `resourcePackUrl`, `resourcePackSha1`); set `serverResourcePack: false` to disable (e.g. if you deliver
+  the pack via `server.properties` yourself). Modded/modpack clients already have the textures bundled —
+  this is for vanilla clients.
+
 ## [1.0.5] - 2026-06-28
 
 ### Added
