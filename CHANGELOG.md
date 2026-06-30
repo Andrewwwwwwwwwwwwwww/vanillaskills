@@ -1,5 +1,13 @@
 # VanillaSkills Changelog
 
+## [1.0.7] - 2026-06-28
+
+### Changed
+- **Resource-pack auto-push now skips solo single-player.** A solo player already has the textures
+  bundled in the jar, so there's no reason to prompt them. The server still pushes the pack on
+  **LAN-opened worlds and dedicated servers** (where vanilla clients can join), so nothing changes
+  there — playing alone just no longer shows a redundant "accept pack" prompt.
+
 ## [1.0.6] - 2026-06-28
 
 ### Added
