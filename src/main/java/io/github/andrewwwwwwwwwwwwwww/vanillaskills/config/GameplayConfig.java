@@ -22,6 +22,16 @@ public class GameplayConfig {
 
     /** Read by {@code ItemEnchantmentsMutableMixin}. false (default) = Mending is stripped everywhere. */
     public static volatile boolean MENDING_ENABLED = false;
+
+    private static final String DEFAULT_RP_URL =
+            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.0.5/VanillaSkills-TexturePack.zip";
+    private static final String DEFAULT_RP_SHA1 = "88e8d95b46367a7b4d6c17860ffe493b60e88d2a";
+
+    /** When true, the server force-pushes the VanillaSkills texture pack to every joining client
+     *  (so vanilla clients see the custom gear with no server.properties setup). Read on player join. */
+    public static volatile boolean PUSH_RESOURCE_PACK = true;
+    public static volatile String RESOURCE_PACK_URL = DEFAULT_RP_URL;
+    public static volatile String RESOURCE_PACK_SHA1 = DEFAULT_RP_SHA1;
     /** Read by {@code QuestBoard} when re-rolling: ms between bounty rotations. */
     public static volatile long BOUNTY_REFRESH_MS = 5L * 3_600_000L;
     /** Read by {@code QuestShop}: ms between shop rotations. */
@@ -40,6 +50,12 @@ public class GameplayConfig {
     public int convertRatio = 3;
     /** Bounties to finish on the starter board before joining the shared main board (default 15). */
     public int graduateAt = 15;
+    /** Auto-push the VanillaSkills texture pack to joining clients (required). Default on. */
+    public boolean serverResourcePack = true;
+    /** Texture-pack download URL the server pushes (default = the GitHub release asset). */
+    public String resourcePackUrl = DEFAULT_RP_URL;
+    /** SHA-1 of that pack (lets clients cache it; update alongside the URL if you change the pack). */
+    public String resourcePackSha1 = DEFAULT_RP_SHA1;
 
     private static Path path() {
         Path dir = VanillaSkills.worldDir();
@@ -74,6 +90,9 @@ public class GameplayConfig {
         SHOP_REFRESH_MS = Math.max(1, shopRefreshHours) * 3_600_000L;
         QuestShop.CONVERT_RATIO = Math.max(1, convertRatio);
         Quests.GRADUATE_AT = Math.max(1, graduateAt);
+        PUSH_RESOURCE_PACK = serverResourcePack;
+        RESOURCE_PACK_URL = resourcePackUrl == null ? "" : resourcePackUrl;
+        RESOURCE_PACK_SHA1 = resourcePackSha1 == null ? "" : resourcePackSha1;
     }
 
     public void save() {
