@@ -26,6 +26,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ClientboundResourcePackPushPacket;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -37,6 +40,8 @@ import org.slf4j.LoggerFactory;
 public class VanillaSkills implements ModInitializer {
     public static final String MOD_ID = "vanillaskills";
     public static final Logger LOGGER = LoggerFactory.getLogger("VanillaSkills");
+    /** Stable id for our server-pushed texture pack, so the client de-duplicates re-pushes. */
+    private static final java.util.UUID RESOURCE_PACK_ID = java.util.UUID.fromString("5b6c9a10-7e2d-4c3a-9f11-a1b2c3d4e5f6");
 
     public static MinecraftServer server;
 
@@ -115,6 +120,19 @@ public class VanillaSkills implements ModInitializer {
             PLAYERS.saveAllAndClear();
             QUESTS.save();
             BOARDS.save();
+        });
+
+        // Force the custom texture pack onto every joining client, so vanilla clients see the gear
+        // with zero server.properties setup. Configurable in gameplay.json; on by default.
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, srv) -> {
+            if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.PUSH_RESOURCE_PACK) return;
+            String url = io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.RESOURCE_PACK_URL;
+            if (url == null || url.isEmpty()) return;
+            handler.send(new ClientboundResourcePackPushPacket(
+                    RESOURCE_PACK_ID, url,
+                    io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.RESOURCE_PACK_SHA1,
+                    true,
+                    java.util.Optional.of(Component.literal("VanillaSkills+ needs this pack to show the custom gear."))));
         });
 
         // Right-click a bounty board's floating-text interaction entity to open the quest GUI.
