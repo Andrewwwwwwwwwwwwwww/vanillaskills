@@ -126,6 +126,9 @@ public class VanillaSkills implements ModInitializer {
         // with zero server.properties setup. Configurable in gameplay.json; on by default.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, srv) -> {
             if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.PUSH_RESOURCE_PACK) return;
+            // Skip pure single-player (the host already has the textures bundled in the jar);
+            // still push on LAN-opened worlds and dedicated servers, where vanilla clients can join.
+            if (srv.isSingleplayer() && !srv.isPublished()) return;
             String url = io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.RESOURCE_PACK_URL;
             if (url == null || url.isEmpty()) return;
             handler.send(new ClientboundResourcePackPushPacket(
