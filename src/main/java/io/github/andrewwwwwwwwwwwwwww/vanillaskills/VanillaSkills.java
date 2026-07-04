@@ -185,6 +185,7 @@ public class VanillaSkills implements ModInitializer {
             for (int i = 0; i < farmLevel; i++) {
                 if (sp.getRandom().nextFloat() < 0.5f) bonus++;
             }
+            bonus = Math.min(bonus, io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Farming.bonusCap(state));
             if (bonus > 0) {
                 net.minecraft.world.level.block.Block.popResource(level, pos, new ItemStack(product, bonus));
             }
