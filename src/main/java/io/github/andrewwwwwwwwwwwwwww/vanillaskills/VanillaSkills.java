@@ -191,11 +191,10 @@ public class VanillaSkills implements ModInitializer {
             }
         });
 
-        // Hardwood swords & axes inflict a little poison on hit; also the Wind Burst launch fix.
+        // Hardwood swords & axes inflict a little poison on hit.
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamage, damageTaken, blocked) -> {
             if (blocked || damageTaken <= 0.0f) return;
             if (!(source.getEntity() instanceof ServerPlayer attacker)) return;
-            WindBurstFix.onMeleeDamage(attacker, damageTaken);
             ItemStack weapon = attacker.getMainHandItem();
             if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.Markers.has(weapon,
                     io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTiers.HARDWOOD.markerKey)) return;
