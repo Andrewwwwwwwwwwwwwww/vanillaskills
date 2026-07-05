@@ -210,6 +210,7 @@ public class VanillaSkills implements ModInitializer {
         ServerPlayerEvents.LEAVE.register(player -> {
             PLAYERS.onLeave(player);
             DragonSet.onPlayerLeave(player.getUUID());
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.StepHeight.onLeave(player.getUUID());
         });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> PLAYERS.applyAll(newPlayer));
 
@@ -270,6 +271,8 @@ public class VanillaSkills implements ModInitializer {
     private void onServerTick(MinecraftServer srv) {
         tickCounter++;
         DragonSet.tick(srv);
+        // Every tick: suppress the Mountaineer step-up bonus while sneaking / toggled off (safety).
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.StepHeight.tick(srv, TREE.tree());
         if (tickCounter % ELYTRA_FORGE_INTERVAL == 0) {
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonElytraForge.tick(srv);
         }
