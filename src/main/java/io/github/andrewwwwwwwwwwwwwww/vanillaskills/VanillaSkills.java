@@ -174,13 +174,15 @@ public class VanillaSkills implements ModInitializer {
         // Cultivator skill: bonus crops when harvesting a mature crop. Each Cultivator level rolls an
         // independent ~50% chance for one extra crop, so the bonus scales clearly with level — at max
         // (5) you average ~2.5 extra per crop, and at level 1 ~0.5.
-        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
-            if (!(world instanceof ServerLevel level) || !(player instanceof ServerPlayer sp)) return;
+        // Runs on BEFORE (block still present) so the melon/pumpkin natural-growth check can see the
+        // attached stem — it reverts the instant the fruit is removed. Always returns true (never cancels).
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+            if (!(world instanceof ServerLevel level) || !(player instanceof ServerPlayer sp)) return true;
             net.minecraft.world.item.Item product =
-                    io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Farming.matureCropProduct(state);
-            if (product == null) return;
+                    io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Farming.matureCropProduct(level, pos, state);
+            if (product == null) return true;
             int farmLevel = io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.CraftingGate.farmingLevel(sp);
-            if (farmLevel <= 0) return;
+            if (farmLevel <= 0) return true;
             int bonus = 0;
             for (int i = 0; i < farmLevel; i++) {
                 if (sp.getRandom().nextFloat() < 0.5f) bonus++;
@@ -189,6 +191,7 @@ public class VanillaSkills implements ModInitializer {
             if (bonus > 0) {
                 net.minecraft.world.level.block.Block.popResource(level, pos, new ItemStack(product, bonus));
             }
+            return true;
         });
 
         // Hardwood swords & axes inflict a little poison on hit.
