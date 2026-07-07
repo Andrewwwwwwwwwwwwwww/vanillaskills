@@ -151,10 +151,11 @@ public class VanillaSkills implements ModInitializer {
             return net.minecraft.world.InteractionResult.PASS;
         });
 
-        // Bounty board: track kills toward active quests.
+        // Bounty board: track kills toward active quests, and boss kills toward Feats.
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (source.getEntity() instanceof ServerPlayer killer) {
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Quests.onKill(killer, entity);
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Feats.onKill(killer, entity);
             }
         });
 
@@ -276,6 +277,8 @@ public class VanillaSkills implements ModInitializer {
         DragonSet.tick(srv);
         // Every tick: suppress the Mountaineer step-up bonus while sneaking / toggled off (safety).
         io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.StepHeight.tick(srv, TREE.tree());
+        // Throttled (every ~2s, internally): discovery/dimension Feats + STAT-quest baselines.
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.Feats.serverTick(srv);
         if (tickCounter % ELYTRA_FORGE_INTERVAL == 0) {
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.DragonElytraForge.tick(srv);
         }
