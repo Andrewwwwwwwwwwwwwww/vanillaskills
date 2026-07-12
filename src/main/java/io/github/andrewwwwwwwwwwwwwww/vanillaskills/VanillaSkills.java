@@ -172,6 +172,14 @@ public class VanillaSkills implements ModInitializer {
         net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) ->
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.DeepslateGate.canBreak(player, state));
 
+        // Fortune IV/V ore boost: one guaranteed extra base drop roll per level above III.
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+            if (world instanceof ServerLevel level && player instanceof ServerPlayer sp) {
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.FortuneBoost.onBreak(level, sp, pos, state);
+            }
+            return true;
+        });
+
         // Cultivator skill: bonus crops when harvesting a mature crop. Each Cultivator level rolls an
         // independent ~50% chance for one extra crop, so the bonus scales clearly with level — at max
         // (5) you average ~2.5 extra per crop, and at level 1 ~0.5.
