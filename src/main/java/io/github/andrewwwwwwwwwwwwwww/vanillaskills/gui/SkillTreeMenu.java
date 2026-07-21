@@ -74,11 +74,20 @@ public class SkillTreeMenu extends ChestMenu {
         String base;
         if (category != null) {
             SkillCategory cat = tree.category(category);
-            base = cat != null ? cat.title : "Skills";
+            // Lane view: translate via the lane key, same as the lane icons use.
+            base = cat != null
+                    ? io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(player, "vanillaskills.lane." + cat.id, cat.title)
+                    : io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(player, "vanillaskills.menu.skilltree.title", "Skills");
         } else {
-            base = tree.title == null ? "Skills" : tree.title;
+            base = io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(player,
+                    "vanillaskills.menu.skilltree.title", tree.title == null ? "Skills" : tree.title);
         }
-        Component title = Component.literal(layoutMode ? base + " (Layout)" : editMode ? base + " (Edit Mode)" : base);
+        String suffix = layoutMode
+                ? " " + io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(player, "vanillaskills.menu.skilltree.layout_suffix", "(Layout)")
+                : editMode
+                ? " " + io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(player, "vanillaskills.menu.skilltree.edit_suffix", "(Edit Mode)")
+                : "";
+        Component title = Component.literal(base + suffix);
         player.openMenu(new SimpleMenuProvider(
                 (syncId, inv, p) -> new SkillTreeMenu(syncId, inv, (ServerPlayer) p, editMode, layoutMode, category), title));
     }
@@ -550,7 +559,7 @@ public class SkillTreeMenu extends ChestMenu {
         if (sel == null) { selectedCategory = null; return; }
         if (cat != null && cat.id.equals(selectedCategory)) { selectedCategory = null; return; } // deselect
         if (slotId == POINTS_SLOT || slotId == STATS_SLOT || slotId == 4 || slotId == container.getContainerSize() - 1) {
-            sp.sendSystemMessage(Component.literal("That spot is reserved (header / Points / Stats).")
+            sp.sendSystemMessage(Component.literal(io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(sp,"vanillaskills.msg.slot_reserved","That spot is reserved (header / Points / Stats)."))
                     .withStyle(ChatFormatting.RED));
             return;
         }
