@@ -148,6 +148,16 @@ armor, only Steel Ingots repair Steel armor (plain copper / the wrong alloy won'
 - Additional tier-specific combat effects (bleed, poison)
 - Stronger tipped arrows
 
+## Translations
+
+Every player-facing string in the mod is translatable — see
+[TRANSLATING.md](TRANSLATING.md) if you'd like to contribute a language.
+
+| Language | Contributor |
+| --- | --- |
+| English (`en_us`) | — |
+| Traditional Chinese (`zh_tw`) | **caprese502** (Discord) |
+
 ## Building
 
 Open in IntelliJ IDEA with the Fabric/Loom Gradle import, then run the `build`
