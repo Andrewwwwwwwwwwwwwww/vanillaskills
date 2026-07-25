@@ -1,5 +1,9 @@
 # VanillaSkills Changelog
 
+## [1.7.6] - 2026-07-24
+### Changed
+- New **Crystallized Diamond** texture.
+
 ## [1.7.5] - 2026-07-22
 ### Added
 - **Traditional Chinese (zh_tw) is now complete** — the 14 advancement titles and descriptions are translated, bringing zh_tw to full parity with English (612 keys). Thanks to caprese502 for the translation.
