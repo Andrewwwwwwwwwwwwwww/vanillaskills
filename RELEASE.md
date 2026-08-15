@@ -18,6 +18,8 @@ are kept in parity from it.
 - [x] Steel at a flat -10% on the full set.
 - [x] Desert crate, with the 1% enchanted golden apple.
 - [x] CHANGELOG entry written.
+- [x] **Art complete** — all 10 remaining textures supplied 2026-08-15 and in the pack. No placeholders left.
+- [x] Release-candidate test server at `projects/_test-server/vs-2.0.0/`.
 - [x] All four editions committed. 26.2 Fabric and 26.2 NeoForge are on `2.0-rework`; both 26.1.2
       editions have their own repository now, with the 2.0 tree as their first commit.
 
@@ -25,12 +27,7 @@ are kept in parity from it.
 
 ## Blocking — must happen before the tag
 
-### 1. Art
-Ten textures are still the magenta/black placeholder: 7 crates, 3 shard items. See
-`VanillaSkills-Art-TODO/README.md` on the Desktop. Shipping 2.0 with placeholders would put a
-missing-texture checker on the most-seen new item in the release.
-
-### 2. Playtest
+### 1. Playtest
 Nothing below has been exercised in a real game:
 
 - the crate slot-machine reel, and crates as a system
@@ -42,7 +39,7 @@ Nothing below has been exercised in a real game:
 - **migration from a real 1.7.6 world** — highest consequence, and the one that can eat player data.
   Run it against a *copy* of the live world before it ever runs against the live one.
 
-### 3. Repositories for the 26.1.2 editions
+### 2. Repositories for the 26.1.2 editions
 Both have local repos and an initial commit, but no remote. Two public repos need creating and
 pushing, following the `vscasino` / `vscasino-mc26.1.2` naming already in use:
 
@@ -54,10 +51,11 @@ gh repo create vanillaskills-mc26.1.2 --public --source=. --remote=origin --push
 gh repo create vanillaskills-neoforge-mc26.1.2 --public --source=. --remote=origin --push
 ```
 
-### 4. Texture pack
-`tools/build-pack.sh v2.0.0` rebuilds the zip and patches its SHA-1 into all four editions. **Re-run
-it after the art lands** — the zip changes, so the hash changes, and a client refuses a pack whose
-hash does not match. Then upload that exact zip to the `v2.0.0` GitHub release.
+### 3. Texture pack
+`tools/build-pack.sh v2.0.0` rebuilds the zip and patches its SHA-1 into all four editions. Already
+run with the finished art — current hash `0b6314361c10262155132b1d4a539ede9c3bd20b`, 193673 bytes.
+Upload **that exact zip** to the `v2.0.0` GitHub release; re-run the script if anything under
+`resourcepack/` changes again, because a client refuses a pack whose hash does not match.
 
 ⚠ `DEFAULT_RP_URL` already points at `.../download/v2.0.0/VanillaSkills-TexturePack.zip`, which does
 not exist until the release is cut. Between now and then, servers on this build push a 404. Cut the
