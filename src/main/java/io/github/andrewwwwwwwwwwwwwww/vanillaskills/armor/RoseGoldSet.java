@@ -44,6 +44,7 @@ public final class RoseGoldSet {
      * needing to track and revoke it.
      */
     private static void grantFireResistance(ServerPlayer player) {
+        if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.ROSE_GOLD_FIRE_RESISTANCE) return;
         player.addEffect(new MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE,
                 FIRE_RESISTANCE_TICKS, 0, true, false, false));
     }

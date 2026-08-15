@@ -31,17 +31,15 @@ public class GameplayConfig {
     // The pushed pack must carry the language files: vanilla clients have no mod jar, so their gear
     // and item NAMES come only from this pack's lang. A stale pack (pre-localization) makes every
     // custom item name fall back to English. Bump BOTH the URL and the SHA-1 whenever the pack changes.
-    // ⚠ RELEASE GATE: this URL must exist before 2.0 ships. The pack is built and hashed
-    // (curseforge-upload/VanillaSkills-TexturePack.zip, SHA-1 below) but the GitHub release carrying it has
-    // NOT been created yet — publishing one is a deliberate, outward-facing step, not something to do as a
-    // side effect of a code change. Until it exists, servers will fail to download and simply see no pack.
+    // Rebuild both with tools/build-pack.sh, which zips the pack and patches the hash into all four
+    // editions at once - they have to be produced together or the client rejects the download.
     //
     // The 1.7.6 pack this replaces was actively harmful under 2.0: it overrode 57 vanilla items
     // (gold_ingot, diamond, iron_ingot, the tool and armour sets) using the pre-2.0 custom_model_data
     // approach, which both broke those vanilla textures and outranked any locally-installed 2.0 pack.
     private static final String DEFAULT_RP_URL =
-            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v2.0.0-beta.1/VanillaSkills-TexturePack.zip";
-    private static final String DEFAULT_RP_SHA1 = "2505c47008954d2abb8953c06a38d0d328dcd286";
+            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v2.0.0/VanillaSkills-TexturePack.zip";
+    private static final String DEFAULT_RP_SHA1 = "926660fb6a9dd6ef291c021d698b78ea7aadfee7";
 
     /** When true, the server force-pushes the VanillaSkills texture pack to every joining client
      *  (so vanilla clients see the custom gear with no server.properties setup). Read on player join. */
@@ -60,8 +58,32 @@ public class GameplayConfig {
     public static volatile boolean FORTUNE_BOOST = true;
     /** Chance of one extra base drop per Fortune level above III. 1.0 = the old guaranteed behaviour. */
     public static volatile float FORTUNE_BONUS_CHANCE = 0.75f;
+
+    // --- Gear balance (see GearTuning for the per-tier numbers) ---
+    /** Fraction of incoming melee damage a full Crystalline set reflects. 0 disables the reflect. */
+    public static volatile float CRYSTAL_REFLECT_FRACTION = 0.25f;
+    /** Grant Strength and Resistance while a full Crystalline set is worn. */
+    public static volatile boolean CRYSTAL_SET_EFFECTS = true;
+    /** Amplifier for those effects: 0 = level I. */
+    public static volatile int CRYSTAL_SET_AMPLIFIER = 0;
+    /** Grant Fire Resistance while a full Rose Gold set is worn. */
+    public static volatile boolean ROSE_GOLD_FIRE_RESISTANCE = true;
+    /** Dragon set dash: launch velocity, downward bias, and cooldown in ticks. 0 speed disables the dash. */
+    public static volatile double DRAGON_DASH_SPEED = 1.6;
+    public static volatile double DRAGON_DASH_DOWN_BIAS = 0.3;
+    public static volatile long DRAGON_DASH_COOLDOWN_TICKS = 60L;
+    /** Steel Shield: durability, movement penalty while held, and damage dealt to melee attackers. */
+    public static volatile int STEEL_SHIELD_DURABILITY = 2400;
+    public static volatile double STEEL_SHIELD_SLOWDOWN = -0.10;
+    public static volatile float STEEL_SHIELD_THORNS = 2.0f;
+    /** Bring a player's existing VanillaSkills gear onto the current tier numbers as they log in.
+     *  Without this, retuning gear balance only affects pieces crafted afterwards. */
+    public static volatile boolean GEAR_RESTAMP = true;
     /** Read by {@code Feats}: false = the whole Feats system is off (no tab, no auto-awards). */
     public static volatile boolean FEATS_ENABLED = true;
+    /** Skill tree screen title and row count (the tree itself is datapack-owned). */
+    public static volatile String SKILL_TREE_TITLE = "Skills";
+    public static volatile int SKILL_TREE_ROWS = 6;
     /** Show a horse's speed / jump / health in its inventory screen title. */
     public static volatile boolean HORSE_STATS = true;
     /** Show the player's banked Skill Shards as the number on the experience bar. */
@@ -193,6 +215,11 @@ public class GameplayConfig {
      *  off long ago as too strong, but the shard economy is far wider now and 188 Quest Shards of built,
      *  finished content was sitting unreachable. */
     public boolean feats = true;
+    /** Title shown on the skill tree screen (default "Skills"). The lanes and nodes themselves are datapack
+     *  content — see {@code data/<ns>/vanillaskills/skill_category/} and {@code skill_node/}. */
+    public String skillTreeTitle = "Skills";
+    /** Rows in the skill tree GUI, 1-6 (default 6). */
+    public int skillTreeRows = 6;
     /** Report a horse's real speed, jump height and health when you open its inventory (default true).
      *  Server-side, so it works on vanilla clients. */
     public boolean horseStats = true;
@@ -276,7 +303,7 @@ public class GameplayConfig {
     public int crateFishingWeight = 1;
     public int crateFishingEmptyWeight = 40;
     /** Show the opening reel when a crate is opened (default true). The reward is rolled the moment the
-     *  crate is opened either way  14 the reel only reveals it, and is granted in full even if you log out
+     *  crate is opened either way - the reel only reveals it, and is granted in full even if you log out
      *  mid-spin. Set false to pay out instantly. */
     public boolean crateReelEnabled = true;
     /** Roughly how long the reel spins before it is allowed to settle, in ticks (default 60 = 3s). */
@@ -305,6 +332,34 @@ public class GameplayConfig {
     public int dragonScaleDrop = 8;
     /** Dragon Scales for the world's very first player kill of the dragon (default 32). One time only. */
     public int dragonScaleFirstKillDrop = 32;
+    /** Per-tier gear balance. See {@link GearTuning} for the shape and the tier ids. */
+    public GearTuning gear = null; // filled with the shipped table on first write
+
+    /** Fraction of melee damage a full Crystalline set reflects at the attacker (default 0.25). */
+    public float crystalReflectFraction = 0.25f;
+    /** Grant Strength + Resistance while a full Crystalline set is worn (default true). */
+    public boolean crystalSetEffects = true;
+    /** Level of those effects, as an amplifier: 0 = I, 1 = II (default 0). */
+    public int crystalSetAmplifier = 0;
+    /** Grant Fire Resistance while a full Rose Gold set is worn (default true). */
+    public boolean roseGoldFireResistance = true;
+    /** Dragon set dash launch speed (default 1.6). Set 0 to disable the dash entirely. */
+    public double dragonDashSpeed = 1.6;
+    /** How much the dash pulls you downward, so it reads as a swoop rather than a jump (default 0.3). */
+    public double dragonDashDownBias = 0.3;
+    /** Ticks between dashes (default 60 = 3s). */
+    public long dragonDashCooldownTicks = 60L;
+    /** Steel Shield durability (default 2400; a vanilla shield is 336). */
+    public int steelShieldDurability = 2400;
+    /** Movement penalty while the Steel Shield is held, as a fraction of walk speed (default -0.10). */
+    public double steelShieldSlowdown = -0.10;
+    /** Damage the Steel Shield deals back to a melee attacker (default 2.0). */
+    public float steelShieldThorns = 2.0f;
+    /** Update existing gear to the current tier numbers when its owner logs in (default true).
+     *  Only durability and attribute modifiers are rewritten — enchantments, damage and anvil renames
+     *  are left alone. Turn off to freeze old gear at whatever stats it was crafted with. */
+    public boolean gearRestamp = true;
+
     /** Auto-push the VanillaSkills texture pack to joining clients (required). Default on. */
     public boolean serverResourcePack = true;
     /** Texture-pack download URL the server pushes (default = the GitHub release asset). */
@@ -344,13 +399,12 @@ public class GameplayConfig {
     /** URLs of packs we've shipped as the default before; a config pinned to one of these predates the
      *  localized pack, so its custom item names show English. Auto-upgraded to the current default. */
     private static final java.util.Set<String> SUPERSEDED_RP_URLS = java.util.Set.of(
-            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.7.5/VanillaSkills-TexturePack.zip",
             "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.0.5/VanillaSkills-TexturePack.zip",
             "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.7.1/VanillaSkills-TexturePack.zip",
             "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.7.4/VanillaSkills-TexturePack.zip",
-            // 1.7.6 matters most of all: any world still pinned to it is being served vanilla-item overrides
-            // that 2.0 removed, so it must be upgraded rather than left alone.
-            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.7.6/VanillaSkills-TexturePack.zip");
+            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.7.5/VanillaSkills-TexturePack.zip",
+            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v1.7.6/VanillaSkills-TexturePack.zip",
+            "https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/releases/download/v2.0.0-beta.1/VanillaSkills-TexturePack.zip");
 
     /** If this config still points at a superseded default pack, move it to the current default.
      *  Only touches the exact old-default URLs — a hand-set custom URL is left alone. Returns true if changed. */
@@ -372,7 +426,23 @@ public class GameplayConfig {
         DEEPSLATE_GATE = deepslateGate;
         FORTUNE_BOOST = fortuneBoost;
         FORTUNE_BONUS_CHANCE = Math.max(0.0f, Math.min(1.0f, fortuneBonusChance));
+        // Gear: fill the block in on first load so the written file documents the whole table, then push it.
+        if (gear == null) gear = GearTuning.defaults();
+        gear.apply();
+        CRYSTAL_REFLECT_FRACTION = Math.max(0.0f, Math.min(1.0f, crystalReflectFraction));
+        CRYSTAL_SET_EFFECTS = crystalSetEffects;
+        CRYSTAL_SET_AMPLIFIER = Math.max(0, Math.min(4, crystalSetAmplifier));
+        ROSE_GOLD_FIRE_RESISTANCE = roseGoldFireResistance;
+        DRAGON_DASH_SPEED = Math.max(0.0, dragonDashSpeed);
+        DRAGON_DASH_DOWN_BIAS = dragonDashDownBias;
+        DRAGON_DASH_COOLDOWN_TICKS = Math.max(1L, dragonDashCooldownTicks);
+        STEEL_SHIELD_DURABILITY = Math.max(1, steelShieldDurability);
+        STEEL_SHIELD_SLOWDOWN = Math.min(0.0, steelShieldSlowdown);
+        STEEL_SHIELD_THORNS = Math.max(0.0f, steelShieldThorns);
+        GEAR_RESTAMP = gearRestamp;
         FEATS_ENABLED = feats;
+        SKILL_TREE_TITLE = (skillTreeTitle == null || skillTreeTitle.isBlank()) ? "Skills" : skillTreeTitle;
+        SKILL_TREE_ROWS = Math.max(1, Math.min(6, skillTreeRows));
         STARTER_QUESTS = starterQuests;
         QUESTS_PER_ROTATION = Math.max(1, Math.min(6, questsPerRotation));  // 6 quest slots in the GUI
         SHOP_SLOTS = Math.max(1, Math.min(45, questShopSlots));
@@ -434,6 +504,9 @@ public class GameplayConfig {
     public void save() {
         Path path = path();
         if (path == null) return; // no world loaded
+        // Fill the gear table in before writing, so a freshly-created gameplay.json documents every tier's
+        // numbers instead of an unhelpful "gear": null. save() runs before apply() on a brand-new world.
+        if (gear == null) gear = GearTuning.defaults();
         try {
             Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(this));

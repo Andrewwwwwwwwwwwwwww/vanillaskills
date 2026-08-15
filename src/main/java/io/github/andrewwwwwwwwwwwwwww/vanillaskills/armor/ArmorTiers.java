@@ -51,9 +51,9 @@ public final class ArmorTiers {
     public static final ArmorTier STEEL = new ArmorTier(
             "steel", "Steel", 0xB8C0C8, "vs_armor_steel",
             new Item[]{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS},
-            // 2.0: per-piece penalty -0.01 -> -0.02, so the full set is -8% rather than -4%. 18 armour with
-            // almost no downside made Steel dominate its bracket; the weight is the trade-off.
-            new int[]{3, 7, 5, 3}, 0.0, 0.0, -0.02, new int[]{330, 481, 451, 390}, // 18 armour, dur x30
+            // 2.0: per-piece penalty -0.01 -> -0.025, so the full set is a flat -10% rather than -4%.
+            // 18 armour with almost no downside made Steel dominate its bracket; the weight is the trade-off.
+            new int[]{3, 7, 5, 3}, 0.0, 0.0, -0.025, new int[]{330, 481, 451, 390}, // 18 armour, dur x30
             itemSet(IRON_INGOT), Alloys::isSteelIngot, null);
 
     // Crystalline sits BETWEEN diamond (20 armor / 2 tough / 0 kb) and netherite (20 / 3 / 0.1):

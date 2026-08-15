@@ -34,11 +34,19 @@ public final class SteelShield {
     private SteelShield() {}
 
     public static final String MARKER = "vs_steel_shield";
-    public static final int DURABILITY = 2400;     // vanilla shield is 336; 2.0 doubled this from 1200
+    /** Durability. Live from gameplay.json ({@code steelShieldDurability}); a vanilla shield is 336. */
+    public static int durability() {
+        return io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.STEEL_SHIELD_DURABILITY;
+    }
     /** Movement penalty while the shield is held, as a fraction of base speed. The steel that buys the
      *  durability is heavy — carrying it should cost something even when not actively blocking. */
-    private static final double HELD_SLOWDOWN = -0.10;
-    public static final float THORNS_DAMAGE = 2.0f;
+    private static double heldSlowdown() {
+        return io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.STEEL_SHIELD_SLOWDOWN;
+    }
+    /** Damage dealt back to a melee attacker while the shield is held. */
+    public static float thornsDamage() {
+        return io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.STEEL_SHIELD_THORNS;
+    }
     private static final int COLOR = 0xB8C0C8;
 
     /** Server-side convenience: uses the running server's registries (e.g. the crafting recipe). */
@@ -72,7 +80,7 @@ public final class SteelShield {
                     .withHidden(DataComponents.BANNER_PATTERNS, true)
                     .withHidden(DataComponents.BASE_COLOR, true));
         }
-        stack.set(DataComponents.MAX_DAMAGE, DURABILITY);
+        stack.set(DataComponents.MAX_DAMAGE, durability());
         stack.set(DataComponents.REPAIRABLE, new Repairable(repairItems()));
         // Slows the wielder while held in either hand. Applied as an item attribute modifier rather than
         // ticked, so it appears and disappears exactly with the item and needs no bookkeeping.
@@ -80,7 +88,7 @@ public final class SteelShield {
                 .add(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED,
                         new net.minecraft.world.entity.ai.attributes.AttributeModifier(
                                 Identifier.fromNamespaceAndPath("vanillaskills", "steel_shield.weight"),
-                                HELD_SLOWDOWN,
+                                heldSlowdown(),
                                 net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
                         net.minecraft.world.entity.EquipmentSlotGroup.HAND)
                 .build());

@@ -131,6 +131,38 @@ public final class RecipeBook {
                 chorus.copy(), netherite.copy(), chorus.copy(),
                 endRod.copy(), new ItemStack(Items.SHULKER_SHELL), endRod.copy()}, count(DragonUpgradeTemplate.create(), 2)));
 
+        // --- Skill Shard blocks ---
+        // These were missing from this lane entirely: the shard economy shipped in Phase 2 but its three
+        // recipes were only ever published to the vanilla recipe book, so a player browsing the in-game
+        // guide had no way to learn how any of it was made.
+        ItemStack ussShard = io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.unstableShard();
+        ItemStack ussBlock = io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.unstableBlock();
+
+        r.add(new Display("Unstable Skill Shard Block",
+                new String[]{"Nine shards, compressed for storage."},
+                new ItemStack[]{
+                        ussShard.copy(), ussShard.copy(), ussShard.copy(),
+                        ussShard.copy(), ussShard.copy(), ussShard.copy(),
+                        ussShard.copy(), ussShard.copy(), ussShard.copy()},
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.unstableBlock()));
+
+        r.add(new Display("Unstable Skill Shards (×9)",
+                new String[]{"The block, back into loose shards."},
+                new ItemStack[]{
+                        E, E, E,
+                        E, ussBlock.copy(), E,
+                        E, E, E},
+                count(io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.unstableShard(),
+                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.SHARDS_PER_BLOCK)));
+
+        r.add(new Display("Stable Skill Shard Block",
+                new String[]{"Harms hostile mobs nearby.", "Works as a beacon base."},
+                new ItemStack[]{
+                        new ItemStack(Items.REDSTONE), new ItemStack(Items.TINTED_GLASS), new ItemStack(Items.REDSTONE),
+                        E, ussBlock.copy(), E,
+                        new ItemStack(Items.REDSTONE), new ItemStack(Items.TINTED_GLASS), new ItemStack(Items.REDSTONE)},
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.stableBlock()));
+
         return r;
     }
 

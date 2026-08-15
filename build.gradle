@@ -43,3 +43,19 @@ jar {
         rename { "${it}_${project.name}" }
     }
 }
+
+// The server pushes resourcepack/ to vanilla clients, and a vanilla client has no mod jar — so the
+// NAMES of every custom item come from the pack's own copy of the lang files, not the mod's. Those two
+// copies drifted apart once already (the pack was 20 keys behind and shipped raw translation keys to
+// players), so the copy is a build step rather than something to remember.
+def packLangDir = file("resourcepack/assets/vanillaskills/lang")
+def modLangDir = file("src/main/resources/assets/vanillaskills/lang")
+
+tasks.register('syncPackLang', Copy) {
+    description = 'Copies the mod lang files into the pushed resource pack.'
+    from modLangDir
+    into packLangDir
+    include '*.json'
+}
+
+tasks.named('build') { dependsOn 'syncPackLang' }

@@ -21,9 +21,9 @@ import java.util.Set;
 
 /**
  * Per-player bounty progress. New players work the FIXED starter board — every quest in
- * {@link QuestPool#STARTER} is always active and completable once, in any order; progress never
+ * {@link QuestPool#starter()} is always active and completable once, in any order; progress never
  * rotation-resets. Completing ALL of them graduates the player to the shared universal board
- * (3 rotating quests from {@link QuestPool#ALL} on the 5-hour timer).
+ * (3 rotating quests from {@link QuestPool#all()} on the 5-hour timer).
  */
 public final class Quests {
     private Quests() {}
@@ -101,7 +101,7 @@ public final class Quests {
     /** The player's current quest list: all fixed starters pre-graduation, else the shared 3. */
     public static List<Quest> activeFor(ServerPlayer player) {
         PlayerSkillData data = VanillaSkills.PLAYERS.get(player.getUUID());
-        return data.graduated ? VanillaSkills.QUESTS.active() : QuestPool.STARTER;
+        return data.graduated ? VanillaSkills.QUESTS.active() : QuestPool.starter();
     }
 
     public static Quest questFor(ServerPlayer player, int index) {
@@ -140,16 +140,22 @@ public final class Quests {
      * Rewrites a pre-2.0 player's quest progress onto quest ids.
      *
      * <p>The two families of key meant different things and must be remapped against different lists:
-     * {@code starterDone}/{@code starterKills} were positions in {@link QuestPool#STARTER} and are
+     * {@code starterDone}/{@code starterKills} were positions in the old hardcoded starter list and are
      * permanent, whereas the four rotating collections were <b>board slot numbers</b> for whatever
-     * rotation was live when they were written. Both are resolved against the pool and board as they
-     * exist right now, which is why this migration had to ship before the pool was ever reordered.
+     * rotation was live when they were written — so those resolve against the live board, which is
+     * itself only meaningful for the rotation that is currently dealt.
+     *
+     * <p>The starter side uses {@link QuestPool#LEGACY_STARTER_IDS}, the frozen pre-2.0 ordering,
+     * rather than the datapack pool: the old numbers only mean anything against the ordering that
+     * wrote them, so a pack that reorders the starter board must not be able to shuffle anyone's
+     * completed quests.
      *
      * <p>Keys that are already ids pass through untouched, so running this twice is harmless.
      */
     private static void migrateQuestIds(PlayerSkillData data) {
-        data.starterDone = remapSet(data.starterDone, i -> idIn(QuestPool.STARTER, i));
-        data.starterKills = remapMap(data.starterKills, i -> idIn(QuestPool.STARTER, i));
+        List<String> legacy = QuestPool.LEGACY_STARTER_IDS;
+        data.starterDone = remapSet(data.starterDone, i -> legacyId(legacy, i));
+        data.starterKills = remapMap(data.starterKills, i -> legacyId(legacy, i));
 
         List<Quest> board = VanillaSkills.QUESTS.active();
         data.questClaimed = remapSet(data.questClaimed, i -> idIn(board, i));
@@ -160,6 +166,11 @@ public final class Quests {
 
     private static String idIn(List<Quest> list, int index) {
         return (index >= 0 && index < list.size()) ? list.get(index).id() : null;
+    }
+
+    /** Same lookup against a frozen list of raw ids (the pre-2.0 orderings). */
+    private static String legacyId(List<String> ids, int index) {
+        return (index >= 0 && index < ids.size()) ? ids.get(index) : null;
     }
 
     /** Old keys were integers; anything non-numeric is already an id and is kept as-is. */
@@ -294,7 +305,7 @@ public final class Quests {
 
         if (!data.graduated) {
             data.questsCompleted++;
-            int total = QuestPool.STARTER.size();
+            int total = QuestPool.starter().size();
             int done = data.starterDone.size();
             if (done >= total) {
                 graduate(player, data);

@@ -97,6 +97,18 @@ public class VanillaSkills implements ModInitializer {
                     @Override
                     public void onResourceManagerReload(ResourceManager manager) {
                         io.github.andrewwwwwwwwwwwwwww.vanillaskills.data.VsContent.reload(manager);
+
+                        // Rebuild the tree so a pack edit takes effect on /reload rather than only on
+                        // restart. Guarded on `server`: this listener also runs during the FIRST datapack
+                        // load, while the server is still being constructed — at that point SERVER_STARTED
+                        // has not run, worldDir() is null, and TREE.load() would have nothing to migrate
+                        // into. SERVER_STARTED does the initial build instead.
+                        if (server != null) {
+                            TREE.load();
+                            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                                PLAYERS.applyAll(player);
+                            }
+                        }
                     }
                 });
 
