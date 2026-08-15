@@ -27,7 +27,20 @@ public final class QuestShop {
     public static int dailyCount() { return io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.SHOP_SLOTS; }
 
     /** A single granted stack within an offer. */
-    public record Grant(String itemId, int count) {}
+    /**
+     * One stack an offer hands over.
+     *
+     * <p>{@code enchantment} is normally null. When set, the granted item is enchanted with it at
+     * {@code enchantLevel} — which is how the shop sells enchanted books without needing a separate offer
+     * type. It is resolved against the live registry at purchase time rather than stored as a Holder,
+     * because enchantments are a datapack registry and {@code vanillaskills:unboxing} does not exist until
+     * the pack has loaded.
+     */
+    public record Grant(String itemId, int count, String enchantment, int enchantLevel) {
+        public Grant(String itemId, int count) {
+            this(itemId, count, null, 0);
+        }
+    }
 
     /** One shop offer: one or more stacks granted for a Quest-Shard price. */
     public record ShopOffer(String key, String label, List<Grant> grants, int price) {
@@ -161,8 +174,7 @@ public final class QuestShop {
         c.add(one("minecraft:tnt", 4, 7));
         c.add(one("minecraft:golden_apple", 1, 8));
         c.add(one("minecraft:golden_apple", 2, 15));
-        c.add(one("minecraft:experience_bottle", 8, 4));
-        c.add(one("minecraft:experience_bottle", 16, 7));
+        // (Bottles o' Enchanting were sold here until 2.0 removed experience from the game.)
         c.add(one("minecraft:saddle", 1, 5));
         c.add(one("minecraft:name_tag", 1, 4));
         c.add(one("minecraft:lead", 4, 3));
@@ -174,7 +186,46 @@ public final class QuestShop {
         c.add(one("minecraft:nether_wart", 8, 3));
         c.add(one("minecraft:bookshelf", 4, 5));
         c.add(one("minecraft:book", 8, 2));
+
+        // --- Enchanted books ---
+        //
+        // Deliberately capped at level I–II. A shelved book is permanent: once it is in a chiseled bookshelf
+        // beside an Infusing Table, that enchantment is available to the player forever. Selling high levels
+        // outright would end the progression, whereas low levels are a starting point — buy two and combine
+        // them at an anvil, which is exactly why book+book combining was kept when book-on-tool was removed.
+        //
+        // Priced well above the rest of the catalogue (which tops out at 22) for the same reason: this is
+        // infrastructure, not a consumable. Fortune IV/V are absent on purpose — those are minted, and their
+        // books are consumed on use.
+        c.add(book("minecraft:efficiency", 1, 26));
+        c.add(book("minecraft:efficiency", 2, 40));
+        c.add(book("minecraft:unbreaking", 1, 26));
+        c.add(book("minecraft:unbreaking", 2, 40));
+        c.add(book("minecraft:protection", 1, 30));
+        c.add(book("minecraft:protection", 2, 45));
+        c.add(book("minecraft:sharpness", 1, 30));
+        c.add(book("minecraft:sharpness", 2, 45));
+        c.add(book("minecraft:feather_falling", 1, 26));
+        c.add(book("minecraft:feather_falling", 2, 40));
+        c.add(book("minecraft:respiration", 1, 26));
+        c.add(book("minecraft:looting", 1, 35));
+        c.add(book("minecraft:looting", 2, 50));
+        c.add(book("minecraft:luck_of_the_sea", 1, 35));
+        c.add(book("minecraft:luck_of_the_sea", 2, 50));
+        c.add(book("minecraft:fortune", 1, 55));
+        c.add(book("minecraft:silk_touch", 1, 55));
+        c.add(book("vanillaskills:unboxing", 1, 45));
         return c;
+    }
+
+    /** An enchanted book offer. The key includes the level so the two tiers are distinct offers. */
+    private static ShopOffer book(String enchantment, int level, int price) {
+        String shortName = enchantment.substring(enchantment.indexOf(':') + 1);
+        String label = Character.toUpperCase(shortName.charAt(0))
+                + shortName.substring(1).replace('_', ' ')
+                + " " + "I".repeat(Math.max(1, level));
+        return new ShopOffer("book:" + enchantment + ":" + level, label,
+                List.of(new Grant("minecraft:enchanted_book", 1, enchantment, level)), price);
     }
 
     /** Selection weight by price tier — cheaper commons appear more often than premiums. */
@@ -236,6 +287,7 @@ public final class QuestShop {
         }
         for (Grant g : offer.grants()) {
             ItemStack stack = new ItemStack(Quests.item(g.itemId()), g.count());
+            applyEnchantment(player, stack, g);
             player.getInventory().placeItemBackInInventory(stack);
         }
         String paid = paySkillShards
@@ -246,6 +298,32 @@ public final class QuestShop {
         player.sendSystemMessage(Component.literal(io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(player,"vanillaskills.msg.purchased","Purchased %s for %s.", offer.displayName(), paid))
                 .withStyle(ChatFormatting.GREEN));
         return true;
+    }
+
+    /**
+     * Stamp a granted stack with its offer's enchantment, if it has one.
+     *
+     * <p>An {@code enchanted_book} carries its enchantment in {@code stored_enchantments} rather than
+     * {@code enchantments}, and {@code EnchantmentHelper.updateEnchantments} already routes to the right one
+     * based on the item — so this works for both a book and, if ever wanted, a directly-enchanted tool.
+     *
+     * <p>Silently leaves the stack plain if the enchantment cannot be resolved. A shop offer must never be
+     * able to fail a purchase the player has already paid for.
+     */
+    private static void applyEnchantment(ServerPlayer player, ItemStack stack, Grant grant) {
+        if (grant.enchantment() == null) return;
+        var server = player.level().getServer();
+        if (server == null) return;
+        var id = net.minecraft.resources.Identifier.tryParse(grant.enchantment());
+        if (id == null) return;
+        var registry = server.registryAccess()
+                .lookup(net.minecraft.core.registries.Registries.ENCHANTMENT).orElse(null);
+        if (registry == null) return;
+        var holder = registry.get(net.minecraft.resources.ResourceKey.create(
+                net.minecraft.core.registries.Registries.ENCHANTMENT, id)).orElse(null);
+        if (holder == null) return;
+        net.minecraft.world.item.enchantment.EnchantmentHelper.updateEnchantments(stack,
+                mutable -> mutable.set(holder, Math.max(1, grant.enchantLevel())));
     }
 
     /** Convert Quest Shards → 1 Skill Shard at the 3:1 ratio; messages the player. */

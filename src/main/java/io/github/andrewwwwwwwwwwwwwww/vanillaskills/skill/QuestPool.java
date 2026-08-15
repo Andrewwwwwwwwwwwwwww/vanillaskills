@@ -1,10 +1,24 @@
 package io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /** The pool of possible bounty-board quests; several are picked each rotation. */
 public final class QuestPool {
     private QuestPool() {}
+
+    /**
+     * Look up a quest by its stable id, across both the starter and rotating pools.
+     *
+     * <p>Player progress is keyed by id rather than list position, so a quest can be added, removed or
+     * reordered without silently remapping anyone's saved progress — the constraint that forced the
+     * old APPEND-ONLY rule on {@link #ALL}. Returns null for an id that no longer exists, which callers
+     * treat as "that quest is gone" rather than an error.
+     */
+    public static Quest byId(String id) {
+        return BY_ID.get(id);
+    }
 
     /**
      * The FIXED starter board: all 15 always active for new players, each completable once. Finishing
@@ -123,4 +137,15 @@ public final class QuestPool {
             new Quest(Quest.Type.STAT, "minecraft:swim_one_cm", 1500, 5, "Swim 1,500 blocks"),
             new Quest(Quest.Type.STAT, "minecraft:jump", 800, 1, "Jump 800 times")
     );
+
+    // Declared AFTER both pools on purpose: static initializers run in declaration order, so building
+    // this any earlier would read STARTER and ALL while they are still null.
+    private static final Map<String, Quest> BY_ID = buildIndex();
+
+    private static Map<String, Quest> buildIndex() {
+        Map<String, Quest> index = new LinkedHashMap<>();
+        for (Quest q : STARTER) index.put(q.id(), q);
+        for (Quest q : ALL) index.put(q.id(), q);
+        return Map.copyOf(index);
+    }
 }

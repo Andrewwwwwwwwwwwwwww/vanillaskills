@@ -62,12 +62,9 @@ public class ArmorTier {
     public ItemStack create(ArmorPiece piece) {
         int i = piece.ordinal();
         ItemStack stack = new ItemStack(baseItems[i]);
-        stack.set(DataComponents.CUSTOM_NAME, Markers.name(
-                "vanillaskills.gear." + id + "." + piece.lower(),
-                displayName + " " + pieceWord(piece), nameColor));
-        Markers.applyMarker(stack, markerKey);
-        stack.set(DataComponents.CUSTOM_MODEL_DATA,
-                new CustomModelData(List.of(), List.of(), List.of("vanillaskills:" + id + "_" + piece.lower()), List.of()));
+        Markers.stamp(stack, markerKey, "vanillaskills:" + id + "_" + piece.lower(),
+                Markers.name("vanillaskills.gear." + id + "." + piece.lower(),
+                        displayName + " " + pieceWord(piece), nameColor));
         stack.set(DataComponents.MAX_DAMAGE, durability[i]);
         stack.set(DataComponents.REPAIRABLE, new Repairable(repairItems));
 
