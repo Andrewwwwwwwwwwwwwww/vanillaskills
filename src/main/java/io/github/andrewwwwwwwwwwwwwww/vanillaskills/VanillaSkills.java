@@ -27,6 +27,10 @@ import net.minecraft.world.item.ItemStack;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.ClientboundResourcePackPushPacket;
 import net.minecraft.core.Registry;
@@ -56,6 +60,10 @@ public class VanillaSkills implements ModInitializer {
             new io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestBoard();
     public static final io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards BOARDS =
             new io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards();
+    public static final io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks SHARDS =
+            new io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks();
+    public static final io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.WorldState STATE =
+            new io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.WorldState();
 
     private static final int ROSE_GOLD_INTERVAL = 10;
     private static final int STATUS_REFRESH_INTERVAL = 40;
@@ -63,19 +71,34 @@ public class VanillaSkills implements ModInitializer {
     private static final int QUEST_ROTATION_INTERVAL = 200; // check the bounty timer every ~10s
     private static final int ELYTRA_FORGE_INTERVAL = 20; // scan items on anvils/grindstones once a second
 
-    // Data-driven recipes granted on join so they appear in the vanilla recipe book.
-    private static final java.util.List<net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> BOOK_RECIPES =
-            java.util.List.of(recipeKey("rose_gold_ingot"), recipeKey("crystallized_diamond"));
-
-    private static net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> recipeKey(String path) {
-        return net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
-                net.minecraft.resources.Identifier.fromNamespaceAndPath(MOD_ID, path));
+    private static net.minecraft.resources.ResourceKey<net.minecraft.world.level.levelgen.placement.PlacedFeature> placedFeature(String path) {
+        return net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.PLACED_FEATURE,
+                Identifier.fromNamespaceAndPath(MOD_ID, path));
     }
+
     private int tickCounter = 0;
 
     @Override
     public void onInitialize() {
         LOGGER.info("VanillaSkills initializing");
+
+        // Datapack-driven content. Registered during init rather than at SERVER_STARTED because the
+        // listener has to be in place before the FIRST datapack load — which happens while the server
+        // is still being constructed, i.e. before SERVER_STARTED assigns `server`. Nothing reached
+        // from here may touch world state or worldDir().
+        // This registration is the one edition-specific part; NeoForge uses AddReloadListenerEvent.
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(
+                new SimpleSynchronousResourceReloadListener() {
+                    @Override
+                    public Identifier getFabricId() {
+                        return Identifier.fromNamespaceAndPath(MOD_ID, "content");
+                    }
+
+                    @Override
+                    public void onResourceManagerReload(ResourceManager manager) {
+                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.data.VsContent.reload(manager);
+                    }
+                });
 
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
                 Identifier.fromNamespaceAndPath(MOD_ID, "fortune_upgrade"),
@@ -90,6 +113,33 @@ public class VanillaSkills implements ModInitializer {
                 Identifier.fromNamespaceAndPath(MOD_ID, "steel_shield"),
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.ShieldInfuseRecipe.SERIALIZER);
         FortuneTemplateLoot.register();
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot.ShardLoot.register();
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot.CrateLoot.register();
+
+        // Skill Shard ore generation.
+        //
+        // The feature itself is plain datapack JSON under data/vanillaskills/worldgen/, shared byte-for-byte
+        // by every edition. Only this biome injection is loader-specific: vanilla has no way for a datapack to
+        // add a feature to an existing biome without replacing that biome outright, which is exactly why
+        // worldgen packs either rewrite biomes wholesale or depend on a library. Replacing vanilla biomes here
+        // would fight every other worldgen pack the server runs, so we inject instead.
+        net.fabricmc.fabric.api.biome.v1.BiomeModifications.addFeature(
+                net.fabricmc.fabric.api.biome.v1.BiomeSelectors.foundInOverworld(),
+                net.minecraft.world.level.levelgen.GenerationStep.Decoration.UNDERGROUND_ORES,
+                placedFeature("skill_shard_ore_overworld"));
+        net.fabricmc.fabric.api.biome.v1.BiomeModifications.addFeature(
+                net.fabricmc.fabric.api.biome.v1.BiomeSelectors.foundInTheNether(),
+                net.minecraft.world.level.levelgen.GenerationStep.Decoration.UNDERGROUND_ORES,
+                placedFeature("skill_shard_ore_nether"));
+        // The End: outer islands only. Excluding minecraft:the_end keeps the ore off the spawn island.
+        net.fabricmc.fabric.api.biome.v1.BiomeModifications.addFeature(
+                net.fabricmc.fabric.api.biome.v1.BiomeSelectors.includeByKey(
+                        net.minecraft.world.level.biome.Biomes.END_HIGHLANDS,
+                        net.minecraft.world.level.biome.Biomes.END_MIDLANDS,
+                        net.minecraft.world.level.biome.Biomes.END_BARRENS,
+                        net.minecraft.world.level.biome.Biomes.SMALL_END_ISLANDS),
+                net.minecraft.world.level.levelgen.GenerationStep.Decoration.UNDERGROUND_ORES,
+                placedFeature("skill_shard_ore_end"));
 
         io.github.andrewwwwwwwwwwwwwww.vanillaskills.creative.VanillaSkillsItemGroup.register();
 
@@ -102,6 +152,9 @@ public class VanillaSkills implements ModInitializer {
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
                 Identifier.fromNamespaceAndPath(MOD_ID, "dragon_template_dup"),
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.DragonTemplateRecipe.SERIALIZER);
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
+                Identifier.fromNamespaceAndPath(MOD_ID, "shard_crafting"),
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardCraftingRecipe.SERIALIZER);
         io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot.DragonTemplateLoot.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(srv -> {
@@ -114,12 +167,23 @@ public class VanillaSkills implements ModInitializer {
             TREE.load();
             QUESTS.load();
             BOARDS.load();
+            SHARDS.load();
+            STATE.load();
+            // Display entities persist, so a crash mid-spin would otherwise leave a ring of items hanging
+            // in the world with nothing tracking it.
+            for (ServerLevel lvl : srv.getAllLevels()) {
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.crate.CrateReel.sweep(lvl);
+            }
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(srv -> {
+            // Settle first: a crate is consumed the moment it is opened, so a reel still spinning at
+            // shutdown is holding loot that has already been paid for.
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.crate.CrateReel.finishAll(srv);
             PLAYERS.saveAllAndClear();
             QUESTS.save();
             BOARDS.save();
+            SHARDS.save();
         });
 
         // Force the custom texture pack onto every joining client, so vanilla clients see the gear
@@ -136,6 +200,131 @@ public class VanillaSkills implements ModInitializer {
                     io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.RESOURCE_PACK_SHA1,
                     true,
                     java.util.Optional.of(Component.translatableWithFallback("vanillaskills.resourcepack.prompt", "VanillaSkills+ needs this pack to show the custom gear."))));
+        });
+
+        // Placing a shard block, and merging one Stable block into another.
+        //
+        // Placement is handled here rather than left to vanilla because the block that lands in the world is
+        // an ordinary amethyst block — we need the same interaction to also record the position and spawn its
+        // display, and there is no "block was placed" hook to bolt that onto afterwards.
+        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+            if (world.isClientSide() || !(player instanceof ServerPlayer sp) || !(world instanceof ServerLevel level)) {
+                return net.minecraft.world.InteractionResult.PASS;
+            }
+            // Right-clicking an enchanting table opens the Infusing Table instead. The vanilla screen still
+            // exists but cannot be paid for now that experience is gone, so this replaces it outright.
+            if (io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.INFUSING_ENABLED
+                    && level.getBlockState(hit.getBlockPos()).is(net.minecraft.world.level.block.Blocks.ENCHANTING_TABLE)
+                    && !sp.isSecondaryUseActive()) {
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.infuse.InfusingMenu.open(sp, hit.getBlockPos());
+                return net.minecraft.world.InteractionResult.SUCCESS;
+            }
+
+            ItemStack held = player.getItemInHand(hand);
+            boolean stable = io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.isStableBlock(held);
+            boolean unstable = io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.isUnstableBlock(held);
+            if (!stable && !unstable) return net.minecraft.world.InteractionResult.PASS;
+
+            // Merge: a Stable block clicked onto an already-placed Stable block widens its aura instead
+            // of placing a second one. Sneaking opts out and places normally — the same convention vanilla
+            // uses to bypass a block's use action, and the only way to build two Stable blocks side by side.
+            if (stable && !sp.isSecondaryUseActive() && SHARDS.kindAt(level, hit.getBlockPos())
+                    == io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.Kind.STABLE) {
+                if (SHARDS.merge(level, hit.getBlockPos())) {
+                    if (!sp.hasInfiniteMaterials()) held.shrink(1);
+                    sp.sendSystemMessage(Component.literal(io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(
+                            sp, "vanillaskills.msg.shard_block_merged", "Merged — area of effect widened (%d/%d).",
+                            SHARDS.mergeCountAt(level, hit.getBlockPos()),
+                            io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.maxMerge())));
+                } else {
+                    sp.sendSystemMessage(Component.literal(io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(
+                            sp, "vanillaskills.msg.shard_block_full", "This block is already fully merged."))
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                }
+                return net.minecraft.world.InteractionResult.SUCCESS;
+            }
+
+            net.minecraft.core.BlockPos target = hit.getBlockPos().relative(hit.getDirection());
+            if (!level.getBlockState(target).canBeReplaced()) return net.minecraft.world.InteractionResult.PASS;
+            var kind = stable
+                    ? io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.Kind.STABLE
+                    : io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.Kind.UNSTABLE;
+            level.setBlockAndUpdate(target,
+                    io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.baseBlock(kind).defaultBlockState());
+            SHARDS.register(level, target, kind);
+            if (!sp.hasInfiniteMaterials()) held.shrink(1);
+            return net.minecraft.world.InteractionResult.SUCCESS;
+        });
+
+        // Breaking a shard block: we take over entirely, so vanilla does not also drop a plain amethyst block.
+        //
+        // The two kinds behave differently below Crystalline, which is deliberate:
+        //   Unstable — breaks like ordinary ore mined with the wrong tool: it is destroyed and drops nothing,
+        //              silently. Losing the block IS the feedback; a message on top would just nag.
+        //   Stable   — refuses to break at all and says why. It is expensive and its aura is infrastructure,
+        //              so destroying one by accident with a diamond pick would be a genuinely bad surprise.
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, be) -> {
+            if (!(world instanceof ServerLevel level)) return true;
+            var kind = SHARDS.kindAt(level, pos);
+            if (kind == null) return true;
+
+            if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.canMine(player)) {
+                if (kind == io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.Kind.STABLE) {
+                    if (player instanceof ServerPlayer sp) {
+                        sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(
+                                Component.literal(io.github.andrewwwwwwwwwwwwwww.vanillaskills.text.Lang.tr(sp,
+                                        "vanillaskills.msg.shard_block_tool",
+                                        "You need a Crystalline or better pickaxe to mine this."))
+                                        .withStyle(net.minecraft.ChatFormatting.RED)));
+                    }
+                    return false; // not broken at all — the block stays and keeps its record
+                }
+                SHARDS.onBroken(level, pos, false); // Unstable: destroyed, nothing dropped
+                return false;
+            }
+            SHARDS.onBroken(level, pos, !player.hasInfiniteMaterials());
+            return false; // handled — cancel the vanilla break
+        });
+
+        // Naturally generated Skill Shard ore: drops shards, behind the same Crystalline-or-better gate.
+        // Below that tier it breaks and drops nothing, exactly like the Unstable block and like vanilla ore
+        // mined with too weak a pickaxe. No message — only the Stable block nags.
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, be) -> {
+            if (!(world instanceof ServerLevel level)) return true;
+            if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardOre.isOre(level, pos, state)) return true;
+            if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.canMine(player)) {
+                level.removeBlock(pos, false);
+                return false;
+            }
+            if (!player.hasInfiniteMaterials()) {
+                ItemStack drop = io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.unstableShard();
+                drop.setCount(io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.SHARD_ORE_DROP);
+                net.minecraft.world.level.block.Block.popResource(level, pos, drop);
+            }
+            level.removeBlock(pos, false);
+            return false; // handled — vanilla's empty drop table would otherwise give nothing
+        });
+
+        // Spawners drop an Unstable Skill Shard Block instead of the experience they used to give.
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, be) -> {
+            if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.SPAWNER_DROPS_SHARD_BLOCK) return;
+            if (!(world instanceof ServerLevel level) || player.hasInfiniteMaterials()) return;
+            if (!state.is(net.minecraft.world.level.block.Blocks.SPAWNER)) return;
+            net.minecraft.world.level.block.Block.popResource(level, pos,
+                    io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.unstableBlock());
+        });
+
+        // Right-click a held Unstable Skill Shard to bank the whole stack again, or a crate to open it.
+        net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.register((player, world, hand) -> {
+            if (world.isClientSide() || !(player instanceof ServerPlayer sp)) {
+                return net.minecraft.world.InteractionResult.PASS;
+            }
+            ItemStack held = player.getItemInHand(hand);
+            if (io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBank.deposit(sp, held)
+                    || io.github.andrewwwwwwwwwwwwwww.vanillaskills.crate.Crates.open(sp, held)) {
+                return net.minecraft.world.InteractionResult.SUCCESS;
+            }
+            return net.minecraft.world.InteractionResult.PASS;
         });
 
         // Right-click a bounty board's floating-text interaction entity to open the quest GUI.
@@ -160,12 +349,18 @@ public class VanillaSkills implements ModInitializer {
         });
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-            if (entity instanceof EnderDragon && entity.level() instanceof ServerLevel level) {
-                ItemStack scales = DragonScale.create();
-                scales.setCount(DRAGON_SCALE_DROP);
-                ItemEntity drop = new ItemEntity(level, entity.getX(), entity.getY() + 1.0, entity.getZ(), scales);
-                level.addFreshEntity(drop);
-            }
+            if (!(entity instanceof EnderDragon) || !(entity.level() instanceof ServerLevel level)) return;
+            // PLAYER kills only. THP can kill the dragon itself as part of how its End fight starts up, and
+            // that must not quietly hand out scales — least of all the one-time first-kill bonus.
+            if (!(source.getEntity() instanceof ServerPlayer)) return;
+            int count = STATE.claimFirstDragonKill()
+                    ? io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.DRAGON_SCALE_FIRST_KILL_DROP
+                    : io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.DRAGON_SCALE_DROP;
+            if (count <= 0) return;
+            ItemStack scales = DragonScale.create();
+            scales.setCount(count);
+            ItemEntity drop = new ItemEntity(level, entity.getX(), entity.getY() + 1.0, entity.getZ(), scales);
+            level.addFreshEntity(drop);
         });
 
         // Deepslate gate: only a Steel-tier-or-better pickaxe can break deepslate & its ores.
@@ -217,12 +412,18 @@ public class VanillaSkills implements ModInitializer {
 
         ServerPlayerEvents.JOIN.register(player -> {
             PLAYERS.onJoin(player);
-            player.awardRecipesByKey(BOOK_RECIPES); // show our data recipes in the recipe book
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.LegacyGear.sweep(player); // repoint pre-2.0 gear models
+            // Our data recipes appear in the book only once the matching skill is unlocked.
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.RecipeUnlocks.sync(player);
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBar.push(player, true);
+            // Anything a crate owed them from a reel they logged out of.
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.crate.CrateReel.PendingRewards.deliver(player);
         });
         ServerPlayerEvents.LEAVE.register(player -> {
             PLAYERS.onLeave(player);
             DragonSet.onPlayerLeave(player.getUUID());
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.StepHeight.onLeave(player.getUUID());
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBar.forget(player);
         });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> PLAYERS.applyAll(newPlayer));
 
@@ -292,6 +493,7 @@ public class VanillaSkills implements ModInitializer {
         }
         if (tickCounter % ROSE_GOLD_INTERVAL == 0) {
             RoseGoldSet.tick(srv);
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.CrystalSet.tick(srv);
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.ArmorSetTooltips.tick(srv);
         }
         if (tickCounter % STATUS_REFRESH_INTERVAL == 0) {
@@ -299,6 +501,9 @@ public class VanillaSkills implements ModInitializer {
             for (ServerPlayer player : srv.getPlayerList().getPlayers()) {
                 PlayerSkillData data = PLAYERS.get(player.getUUID());
                 SkillEffects.refreshStatusEffects(player, data, tree);
+                // Catches pre-2.0 gear picked up from a chest after the join sweep. Costs one
+                // component lookup per slot once a world has been migrated.
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.LegacyGear.sweep(player);
             }
         }
         if (tickCounter % QUEST_ROTATION_INTERVAL == 0) {
@@ -307,5 +512,10 @@ public class VanillaSkills implements ModInitializer {
         if (tickCounter % io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.BountyBoards.REFRESH_INTERVAL == 0) {
             BOARDS.tick(srv, tickCounter);
         }
+        SHARDS.tick(srv, tickCounter); // self-throttling; harms hostiles inside a Stable block's area
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.NetherRoof.tick(srv, tickCounter); // self-throttling
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBar.tick(srv, tickCounter); // self-throttling
+        // Every tick: the reel paces its own steps, and returns immediately when nothing is spinning.
+        io.github.andrewwwwwwwwwwwwwww.vanillaskills.crate.CrateReel.tick(srv);
     }
 }

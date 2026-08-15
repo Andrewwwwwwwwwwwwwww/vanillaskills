@@ -34,7 +34,10 @@ public final class SteelShield {
     private SteelShield() {}
 
     public static final String MARKER = "vs_steel_shield";
-    public static final int DURABILITY = 1200;     // vanilla shield is 336
+    public static final int DURABILITY = 2400;     // vanilla shield is 336; 2.0 doubled this from 1200
+    /** Movement penalty while the shield is held, as a fraction of base speed. The steel that buys the
+     *  durability is heavy — carrying it should cost something even when not actively blocking. */
+    private static final double HELD_SLOWDOWN = -0.10;
     public static final float THORNS_DAMAGE = 2.0f;
     private static final int COLOR = 0xB8C0C8;
 
@@ -51,7 +54,7 @@ public final class SteelShield {
      */
     public static ItemStack create(HolderLookup.Provider registries) {
         ItemStack stack = new ItemStack(Items.SHIELD);
-        stack.set(DataComponents.CUSTOM_NAME, Markers.name("vanillaskills.item.steel_shield", "Steel-Infused Shield", COLOR));
+        stack.set(DataComponents.ITEM_NAME, Markers.name("vanillaskills.item.steel_shield", "Steel-Infused Shield", COLOR));
         Markers.applyMarker(stack, MARKER);
         // Render as a steel shield via a custom banner pattern: the vanilla shield renderer draws
         // bannered shields in full 3D everywhere (inventory/held/blocking), and plain shields with
@@ -71,9 +74,20 @@ public final class SteelShield {
         }
         stack.set(DataComponents.MAX_DAMAGE, DURABILITY);
         stack.set(DataComponents.REPAIRABLE, new Repairable(repairItems()));
+        // Slows the wielder while held in either hand. Applied as an item attribute modifier rather than
+        // ticked, so it appears and disappears exactly with the item and needs no bookkeeping.
+        stack.set(DataComponents.ATTRIBUTE_MODIFIERS, net.minecraft.world.item.component.ItemAttributeModifiers.builder()
+                .add(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED,
+                        new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                                Identifier.fromNamespaceAndPath("vanillaskills", "steel_shield.weight"),
+                                HELD_SLOWDOWN,
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+                        net.minecraft.world.entity.EquipmentSlotGroup.HAND)
+                .build());
         stack.set(DataComponents.LORE, new ItemLore(List.of(
                 line("vanillaskills.item.steel_shield.desc1", "Hardened with steel for great durability.", ChatFormatting.GRAY),
-                line("vanillaskills.item.steel_shield.desc2", "Blocking a melee hit injures the attacker.", ChatFormatting.GRAY))));
+                line("vanillaskills.item.steel_shield.desc2", "Blocking a melee hit injures the attacker.", ChatFormatting.GRAY),
+                line("vanillaskills.item.steel_shield.desc3", "Heavy — slows you while held.", ChatFormatting.GRAY))));
         return stack;
     }
 

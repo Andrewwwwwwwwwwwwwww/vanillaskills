@@ -1,0 +1,8 @@
+{
+  "block.minecraft.enchanting_table": "灌魔台",
+  "item.minecraft.enchanting_table": "灌魔台",
+  "container.enchant": "灌魔台",
+
+  "container.repair.cost": "技能碎片消耗：%1$s",
+  "container.repair.expensive": "技能碎片不足！"
+}

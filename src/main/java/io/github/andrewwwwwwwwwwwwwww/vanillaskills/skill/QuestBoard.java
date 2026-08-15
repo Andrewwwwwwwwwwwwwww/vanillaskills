@@ -30,7 +30,10 @@ public class QuestBoard {
     private static class State {
         long rotationId = 0;
         long nextRotationMs = 0;
+        /** LEGACY (pre-2.0): positions in {@code QuestPool.ALL}. Converted to ids on load, then unused. */
         int[] activeIndices = new int[0];
+        /** The dealt quests, by stable id — immune to the pool being reordered or edited. */
+        String[] activeIds = new String[0];
     }
 
     public long rotationId() {
@@ -41,11 +44,12 @@ public class QuestBoard {
         return state.nextRotationMs;
     }
 
-    /** The 3 currently-active quests (by their index in the active list). */
+    /** The currently-dealt quests, in board-slot order. Ids that no longer exist are skipped. */
     public List<Quest> active() {
         List<Quest> out = new ArrayList<>();
-        for (int idx : state.activeIndices) {
-            if (idx >= 0 && idx < QuestPool.ALL.size()) out.add(QuestPool.ALL.get(idx));
+        for (String id : state.activeIds) {
+            Quest q = QuestPool.byId(id);
+            if (q != null) out.add(q);
         }
         return out;
     }
@@ -65,10 +69,31 @@ public class QuestBoard {
         } catch (Exception e) {
             VanillaSkills.LOGGER.error("Failed to load questboard.json", e);
         }
+        migrateLegacyIndices();
         long now = System.currentTimeMillis();
-        if (state.activeIndices.length != activeCount() || state.nextRotationMs <= now) {
+        if (state.activeIds.length != activeCount() || state.nextRotationMs <= now) {
             reroll(now);
         }
+    }
+
+    /**
+     * Convert a pre-2.0 board, which stored positions in {@code QuestPool.ALL}, to stable quest ids.
+     *
+     * <p>Runs against the pool as it is right now, which is exactly why the id migration had to ship
+     * before the pool was ever reordered: the old numbers are only meaningful against the ordering
+     * that wrote them.
+     */
+    private void migrateLegacyIndices() {
+        if (state.activeIds == null) state.activeIds = new String[0];
+        if (state.activeIds.length > 0 || state.activeIndices == null || state.activeIndices.length == 0) return;
+        List<String> ids = new ArrayList<>();
+        for (int idx : state.activeIndices) {
+            if (idx >= 0 && idx < QuestPool.ALL.size()) ids.add(QuestPool.ALL.get(idx).id());
+        }
+        state.activeIds = ids.toArray(new String[0]);
+        state.activeIndices = new int[0];
+        VanillaSkills.LOGGER.info("Migrated bounty board to quest ids: {}", String.join(", ", ids));
+        save();
     }
 
     public void tick(MinecraftServer server) {
@@ -87,11 +112,11 @@ public class QuestBoard {
     private void reroll(long now) {
         state.rotationId++;
         state.nextRotationMs = now + GameplayConfig.BOUNTY_REFRESH_MS;
-        state.activeIndices = pickDistinct(activeCount());
+        state.activeIds = pickDistinct(activeCount());
         save();
     }
 
-    private int[] pickDistinct(int count) {
+    private String[] pickDistinct(int count) {
         // The universal board draws from the full pool (early-game gating now lives on the starter board).
         List<Integer> pool = new ArrayList<>();
         for (int i = 0; i < QuestPool.ALL.size(); i++) {
@@ -111,8 +136,8 @@ public class QuestBoard {
             }
             chosen.add(pool.remove(removeAt));
         }
-        int[] out = new int[chosen.size()];
-        for (int i = 0; i < out.length; i++) out[i] = chosen.get(i);
+        String[] out = new String[chosen.size()];
+        for (int i = 0; i < out.length; i++) out[i] = QuestPool.ALL.get(chosen.get(i)).id();
         return out;
     }
 

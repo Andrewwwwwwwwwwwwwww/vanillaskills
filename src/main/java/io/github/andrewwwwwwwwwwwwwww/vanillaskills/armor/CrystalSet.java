@@ -24,6 +24,28 @@ public final class CrystalSet {
     private static final EquipmentSlot[] ARMOR_SLOTS = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
+    /** Refreshed well inside its own duration, so the effects never visibly flicker between ticks. */
+    private static final int EFFECT_TICKS = 200;
+
+    /**
+     * Grants Strength and Resistance I while the full set is worn.
+     *
+     * <p>These are <b>in addition to</b> the melee reflect, not a replacement for it — Crystalline is the
+     * defensive capstone below Dragon, so it keeps the thorns identity and gains staying power on top.
+     *
+     * <p>Applied ambient and hidden so they read as a property of the armour rather than potions, and
+     * re-applied each pass so they lapse on their own shortly after a piece comes off.
+     */
+    public static void tick(net.minecraft.server.MinecraftServer server) {
+        for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
+            if (!isFullSet(player)) continue;
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.STRENGTH, EFFECT_TICKS, 0, true, false, false));
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.RESISTANCE, EFFECT_TICKS, 0, true, false, false));
+        }
+    }
+
     /** True only while all four Crystalline pieces are worn (checked live, so it reverts instantly). */
     public static boolean isFullSet(LivingEntity entity) {
         for (EquipmentSlot slot : ARMOR_SLOTS) {
@@ -39,6 +61,7 @@ public final class CrystalSet {
         lines.add(trStyled("vanillaskills.set.crystal.name_plain", "Crystalline Set", ChatFormatting.LIGHT_PURPLE));
         lines.add(trStyled("vanillaskills.set.crystal.desc1", "Full set: reflect 25% of", ChatFormatting.GRAY));
         lines.add(trStyled("vanillaskills.set.crystal.desc2", "melee damage back at attackers", ChatFormatting.GRAY));
+        lines.add(trStyled("vanillaskills.set.crystal.desc3", "plus Strength & Resistance I", ChatFormatting.GRAY));
         return new ItemLore(lines);
     }
 
