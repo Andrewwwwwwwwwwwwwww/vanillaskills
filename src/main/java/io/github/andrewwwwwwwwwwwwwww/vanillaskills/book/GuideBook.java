@@ -185,7 +185,7 @@ public final class GuideBook {
             // Fill the live-config tokens so the guide always matches the current settings.
             String text = page
                     .replace("{MENDING}", mending)
-                    .replace("{GRAD}", String.valueOf(io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestPool.STARTER.size()))
+                    .replace("{GRAD}", String.valueOf(io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.QuestPool.starter().size()))
                     .replace("{CONVERT}", String.valueOf(QuestShop.CONVERT_RATIO));
             pages.add(Filterable.passThrough(Component.literal(text)));
         }

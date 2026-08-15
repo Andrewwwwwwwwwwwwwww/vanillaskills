@@ -18,8 +18,11 @@ import java.util.List;
 public final class CrystalSet {
     private CrystalSet() {}
 
-    /** Fraction of incoming melee damage reflected to the attacker while the full set is worn. */
-    public static final float REFLECT_FRACTION = 0.25f;
+    /** Fraction of incoming melee damage reflected to the attacker while the full set is worn.
+     *  Live from gameplay.json ({@code crystalReflectFraction}); 0 turns the reflect off. */
+    public static float reflectFraction() {
+        return io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.CRYSTAL_REFLECT_FRACTION;
+    }
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -39,10 +42,12 @@ public final class CrystalSet {
     public static void tick(net.minecraft.server.MinecraftServer server) {
         for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (!isFullSet(player)) continue;
+            if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.CRYSTAL_SET_EFFECTS) continue;
+            int amp = io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.CRYSTAL_SET_AMPLIFIER;
             player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                    net.minecraft.world.effect.MobEffects.STRENGTH, EFFECT_TICKS, 0, true, false, false));
+                    net.minecraft.world.effect.MobEffects.STRENGTH, EFFECT_TICKS, amp, true, false, false));
             player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                    net.minecraft.world.effect.MobEffects.RESISTANCE, EFFECT_TICKS, 0, true, false, false));
+                    net.minecraft.world.effect.MobEffects.RESISTANCE, EFFECT_TICKS, amp, true, false, false));
         }
     }
 

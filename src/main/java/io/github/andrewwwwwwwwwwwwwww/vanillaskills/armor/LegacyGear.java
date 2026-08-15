@@ -29,6 +29,7 @@ public final class LegacyGear {
     /** Repoint one stack's model if it is a pre-2.0 VanillaSkills item. Returns true if it changed. */
     public static boolean upgrade(ItemStack stack) {
         boolean changed = demoteCustomName(stack);
+        changed |= restat(stack);
 
         CustomModelData cmd = stack.get(DataComponents.CUSTOM_MODEL_DATA);
         if (cmd == null) return changed;               // already migrated, or never ours
@@ -65,6 +66,38 @@ public final class LegacyGear {
         if (!stack.has(DataComponents.ITEM_NAME)) return false;
         stack.remove(DataComponents.CUSTOM_NAME);
         return true;
+    }
+
+    /**
+     * Bring a piece of VanillaSkills gear onto its tier's current durability and attribute modifiers.
+     *
+     * <p>Gear stats are baked into each stack when it is crafted, so retuning a tier in gameplay.json would
+     * otherwise only reach newly-made pieces and leave everyone's existing kit on the old numbers. This
+     * closes that gap, and doubles as the path that brings 1.x gear onto 2.0 stats.
+     *
+     * <p>Deliberately narrow: only {@code MAX_DAMAGE} and {@code ATTRIBUTE_MODIFIERS} are rewritten, so
+     * enchantments, current damage and anvil renames all survive. Controlled by {@code gearRestamp}.
+     */
+    private static boolean restat(ItemStack stack) {
+        if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.GEAR_RESTAMP) return false;
+        if (stack.isEmpty() || !Markers.isOurs(stack)) return false;
+
+        for (ArmorTier tier : ArmorTiers.TIERS) {
+            if (!tier.isWorn(stack)) continue;
+            ArmorPiece piece = tier.pieceOf(stack);
+            if (piece == null) return false;
+            tier.applyStats(stack, piece);
+            return true;
+        }
+        for (io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTier tier :
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolTiers.TIERS) {
+            if (!Markers.has(stack, tier.markerKey)) continue;
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolKind kind = tier.kindOf(stack);
+            if (kind == null) return false;
+            tier.applyStats(stack, kind);
+            return true;
+        }
+        return false;
     }
 
     /**

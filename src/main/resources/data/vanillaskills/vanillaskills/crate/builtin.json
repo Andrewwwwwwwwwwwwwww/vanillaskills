@@ -36,6 +36,12 @@
       "name": "Lush Crate",
       "color": "#7BD44A",
       "loot_table": "vanillaskills:crate/lush"
+    },
+    {
+      "id": "desert",
+      "name": "Desert Crate",
+      "color": "#E3C77B",
+      "loot_table": "vanillaskills:crate/desert"
     }
   ]
 }

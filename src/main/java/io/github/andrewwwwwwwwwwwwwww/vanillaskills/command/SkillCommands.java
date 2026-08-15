@@ -34,7 +34,6 @@ import net.minecraft.world.item.ItemStack;
  * /skill reset|recalc &lt;player&gt;       (op) refund all unlocks / reprice against current config
  * /skill reload                      (op) reload tree + configs from disk
  * /skill mending on|off              (op) enable or strip Mending for this world
- * /skill regen                       (op) rebuild the tree, keeping edits, backing up the old file
  * /skill regenpoints                 (op) reset points.json to defaults
  */
 public final class SkillCommands {
@@ -113,12 +112,6 @@ public final class SkillCommands {
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("on").executes(ctx -> setMending(ctx, true)))
                 .then(Commands.literal("off").executes(ctx -> setMending(ctx, false))));
-
-        // Rebuilds the tree while KEEPING existing edits, and backs the old file up first. The full-reset
-        // "fresh" variant is gone: it was one mistyped word away from wiping a tuned tree.
-        root.then(Commands.literal("regen")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                .executes(ctx -> regen(ctx, true)));
 
         root.then(Commands.literal("regenpoints")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -352,22 +345,6 @@ public final class SkillCommands {
         return 1;
     }
 
-    private static int regen(CommandContext<CommandSourceStack> ctx, boolean preserve) {
-        java.nio.file.Path backup = VanillaSkills.TREE.regenerate(preserve);
-        if (ctx.getSource().getServer() != null) {
-            for (ServerPlayer player : ctx.getSource().getServer().getPlayerList().getPlayers()) {
-                VanillaSkills.PLAYERS.applyAll(player);
-            }
-        }
-        String suffix = backup != null ? " Backed up the old tree to " + backup.getFileName() + "." : "";
-        String mode = preserve
-                ? "Updated the tree, keeping your changes (added any new lanes/nodes)"
-                : "Reset the tree to the built-in default";
-        ctx.getSource().sendSuccess(() -> Component.literal(
-                mode + " (" + VanillaSkills.TREE.tree().size() + " nodes)." + suffix)
-                .withStyle(ChatFormatting.GREEN), true);
-        return 1;
-    }
 
     // ---- op: tree editor ----
 
@@ -401,45 +378,6 @@ public final class SkillCommands {
 
 
 
-    private static int editRequire(CommandContext<CommandSourceStack> ctx, boolean add) {
-        SkillNode node = requireNode(ctx);
-        if (node == null) return 0;
-        String req = StringArgumentType.getString(ctx, "req");
-        if (add) {
-            if (!node.requires.contains(req)) node.requires.add(req);
-        } else {
-            node.requires.remove(req);
-        }
-        VanillaSkills.TREE.touchAndSave();
-        ctx.getSource().sendSuccess(() -> Component.literal(
-                (add ? "Added" : "Removed") + " requirement '" + req + "' " + (add ? "to" : "from") + " '" + node.id + "'."), true);
-        return 1;
-    }
 
-    private static int editEffectClear(CommandContext<CommandSourceStack> ctx) {
-        SkillNode node = requireNode(ctx);
-        if (node == null) return 0;
-        node.effects.clear();
-        VanillaSkills.TREE.touchAndSave();
-        ctx.getSource().sendSuccess(() -> Component.literal("Cleared effects of '" + node.id + "'."), true);
-        return 1;
-    }
 
-    private static int editEffectAttribute(CommandContext<CommandSourceStack> ctx) {
-        SkillNode node = requireNode(ctx);
-        if (node == null) return 0;
-        String attribute = IdentifierArgument.getId(ctx, "attribute").toString();
-        String operation = StringArgumentType.getString(ctx, "operation");
-        double amount = DoubleArgumentType.getDouble(ctx, "amount");
-        if (!operation.equals("add_value") && !operation.equals("add_multiplied_base") && !operation.equals("add_multiplied_total")) {
-            ctx.getSource().sendFailure(Component.literal(
-                    "Operation must be add_value, add_multiplied_base, or add_multiplied_total."));
-            return 0;
-        }
-        node.effects.add(SkillEffect.attribute(attribute, operation, amount));
-        VanillaSkills.TREE.touchAndSave();
-        ctx.getSource().sendSuccess(() -> Component.literal(
-                "Added attribute effect to '" + node.id + "': " + attribute + " " + operation + " " + amount).withStyle(ChatFormatting.GREEN), true);
-        return 1;
-    }
 }

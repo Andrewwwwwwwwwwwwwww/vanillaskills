@@ -3,7 +3,7 @@
   "random_sequence": "vanillaskills:crate_fishing",
   "pools": [
     {
-      "rolls": 1.0,
+      "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
@@ -13,7 +13,9 @@
             {
               "function": "minecraft:set_components",
               "components": {
-                "minecraft:custom_data": { "vs_crate_wooden": true },
+                "minecraft:custom_data": {
+                  "vs_crate_wooden": true
+                },
                 "minecraft:item_model": "vanillaskills:crate_wooden",
                 "minecraft:item_name": {
                   "translate": "vanillaskills.crate.wooden",
@@ -41,7 +43,9 @@
             {
               "function": "minecraft:set_components",
               "components": {
-                "minecraft:custom_data": { "vs_crate_copper": true },
+                "minecraft:custom_data": {
+                  "vs_crate_copper": true
+                },
                 "minecraft:item_model": "vanillaskills:crate_copper",
                 "minecraft:item_name": {
                   "translate": "vanillaskills.crate.copper",
@@ -69,7 +73,9 @@
             {
               "function": "minecraft:set_components",
               "components": {
-                "minecraft:custom_data": { "vs_crate_iron": true },
+                "minecraft:custom_data": {
+                  "vs_crate_iron": true
+                },
                 "minecraft:item_model": "vanillaskills:crate_iron",
                 "minecraft:item_name": {
                   "translate": "vanillaskills.crate.iron",
@@ -97,7 +103,9 @@
             {
               "function": "minecraft:set_components",
               "components": {
-                "minecraft:custom_data": { "vs_crate_diamond": true },
+                "minecraft:custom_data": {
+                  "vs_crate_diamond": true
+                },
                 "minecraft:item_model": "vanillaskills:crate_diamond",
                 "minecraft:item_name": {
                   "translate": "vanillaskills.crate.diamond",
@@ -125,14 +133,21 @@
             {
               "condition": "minecraft:table_bonus",
               "enchantment": "vanillaskills:unboxing",
-              "chances": [0.0, 0.5, 0.75, 1.0]
+              "chances": [
+                0,
+                0.5,
+                0.75,
+                1
+              ]
             }
           ],
           "functions": [
             {
               "function": "minecraft:set_components",
               "components": {
-                "minecraft:custom_data": { "vs_crate_diamond": true },
+                "minecraft:custom_data": {
+                  "vs_crate_diamond": true
+                },
                 "minecraft:item_model": "vanillaskills:crate_diamond",
                 "minecraft:item_name": {
                   "translate": "vanillaskills.crate.diamond",
@@ -159,14 +174,18 @@
           "conditions": [
             {
               "condition": "minecraft:location_check",
-              "predicate": { "biomes": "#vanillaskills:frozen_waters" }
+              "predicate": {
+                "biomes": "#vanillaskills:frozen_waters"
+              }
             }
           ],
           "functions": [
             {
               "function": "minecraft:set_components",
               "components": {
-                "minecraft:custom_data": { "vs_crate_frozen": true },
+                "minecraft:custom_data": {
+                  "vs_crate_frozen": true
+                },
                 "minecraft:item_model": "vanillaskills:crate_frozen",
                 "minecraft:item_name": {
                   "translate": "vanillaskills.crate.frozen",
@@ -193,19 +212,61 @@
           "conditions": [
             {
               "condition": "minecraft:location_check",
-              "predicate": { "biomes": "#vanillaskills:lush_waters" }
+              "predicate": {
+                "biomes": "#vanillaskills:lush_waters"
+              }
             }
           ],
           "functions": [
             {
               "function": "minecraft:set_components",
               "components": {
-                "minecraft:custom_data": { "vs_crate_lush": true },
+                "minecraft:custom_data": {
+                  "vs_crate_lush": true
+                },
                 "minecraft:item_model": "vanillaskills:crate_lush",
                 "minecraft:item_name": {
                   "translate": "vanillaskills.crate.lush",
                   "fallback": "Lush Crate",
                   "color": "#7BD44A",
+                  "italic": false
+                },
+                "minecraft:lore": [
+                  {
+                    "translate": "vanillaskills.crate.open_hint",
+                    "fallback": "Right-click to open.",
+                    "color": "gray",
+                    "italic": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:brick",
+          "weight": 10,
+          "conditions": [
+            {
+              "condition": "minecraft:location_check",
+              "predicate": {
+                "biomes": "#vanillaskills:desert_waters"
+              }
+            }
+          ],
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "vs_crate_desert": true
+                },
+                "minecraft:item_model": "vanillaskills:crate_desert",
+                "minecraft:item_name": {
+                  "translate": "vanillaskills.crate.desert",
+                  "fallback": "Desert Crate",
+                  "color": "#E3C77B",
                   "italic": false
                 },
                 "minecraft:lore": [

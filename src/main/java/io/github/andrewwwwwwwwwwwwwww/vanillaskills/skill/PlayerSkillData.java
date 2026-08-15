@@ -35,7 +35,7 @@ public class PlayerSkillData {
     // One-time Feats (structure discoveries, boss kills, entering the End). Permanent; never rotation-reset.
     public Set<String> featsDone = new LinkedHashSet<>();
 
-    // Starter board: new players complete ALL fixed starter quests (QuestPool.STARTER) to graduate
+    // Starter board: new players complete ALL fixed starter quests (QuestPool.starter()) to graduate
     // to the universal rotating board. Starter progress never rotation-resets.
     public int questsCompleted = 0;
     public boolean graduated = false;
@@ -53,7 +53,7 @@ public class PlayerSkillData {
      * real quest ids on first sync.
      *
      * <p>⚠ The two families of index meant different things, which the migration has to respect:
-     * {@code starterDone}/{@code starterKills} were indices into {@code QuestPool.STARTER} and are
+     * {@code starterDone}/{@code starterKills} were indices into the pre-2.0 hardcoded starter list and are
      * permanent, while the four rotating collections were <b>board slot numbers</b> (0-5) that only
      * made sense for the current rotation.
      */

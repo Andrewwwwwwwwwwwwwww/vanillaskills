@@ -25,10 +25,18 @@ public class ToolTier {
     public final int nameColor;
     public final String markerKey;
     private final Item[] baseItems;   // indexed by ToolKind.ordinal()
-    private final int durability;
-    private final double attackDamageBonus;
-    private final double attackSpeedBonus;
-    private final double pickaxeMiningBonus; // flat mining_efficiency baked onto this tier's pickaxe
+    // The four numeric fields below are the tier's BALANCE and the only mutable state here: they are
+    // overwritten from gameplay.json on every config load (see GameplayConfig#applyGear). Everything else
+    // about a tier — base items, materials, repair rules, extra harvest — is structural and stays in code.
+    private int durability;
+    private double attackDamageBonus;
+    private double attackSpeedBonus;
+    private double pickaxeMiningBonus; // flat mining_efficiency baked onto this tier's pickaxe
+    /** The as-shipped values, so gameplay.json can be written with real defaults and reset cleanly. */
+    public final int defaultDurability;
+    public final double defaultAttackDamage;
+    public final double defaultAttackSpeed;
+    public final double defaultPickaxeMining;
     private final HolderSet<Item> repairItems;
     public final Predicate<ItemStack> material;
     /** Blocks this tier can harvest beyond what its base tool allows. Empty for most tiers. */
@@ -55,8 +63,52 @@ public class ToolTier {
         this.attackDamageBonus = attackDamageBonus;
         this.attackSpeedBonus = attackSpeedBonus;
         this.pickaxeMiningBonus = pickaxeMiningBonus;
+        this.defaultDurability = durability;
+        this.defaultAttackDamage = attackDamageBonus;
+        this.defaultAttackSpeed = attackSpeedBonus;
+        this.defaultPickaxeMining = pickaxeMiningBonus;
         this.repairItems = repairItems;
         this.material = material;
+    }
+
+    /**
+     * Overwrite this tier's balance from config. A null keeps the current value, so a partly-filled
+     * gameplay.json tunes only what it names.
+     *
+     * <p>⚠ Applies to tools built <b>from now on</b>; existing tools carry their stats in their own
+     * components. {@link io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.LegacyGear} brings those forward.
+     */
+    public void tune(Integer durability, Double attackDamage, Double attackSpeed, Double pickaxeMining) {
+        if (durability != null && durability > 0) this.durability = durability;
+        if (attackDamage != null) this.attackDamageBonus = attackDamage;
+        if (attackSpeed != null) this.attackSpeedBonus = attackSpeed;
+        if (pickaxeMining != null) this.pickaxeMiningBonus = pickaxeMining;
+    }
+
+    /** Which kind of this tier the stack is, by base item, or null if it is not one of ours. */
+    public ToolKind kindOf(ItemStack stack) {
+        for (ToolKind kind : ToolKind.values()) {
+            if (stack.is(baseItems[kind.ordinal()])) return kind;
+        }
+        return null;
+    }
+
+    public int durability() { return durability; }
+    public double attackDamageBonus() { return attackDamageBonus; }
+    public double attackSpeedBonus() { return attackSpeedBonus; }
+    public double pickaxeMiningBonus() { return pickaxeMiningBonus; }
+
+    /**
+     * Write this tier's current durability and attribute modifiers onto an existing stack, so a retune
+     * reaches gear that already exists without rebuilding it (which would discard enchantments, damage and
+     * any anvil rename). Damage is clamped so a lowered durability cannot over-damage a tool.
+     */
+    public void applyStats(ItemStack stack, ToolKind kind) {
+        stack.set(DataComponents.MAX_DAMAGE, durability);
+        if (stack.getDamageValue() > durability - 1) {
+            stack.setDamageValue(Math.max(0, durability - 1));
+        }
+        applyAttributes(stack, baseItems[kind.ordinal()], kind);
     }
 
     public ItemStack create(ToolKind kind) {

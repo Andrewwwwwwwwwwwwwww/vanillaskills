@@ -247,6 +247,14 @@ SortedReloadListenerEvent`, with `addListener(Identifier, PreparableReloadListen
 Content types: `skill_lane` (lane metadata with its nodes nested), `quest`, `shop_offer`, `feat`, `gear_tier`,
 `crate`.
 
+**As built (2026-08-14):** `feat`, `crate`, `skill_category`, `skill_node`, `quest`, `shop_offer`. Lanes and
+nodes ended up as **two flat types instead of one nested `skill_lane`** — a node's `category` field points at
+its lane — because that keeps every content type a flat id-keyed list, so the tag-style merge and per-entry
+override work identically for all of them. `gear_tier` is the one type not yet done.
+
+The two quest boards are a single `quest` type split by a `"pool"` field (`starter` / `rotating`), not two
+types: they are the same shape, and a pack moving a quest between boards should be a one-word edit.
+
 File format follows the familiar vanilla **tag style** so one file scales from a single entry to a hundred:
 
 ```json
@@ -400,6 +408,12 @@ up for free. ⚠ Verify no two titles collide across `STARTER` and `ALL` before 
 ⚠ **Ordering constraint:** the migration maps old indices through the `QuestPool` ordering *as it exists at
 migration time*. **Ship the migration before reordering or datapack-ifying quests** — doing both in one release
 would corrupt the mapping.
+
+**Resolved (2026-08-14).** Rather than depending on release ordering, the two pre-2.0 orderings are now frozen
+in code as `QuestPool.LEGACY_STARTER_IDS` / `LEGACY_ALL_IDS`, and the migration reads *those* instead of the
+live pools. A pack may reorder or replace quests freely without ever shifting a legacy save's mapping, and the
+constraint above no longer applies to any future release. The ids matched title slugs with no collisions across
+the two boards (verified: 72 quests, 72 unique ids).
 
 ### Existing items in worlds
 

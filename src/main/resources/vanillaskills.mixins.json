@@ -12,6 +12,7 @@
     "CrystalReflectMixin",
     "CustomArmorTrimMixin",
     "DisplayTransformAccessor",
+    "EntityCustomNameAccessor",
     "DragonImmunityMixin",
     "DragonSmithingMixin",
     "DragonTemplateTooltipMixin",
