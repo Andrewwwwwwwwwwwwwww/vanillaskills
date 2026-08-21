@@ -121,9 +121,6 @@ public class VanillaSkills implements ModInitializer {
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
                 Identifier.fromNamespaceAndPath(MOD_ID, "tool_crafting"),
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.tool.ToolCraftingRecipe.SERIALIZER);
-        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER,
-                Identifier.fromNamespaceAndPath(MOD_ID, "steel_shield"),
-                io.github.andrewwwwwwwwwwwwwww.vanillaskills.shield.ShieldInfuseRecipe.SERIALIZER);
         FortuneTemplateLoot.register();
         io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot.ShardLoot.register();
         io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot.CrateLoot.register();
@@ -210,8 +207,10 @@ public class VanillaSkills implements ModInitializer {
         // with zero server.properties setup. Configurable in gameplay.json; on by default.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, srv) -> {
             if (!io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.PUSH_RESOURCE_PACK) return;
-            // Skip pure single-player (the host already has the textures bundled in the jar);
-            // still push on LAN-opened worlds and dedicated servers, where vanilla clients can join.
+            // Skip pure single-player: the host has every texture in the mod jar already, including the
+            // assets/minecraft/** overrides the block takeover needs. Keep those bundled — without them a
+            // single-player world shows plain reinforced deepslate and lodestone with their vanilla names.
+            // Still push on LAN-opened worlds and dedicated servers, where vanilla clients can join.
             if (srv.isSingleplayer() && !srv.isPublished()) return;
             String url = io.github.andrewwwwwwwwwwwwwww.vanillaskills.config.GameplayConfig.RESOURCE_PACK_URL;
             if (url == null || url.isEmpty()) return;
@@ -222,11 +221,10 @@ public class VanillaSkills implements ModInitializer {
                     java.util.Optional.of(Component.translatableWithFallback("vanillaskills.resourcepack.prompt", "VanillaSkills+ needs this pack to show the custom gear."))));
         });
 
-        // Placing a shard block, and merging one Stable block into another.
-        //
-        // Placement is handled here rather than left to vanilla because the block that lands in the world is
-        // an ordinary amethyst block — we need the same interaction to also record the position and spawn its
-        // display, and there is no "block was placed" hook to bolt that onto afterwards.
+        // Right-clicks that need to beat vanilla to the punch: opening the Infusing Table, and merging one
+        // Stable block into another. Placement itself is vanilla's — the blocks ARE reinforced deepslate and
+        // lodestone, so a BlockItem places them correctly on its own; ShardBlockPlaceMixin records the
+        // position afterwards.
         net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (world.isClientSide() || !(player instanceof ServerPlayer sp) || !(world instanceof ServerLevel level)) {
                 return net.minecraft.world.InteractionResult.PASS;
@@ -264,16 +262,13 @@ public class VanillaSkills implements ModInitializer {
                 return net.minecraft.world.InteractionResult.SUCCESS;
             }
 
-            net.minecraft.core.BlockPos target = hit.getBlockPos().relative(hit.getDirection());
-            if (!level.getBlockState(target).canBeReplaced()) return net.minecraft.world.InteractionResult.PASS;
-            var kind = stable
-                    ? io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.Kind.STABLE
-                    : io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.Kind.UNSTABLE;
-            level.setBlockAndUpdate(target,
-                    io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBlocks.baseBlock(kind).defaultBlockState());
-            SHARDS.register(level, target, kind);
-            if (!sp.hasInfiniteMaterials()) held.shrink(1);
-            return net.minecraft.world.InteractionResult.SUCCESS;
+            // Placement is left entirely to vanilla BlockItem#place, and ShardBlockPlaceMixin records the
+            // position afterwards. This used to be hand-rolled here, which meant re-implementing every
+            // vanilla placement rule by hand and getting them wrong: it ignored that right-clicking an
+            // interactable block should OPEN it rather than place against it, so aiming at a crafting table
+            // with a shard block in hand buried the table instead of opening it. Deferring fixes that and
+            // every other nuance (replaceability, collision, sounds, offhand) at once.
+            return net.minecraft.world.InteractionResult.PASS;
         });
 
         // Breaking a shard block: we take over entirely, so vanilla does not also drop a plain amethyst block.
@@ -524,6 +519,9 @@ public class VanillaSkills implements ModInitializer {
                 // Catches pre-2.0 gear picked up from a chest after the join sweep. Costs one
                 // component lookup per slot once a world has been migrated.
                 io.github.andrewwwwwwwwwwwwwww.vanillaskills.armor.LegacyGear.sweep(player);
+                // Reveal recipes for ingredients picked up since the last check. Only awarding on join
+                // meant finding your first shard showed nothing until you relogged.
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.RecipeUnlocks.sync(player);
             }
         }
         if (tickCounter % QUEST_ROTATION_INTERVAL == 0) {
