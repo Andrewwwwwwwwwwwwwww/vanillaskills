@@ -428,10 +428,27 @@ tick), which is cheap and invisible. The re-stamp is the recommended route.
 
 ## 6. Open decisions
 
-### 6.1 Custom-block appearance — RESOLVED 2026-07-30: base block + item-display overlay
+### 6.1 Custom-block appearance — SUPERSEDED 2026-08-19: block takeover
 
-**Chosen: a real `minecraft:amethyst_block` in the world, dressed with a `Display.ItemDisplay` carrying the
-custom model.** VanillaSkills already tracks each placed position (it must, for merge counts and the aura),
+> **This decision was reversed in testing and the shipped 2.0 does the opposite.** The overlay is gone.
+> The Unstable and Stable Skill Shard Blocks are **reinforced deepslate** and **lodestone**, taken over
+> outright and retextured in the pushed pack. Ancient cities generate obsidian in their place through
+> three `minecraft:rule` processor lists, and lodestone's recipe is removed, so neither block is
+> obtainable except through VanillaSkills.
+>
+> **Why the overlay failed in practice.** Display entities are lit by the light level *at their own
+> position*, which inside a solid block is zero — so every overlay rendered black. Forcing a brightness
+> override fixed the colour but not the rest: the overlay flickered back to the base block on neighbour
+> updates, could not be made to survive chunk reloads reliably, and the amethyst base showed through
+> during the gap. The objection below — that retexturing a vanilla block "visibly rewrites two of the
+> game's set pieces" — turned out to be answerable: redirecting ancient-city generation to obsidian
+> costs three processor-list files and removes the conflict entirely.
+>
+> The analysis of the other two routes is kept because it is still correct, and still the reason
+> blockstate multiplexing was not revisited.
+
+**Originally chosen: a real `minecraft:amethyst_block` in the world, dressed with a `Display.ItemDisplay`
+carrying the custom model.** VanillaSkills already tracks each placed position (it must, for merge counts and the aura),
 so spawning and clearing the display alongside costs nothing extra. Amethyst is the base deliberately: if a
 display ever fails to spawn, the block degrades to something that still reads as a crystal.
 
@@ -451,7 +468,7 @@ Three routes were investigated. The two rejected ones and why:
 The display overlay avoids fighting vanilla block behaviour entirely, reuses the entity pattern already proven
 by `BountyBoards`, and is what the reference pack's Warding Stone does.
 
-⚠ Trade-off accepted: displays are entities, so they add entity count and can in principle be culled or lost.
+⚠ (No longer applicable — see the note above.) Trade-off accepted: displays are entities, so they add entity count and can in principle be culled or lost.
 `ShardBlocks.refreshAll` exists as the repair path — it re-spawns the display for every tracked position in a
 loaded chunk.
 ⚠ `Display.ItemDisplay.setItemStack` is private on both loaders; use the **public** `getSlot(0).set(stack)`
