@@ -44,22 +44,12 @@ echo "built  $OUT"
 echo "size   $SIZE bytes"
 echo "sha1   $SHA1"
 
-# Patch the hash into every edition so they cannot drift apart.
-for ED in "$HERE" \
-          "$HERE/../../26.1.2/vanillaskills" \
-          "$HERE/../vanillaskills-neoforge" \
-          "$HERE/../../26.1.2/vanillaskills-neoforge"; do
-    CFG="$ED/src/main/java/io/github/andrewwwwwwwwwwwwwww/vanillaskills/config/GameplayConfig.java"
-    [ -f "$CFG" ] || { echo "skip (no config): $ED"; continue; }
-    perl -pi -e "s/(DEFAULT_RP_SHA1 = \")[0-9a-f]{40}(\")/\${1}$SHA1\${2}/" "$CFG"
-    if [ -n "$TAG" ]; then
-        # ONLY the DEFAULT_RP_URL line. The same URL shape appears in SUPERSEDED_RP_URLS, which is a
-        # historical record of packs we have shipped — rewriting those flattens them all onto the current
-        # tag, and the auto-upgrade for servers pinned to an old pack silently becomes a no-op.
-        perl -0pi -e "s{(DEFAULT_RP_URL =\s*\n\s*\"[^\"]*releases/download/)[^/]+(/VanillaSkills-TexturePack\.zip\")}{\${1}$TAG\${2}}" "$CFG"
-    fi
-    echo "patched $(basename "$(dirname "$(dirname "$ED")")")/$(basename "$ED")"
-done
+# Patch the hash (and tag) into every edition so they cannot drift apart.
+#
+# Done in Node, not perl: `perl -pi` reads bytes as latin-1 and so truncates every multi-byte character
+# in the file it rewrites. GameplayConfig's javadoc is full of em dashes, and the mangled result still
+# compiles, so the damage is easy to ship without noticing.
+node "$HERE/tools/patch-pack-refs.js" "$SHA1" ${TAG:+"$TAG"}
 
 echo
 echo "Next: upload $OUT to the GitHub release${TAG:+ $TAG}, then rebuild all four editions."

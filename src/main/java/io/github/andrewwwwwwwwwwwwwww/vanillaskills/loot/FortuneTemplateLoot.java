@@ -3,7 +3,6 @@ package io.github.andrewwwwwwwwwwwwwww.vanillaskills.loot;
 import io.github.andrewwwwwwwwwwwwwww.vanillaskills.recipe.FortuneTemplate;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
