@@ -35,7 +35,10 @@ cp "$HERE/src/main/resources/assets/vanillaskills/lang/"*.json \
 mkdir -p "$(dirname "$OUT")"
 rm -f "$OUT"
 # -C so pack.mcmeta lands at the zip ROOT, which is what Minecraft requires.
-(cd "$PACK_DIR" && "$JAR" --create --file "$OUT" --no-manifest .)
+# List the pack's parts explicitly rather than zipping the whole directory: `.` also swept up
+# README.txt and _PROGRESS.md, which are notes to ourselves and were being shipped to every player
+# who joined. Minecraft ignores them, but they have no business in a pushed pack.
+(cd "$PACK_DIR" && "$JAR" --create --file "$OUT" --no-manifest pack.mcmeta pack.png assets)
 
 SHA1=$(sha1sum "$OUT" | cut -d' ' -f1)
 SIZE=$(wc -c < "$OUT")
