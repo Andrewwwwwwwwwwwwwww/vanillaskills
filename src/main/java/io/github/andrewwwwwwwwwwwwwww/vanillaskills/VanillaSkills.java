@@ -201,6 +201,7 @@ public class VanillaSkills implements ModInitializer {
             QUESTS.save();
             BOARDS.save();
             SHARDS.save();
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.TaskShards.clear();
         });
 
         // Force the custom texture pack onto every joining client, so vanilla clients see the gear
@@ -411,6 +412,16 @@ public class VanillaSkills implements ModInitializer {
                 net.minecraft.world.level.block.Block.popResource(level, pos, new ItemStack(product, bonus));
             }
             return true;
+        });
+
+        // Hard work pays: every block actually broken (mining, digging, harvesting a crop) rolls the
+        // rare task-shard chance. AFTER only fires for breaks that went through, so anything a BEFORE
+        // handler cancelled — gated deepslate, shard blocks — never rolls. Placement rolls the same
+        // chance from TaskShardPlaceMixin, and TaskShards itself enforces the per-player cooldown.
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
+            if (world instanceof ServerLevel level && player instanceof ServerPlayer sp) {
+                io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.TaskShards.roll(level, sp, pos);
+            }
         });
 
         // Hardwood swords & axes inflict a little poison on hit.
