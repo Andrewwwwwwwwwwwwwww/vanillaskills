@@ -38,19 +38,36 @@ file players get from GitHub.
 
 ## Changelog to paste
 
+The CurseForge page jumps 2.0.1 → 2.1.1, so this covers all three releases since:
+
 ```
-Advancements pay more, and luck sweetens the task-shard odds.
+Everything since 2.0.1: anvils re-priced around finite shards, a rare shard trickle
+from ordinary play, and richer advancement payouts.
 
 Changed
-- Advancements pay more. With enchanting and the anvil both charging Skill Shards, the old rates
-  were too stingy: tasks now pay 5 (was 2), goals 20 (was 12) and challenges 50 (was 45). New worlds
-  get the new numbers automatically; an existing world keeps its points.json — raise valueTask /
-  valueGoal / valueChallenge there and run /skill recalc <player> to re-credit everyone.
-- Luck raises the task-shard odds. The 2.1.0 work-trickle now reads your luck attribute: each point
-  (Fortune Finder gives +0.5 per node; Luck potions count too) multiplies the base chance by another
-  +10%, so a maxed Fortune Finder lane rolls at +50% odds. New option taskShardLuckBonus.
+- Anvils now price by what the operation actually consumes, not vanilla's level formula:
+  one shard per repair material and one per enchantment level on the sacrificed item,
+  with renames free by default. The prior-work penalty no longer compounds, so gear
+  never becomes "too expensive". Dragon scale repair drops from 20 shards to 2.
+  Options: anvilMaterialPricing, anvilRepairCostPerMaterial, anvilEnchantCostPerLevel,
+  anvilRenameCost.
+- Advancements pay more: tasks 5 (was 2), goals 20 (was 12), challenges 50 (was 45).
+  New worlds get the new numbers automatically; on an existing world raise valueTask /
+  valueGoal / valueChallenge in points.json and run /skill recalc <player>.
 
-The texture pack is unchanged; servers keep pulling it from the v2.0.1 release automatically.
+Added
+- Hard work pays: mining or placing a block and harvesting crops (berries included)
+  each carry a small chance — 0.2% by default — of shaking an Unstable Skill Shard
+  loose on the spot. A payout starts a 4-minute per-player cooldown, so the trickle
+  rewards ordinary play without ever becoming a farm. Creative earns nothing.
+- Your luck attribute sweetens those odds: each point (Fortune Finder, Luck potions)
+  multiplies the chance by another +10%, so a maxed Fortune Finder rolls at +50%.
+  Options: taskShardChance (0 disables), taskShardCooldownSeconds, taskShardLuckBonus.
+- The new source is listed on the Earning Skill Shards screen, rates read live from
+  the config.
+
+The texture pack is unchanged; servers keep pulling it from the v2.0.1 release
+automatically.
 ```
 
 Full detail: <https://github.com/Andrewwwwwwwwwwwwwww/vanillaskills/blob/master/CHANGELOG.md>
