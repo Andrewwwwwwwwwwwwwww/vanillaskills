@@ -451,7 +451,14 @@ public class VanillaSkills implements ModInitializer {
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.skill.StepHeight.onLeave(player.getUUID());
             io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBar.forget(player);
         });
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> PLAYERS.applyAll(newPlayer));
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            PLAYERS.applyAll(newPlayer);
+            // Vanilla fills the fresh body to its BASE max (20) before our max-health modifiers are
+            // reapplied, so a Vitality player came back at a fraction of their bar. A death respawn
+            // means full health — but only a death respawn: alive=true is an end-portal return, where
+            // topping up would be a free heal.
+            if (!alive) newPlayer.setHealth(newPlayer.getMaxHealth());
+        });
 
         ServerTickEvents.END_SERVER_TICK.register(this::onServerTick);
 
