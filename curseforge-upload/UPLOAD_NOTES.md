@@ -1,35 +1,35 @@
-# CurseForge upload — VanillaSkills 2.1.3 (4 jars, no texture pack)
+# CurseForge upload — VanillaSkills 2.1.4 (4 jars, no texture pack)
 
-All four jars were **downloaded back from the published GitHub release** (`v2.1.3`) and byte-compared
+All four jars were **downloaded back from the published GitHub release** (`v2.1.4`) and byte-compared
 (SHA-256) against the local builds before staging, so what goes to CurseForge is provably the same
 file players get from GitHub.
 
-> **No texture pack this time.** The pack did not change in 2.1.3 — the jars still point at the
+> **No texture pack this time.** The pack did not change in 2.1.4 — the jars still point at the
 > v2.0.1 pack asset, which stays where it is. Upload jars only.
 
 ---
 
 ## 1. Fabric jar (26.2) → **Vanilla-Skills** (projectID `1570558`, slug `vanilla-skills`)
-**File:** `vanillaskills-2.1.3+mc26.2.jar` (this folder)
+**File:** `vanillaskills-2.1.4+mc26.2.jar` (this folder)
 - Game version **26.2**, loader **Fabric**
 - Required dependency: **Fabric API** (projectID `306612`)
 - Release type: Release
 
 ## 2. NeoForge jar (26.2) → same project (`1570558`)
-**File:** `vanillaskills-2.1.3+mc26.2-neoforge.jar`
+**File:** `vanillaskills-2.1.4+mc26.2-neoforge.jar`
 (in `../../vanillaskills-neoforge/curseforge-upload/`)
 - Game version **26.2**, loader **NeoForge**
 - Release type: Release
 
 ## 3. Fabric jar (26.1.2) → same project (`1570558`)
-**File:** `vanillaskills-2.1.3+mc26.1.2.jar`
+**File:** `vanillaskills-2.1.4+mc26.1.2.jar`
 (in `../../vanillaskills-mc26.1.2/curseforge-upload/`)
 - Game version **26.1.2**, loader **Fabric**
 - Required dependency: **Fabric API** (projectID `306612`)
 - Release type: Release
 
 ## 4. NeoForge jar (26.1.2) → same project (`1570558`)
-**File:** `vanillaskills-2.1.3+mc26.1.2-neoforge.jar`
+**File:** `vanillaskills-2.1.4+mc26.1.2-neoforge.jar`
 (in `../../vanillaskills-neoforge-mc26.1.2/curseforge-upload/`)
 - Game version **26.1.2**, loader **NeoForge**
 - Release type: Release
@@ -38,15 +38,24 @@ file players get from GitHub.
 
 ## Changelog to paste
 
-The CurseForge page jumps 2.0.1 → 2.1.3, so this covers all five releases since:
+The CurseForge page jumps 2.0.1 → 2.1.4, so this covers all six releases since:
 
 ```
 Everything since 2.0.1: anvils and infusing re-priced around finite shards, a rare
-shard trickle from ordinary play, richer advancement payouts, and a respawn health fix.
+shard trickle from ordinary play, richer advancement payouts, repair materials for the
+repair-less items, and a batch of fixes.
 
 Fixed
 - Respawning restores your whole health bar: a player with Vitality hearts used to come
   back at base health. An End-portal return still keeps the health you left with.
+- A free anvil result (like the now-free rename) can actually be taken.
+- Renaming VanillaSkills gear sticks instead of silently reverting.
+- The Satchel keeps its name through placing, the block entity, and mining.
+
+Added
+- Repair materials for the items vanilla ships combine-only: Trident <- Prismarine,
+  Bow / Crossbow / Fishing Rod <- String, Flint and Steel / Shears <- Iron Ingot,
+  Brush <- Copper Ingot. Toggle: vanillaRepairMaterials.
 
 Changed
 - Infusing drops to 2 shards per enchantment level (was 3) — a level V book now costs
@@ -87,5 +96,5 @@ Documentation: <https://andrewwwwwwwwwwwwwww.github.io/modhub/mods/vanillaskills
 ## After upload
 
 CurseForge issues a new fileID once the files are approved. Repoint any modpack manifest that pins
-VanillaSkills (the VSP Player/Server packs) from the 2.0.1 fileID to the 2.1.3 one and bump the pack
+VanillaSkills (the VSP Player/Server packs) from the 2.0.1 fileID to the 2.1.4 one and bump the pack
 version.
