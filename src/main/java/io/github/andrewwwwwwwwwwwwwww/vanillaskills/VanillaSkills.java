@@ -459,7 +459,16 @@ public class VanillaSkills implements ModInitializer {
             // means full health — but only a death respawn: alive=true is an end-portal return, where
             // topping up would be a free heal.
             if (!alive) newPlayer.setHealth(newPlayer.getMaxHealth());
+            // The fresh client entity resets its XP display to zero, and the reconcile loop skips
+            // players whose number "hasn't changed" — so the shard readout stayed blank. Force it.
+            io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBar.push(newPlayer, true);
         });
+
+        // Same client-side reset happens on a portal trip (nether or otherwise) without any respawn
+        // event firing, so the shard readout vanished until the balance next changed. Force it here too.
+        net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL
+                .register((player, origin, destination) ->
+                        io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardBar.push(player, true));
 
         ServerTickEvents.END_SERVER_TICK.register(this::onServerTick);
 
