@@ -1,35 +1,35 @@
-# CurseForge upload — VanillaSkills 2.1.11 (4 jars, no texture pack)
+# CurseForge upload — VanillaSkills 2.1.12 (4 jars, no texture pack)
 
-All four jars were **downloaded back from the published GitHub release** (`v2.1.11`) and byte-compared
+All four jars were **downloaded back from the published GitHub release** (`v2.1.12`) and byte-compared
 (SHA-256) against the local builds before staging, so what goes to CurseForge is provably the same
 file players get from GitHub.
 
-> **No texture pack this time.** The pack did not change in 2.1.11 — the jars still point at the
+> **No texture pack this time.** The pack did not change in 2.1.12 — the jars still point at the
 > v2.0.1 pack asset, which stays where it is. Upload jars only.
 
 ---
 
 ## 1. Fabric jar (26.2) → **Vanilla-Skills** (projectID `1570558`, slug `vanilla-skills`)
-**File:** `vanillaskills-2.1.11+mc26.2.jar` (this folder)
+**File:** `vanillaskills-2.1.12+mc26.2.jar` (this folder)
 - Game version **26.2**, loader **Fabric**
 - Required dependency: **Fabric API** (projectID `306612`)
 - Release type: Release
 
 ## 2. NeoForge jar (26.2) → same project (`1570558`)
-**File:** `vanillaskills-2.1.11+mc26.2-neoforge.jar`
+**File:** `vanillaskills-2.1.12+mc26.2-neoforge.jar`
 (in `../../vanillaskills-neoforge/curseforge-upload/`)
 - Game version **26.2**, loader **NeoForge**
 - Release type: Release
 
 ## 3. Fabric jar (26.1.2) → same project (`1570558`)
-**File:** `vanillaskills-2.1.11+mc26.1.2.jar`
+**File:** `vanillaskills-2.1.12+mc26.1.2.jar`
 (in `../../vanillaskills-mc26.1.2/curseforge-upload/`)
 - Game version **26.1.2**, loader **Fabric**
 - Required dependency: **Fabric API** (projectID `306612`)
 - Release type: Release
 
 ## 4. NeoForge jar (26.1.2) → same project (`1570558`)
-**File:** `vanillaskills-2.1.11+mc26.1.2-neoforge.jar`
+**File:** `vanillaskills-2.1.12+mc26.1.2-neoforge.jar`
 (in `../../vanillaskills-neoforge-mc26.1.2/curseforge-upload/`)
 - Game version **26.1.2**, loader **NeoForge**
 - Release type: Release
@@ -38,7 +38,7 @@ file players get from GitHub.
 
 ## Changelog to paste
 
-The CurseForge page jumps 2.0.1 → 2.1.11, so this covers all thirteen releases since:
+The CurseForge page jumps 2.0.1 → 2.1.12, so this covers all fourteen releases since:
 
 ```
 Everything since 2.0.1: anvils and infusing re-priced around finite shards, a rare
@@ -59,6 +59,8 @@ Added
 - The config files explain themselves: gameplay.json and points.json carry an
   #option-guide block describing every option, always current with the installed
   version.
+- The recipe book opens on a contents page: every custom recipe listed as its finished
+  item, click one to see its grid, back to the list or the skill tree from there.
 - Every crate has a small chance of an Unboxing book, tiered to the crate: Wooden ->
   Unboxing I (3%), Copper -> II (3%), Iron (5%) / Diamond (7%) / biome crates (4%) ->
   III — so the humblest crate offers a rung up the ladder, and a crate can never drop
@@ -87,7 +89,8 @@ Fixed
   enchanted tool a plain spare is no longer free (anvilCombineRepairCost).
 - Renaming VanillaSkills gear sticks instead of silently reverting.
 - The Satchel keeps its name through placing, the block entity, and mining.
-- The shard readout on the XP bar no longer vanishes after a dimension change or respawn.
+- The Skill Shard count on the XP bar is self-healing: it is re-sent twice a second, so it
+  can no longer stay blank after a respawn or dimension change.
 
 The texture pack is unchanged; servers keep pulling it from the v2.0.1 release
 automatically.
@@ -101,5 +104,5 @@ Documentation: <https://andrewwwwwwwwwwwwwww.github.io/modhub/mods/vanillaskills
 ## After upload
 
 CurseForge issues a new fileID once the files are approved. Repoint any modpack manifest that pins
-VanillaSkills (the VSP Player/Server packs) from the 2.0.1 fileID to the 2.1.11 one and bump the pack
+VanillaSkills (the VSP Player/Server packs) from the 2.0.1 fileID to the 2.1.12 one and bump the pack
 version.
