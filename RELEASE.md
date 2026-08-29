@@ -65,6 +65,13 @@ release with the asset attached before deploying anywhere real.
 
 ## Release ritual
 
+0. **`node tools/check-assets.js` in each edition, and `node tools/check-parity.js`.** The asset check
+   catches the two faults that reach players silently and never fail a build: a mod texture that differs
+   from the pushed pack's copy (single player has no pack, so the jar's copy is what people see — this is
+   how nine placeholder textures shipped for months), and a duplicate or missing language key (Gson
+   rejects the whole file on one duplicate, so every string in every language falls back to English).
+   Parity cannot see either: it compares the four editions against each other, and a fault copied into
+   all four is "in parity".
 1. `./tools/build-pack.sh v2.0.0` (after art).
 2. Build all four editions.
 3. Archive the previous jars to `projects/_jar-archive/vanillaskills/`, prune `build/libs/` to the
