@@ -239,6 +239,12 @@ public class VanillaSkills implements ModInitializer {
                 return net.minecraft.world.InteractionResult.SUCCESS;
             }
 
+            // Bone meal on a spore blossom spreads it; vanilla does nothing at all here.
+            if (io.github.andrewwwwwwwwwwwwwww.vanillaskills.world.SporeBlossoms.tryBoneMeal(
+                    level, hit.getBlockPos(), sp, sp.getItemInHand(hand))) {
+                return net.minecraft.world.InteractionResult.SUCCESS;
+            }
+
             ItemStack held = player.getItemInHand(hand);
             boolean stable = io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.isStableBlock(held);
             boolean unstable = io.github.andrewwwwwwwwwwwwwww.vanillaskills.shard.ShardItems.isUnstableBlock(held);
