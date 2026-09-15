@@ -14,7 +14,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ConstantValue;
 
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public final class ShardLoot {
 
     private static LootPool.Builder pool(int shardWeight, int emptyWeight) {
         return LootPool.lootPool()
-                .setRolls(ConstantValue.exactly(1.0f))
+                .setRolls(Holder.direct(new ConstantValue(1)))
                 .add(EmptyLootItem.emptyItem().setWeight(Math.max(1, emptyWeight)))
                 .add(LootItem.lootTableItem(Items.WRITTEN_BOOK)
                         .setWeight(shardWeight)

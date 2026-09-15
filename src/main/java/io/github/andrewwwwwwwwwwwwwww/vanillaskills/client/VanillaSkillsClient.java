@@ -7,7 +7,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 /**
  * Client-only entrypoint. Registers two rebindable keys (Options → Controls → "VanillaSkills") that
@@ -34,9 +34,9 @@ public class VanillaSkillsClient implements ClientModInitializer {
         // Defaults: ] for the skill tree, [ for the bounty board — both unbound in vanilla, unlike the
         // commonly-used B/V. Players can rebind under Options -> Controls -> VanillaSkills.
         openSkills = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.vanillaskills.open_skills", GLFW.GLFW_KEY_RIGHT_BRACKET, category));
+                "key.vanillaskills.open_skills", InputConstants.KEY_RBRACKET, category));
         openQuests = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.vanillaskills.open_quests", GLFW.GLFW_KEY_LEFT_BRACKET, category));
+                "key.vanillaskills.open_quests", InputConstants.KEY_LBRACKET, category));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openSkills.consumeClick()) runServerCommand(client, "skill");

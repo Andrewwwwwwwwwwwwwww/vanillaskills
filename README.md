@@ -1,6 +1,6 @@
 # VanillaSkills
 
-A **server-side** progression overhaul for Minecraft **26.2** (Fabric).
+A **server-side** progression overhaul for Minecraft **26.3** (Fabric).
 
 Experience is removed and **Skill Shards** take its place — earned from advancements and
 found in the world, spent in a fifteen-lane skill tree, at the anvil, and at the Infusing
@@ -30,7 +30,7 @@ installed by hand. A client-side install is optional.
 
 ## Requirements
 
-- Minecraft **26.2**
+- Minecraft **26.3**
 - **Fabric Loader** and **Fabric API**
 - Installed on the **server**
 

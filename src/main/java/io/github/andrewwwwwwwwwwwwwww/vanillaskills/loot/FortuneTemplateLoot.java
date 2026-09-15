@@ -9,7 +9,8 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ConstantValue;
 
 /**
  * Adds the Fortune Upgrade template to Ancient City and minecart (abandoned mineshaft) chests
@@ -36,7 +37,7 @@ public final class FortuneTemplateLoot {
 
     private static LootPool.Builder templatePool() {
         return LootPool.lootPool()
-                .setRolls(ConstantValue.exactly(1.0f))
+                .setRolls(Holder.direct(new ConstantValue(1)))
                 .add(EmptyLootItem.emptyItem().setWeight(EMPTY_WEIGHT))
                 .add(LootItem.lootTableItem(FortuneTemplate.BASE)
                         .setWeight(TEMPLATE_WEIGHT)
